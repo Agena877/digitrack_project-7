@@ -1,0 +1,2730 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DigiTrack - MTO Admin</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --primary-color: #0077B6;
+            --primary-dark: #005577;
+            --primary-light: #e6f3ff;
+            --secondary-color: #f39c12;
+            --success-color: #27ae60;
+            --warning-color: #e67e22;
+            --danger-color: #e74c3c;
+            --light-bg: #f8fafc;
+            --white: #ffffff;
+            --text-dark: #2c3e50;
+            --text-muted: #6c757d;
+            --border-color: #e1e8ed;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.06);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+            --shadow-xl: 0 20px 25px rgba(0,0,0,0.1);
+            --border-radius: 8px;
+            --border-radius-lg: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            display: flex;
+            height: 100vh;
+            font-weight: 400;
+            line-height: 1.6;
+            color: var(--text-dark);
+        }
+        /* Sidebar styles */
+        .sidebar {
+            width: 280px;
+            background: var(--white);
+            backdrop-filter: blur(10px);
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            flex-direction: column;
+            padding: 30px 0;
+            position: fixed;
+            left: 0;
+            top: 90px;
+            height: calc(100vh - 90px);
+            z-index: 1000;
+            transition: var(--transition);
+            border-right: 1px solid var(--border-color);
+        }
+        
+        .sidebar-header {
+            display: none; /* hide sidebar header, logo will be in header-bar */
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+        
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 16px 28px;
+            text-decoration: none;
+            color: var(--text-dark);
+            font-size: 15px;
+            font-weight: 500;
+            transition: var(--transition);
+            border-radius: 0 25px 25px 0;
+            margin: 4px 0;
+            margin-right: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar-menu a::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: var(--primary-color);
+            transform: scaleY(0);
+            transition: var(--transition);
+        }
+        
+        .sidebar-menu a:hover {
+            background: var(--primary-light);
+            color: var(--primary-color);
+            transform: translateX(8px);
+        }
+
+        .sidebar-menu a:hover::before,
+        .sidebar-menu a.active::before {
+            transform: scaleY(1);
+        }
+        
+        .sidebar-menu a.active {
+            background: linear-gradient(135deg, var(--primary-light) 0%, rgba(0, 119, 182, 0.1) 100%);
+            color: var(--primary-color);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .sidebar-menu a i {
+            margin-right: 16px;
+            font-size: 18px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        /* Main content styles */
+        .main-content {
+            flex-grow: 1;
+            margin-left: 280px;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            transition: var(--transition);
+        }
+        
+        /* Header bar styles */
+        .header-bar {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-lg);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 90px;
+            z-index: 1100;
+            backdrop-filter: blur(10px);
+        }
+        
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .header-logo-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--secondary-color) 0%, #e67e22 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: #fff;
+            margin-right: 16px;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='55' x='50' text-anchor='middle' dominant-baseline='middle' fill='white' font-size='32' font-weight='bold'%3EDT%3C/text%3E%3C/svg%3E");
+            background-size: 70% 70%;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        .header-logo-icon:hover {
+            transform: scale(1.05) rotate(5deg);
+        }
+        
+        .header-logo-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: 1.2px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .header-bar .title {
+            display: none; /* hide old title */
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 12px 20px;
+            border-radius: var(--border-radius-lg);
+            transition: var(--transition);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            font-weight: 500;
+        }
+
+        .user-profile:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .user-profile i {
+            font-size: 26px;
+            margin-right: 12px;
+        }
+        
+        /* Content area */
+        .content-area {
+            margin-top: 90px;
+            padding: 40px;
+            overflow-y: auto;
+            flex-grow: 1;
+            background: transparent;
+        }
+        
+        /* User Management styles */
+        .user-management-container {
+            background: var(--white);
+            padding: 32px;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-xl);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+        }
+        
+        .user-management-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #e6e6e6;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .user-management-header h2 {
+            font-size: 28px;
+            font-weight: 700;
+            margin: 0;
+            color: var(--text-dark);
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .user-management-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .user-management-buttons button {
+            padding: 12px 20px;
+            border: 2px solid var(--border-color);
+            background: var(--white);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+            font-weight: 500;
+            color: var(--text-dark);
+            font-size: 14px;
+        }
+        
+        .user-management-buttons button:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .user-management-buttons button i {
+            font-size: 16px;
+        }
+        
+        .user-tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        
+        .user-tabs button {
+            padding: 14px 24px;
+            border: none;
+            background: transparent;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: var(--transition);
+            color: var(--text-muted);
+            position: relative;
+        }
+
+        .user-tabs button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 3px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            transition: var(--transition);
+        }
+
+        .user-tabs button:hover {
+            color: var(--primary-color);
+        }
+
+        .user-tabs button:hover::before {
+            width: 100%;
+        }
+        
+        .user-tabs button.active-tab {
+            border-bottom-color: var(--primary-color);
+            color: var(--primary-color);
+            background: var(--primary-light);
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+        }
+
+        .user-tabs button.active-tab::before {
+            width: 100%;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .user-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .user-table th, .user-table td {
+            padding: 16px 20px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .user-table thead {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+        }
+
+        .user-table thead th {
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .user-table tbody tr {
+            transition: var(--transition);
+        }
+
+        .user-table tbody tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+        
+        .user-table tbody tr:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .action-icons i {
+            cursor: pointer;
+            font-size: 18px;
+            margin-right: 12px;
+            padding: 8px;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .action-icons i:hover {
+            transform: scale(1.2);
+        }
+        
+        .action-icons .edit-icon {
+            color: var(--success-color);
+        }
+
+        .action-icons .edit-icon:hover {
+            background: rgba(39, 174, 96, 0.1);
+        }
+        
+        .action-icons .delete-icon {
+            color: var(--danger-color);
+        }
+
+        .action-icons .delete-icon:hover {
+            background: rgba(231, 76, 60, 0.1);
+        }
+        
+        .action-icons .restore-icon {
+            color: var(--primary-color);
+        }
+
+        .action-icons .restore-icon:hover {
+            background: var(--primary-light);
+        }
+        
+        /* Dashboard styles */
+        .dashboard-container {
+            padding: 32px;
+        }
+        
+        .dashboard-container h2 {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 32px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+        
+        .stat-card {
+            background: var(--white);
+            padding: 32px 24px;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-xl);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        }
+
+        .stat-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .stat-card i {
+            font-size: 48px;
+            color: var(--primary-color);
+            margin-bottom: 16px;
+            padding: 20px;
+            background: var(--primary-light);
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover i {
+            transform: scale(1.1) rotate(5deg);
+        }
+        
+        .stat-card .number {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+        
+        .stat-card .label {
+            font-size: 14px;
+            color: var(--text-muted);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .homestay-list-container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .list-header h3 {
+            font-size: 20px;
+            font-weight: 500;
+            margin: 0;
+        }
+        
+        .search-container {
+            display: flex;
+            align-items: center;
+        }
+        
+        .search-container input {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+            margin-right: 5px;
+        }
+        
+        .search-container button {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .search-container button i {
+            font-size: 16px;
+        }
+        
+        /* Table container with slide animation */
+        .table-container {
+            position: relative;
+            overflow: hidden;
+            min-height: 200px;
+        }
+        
+        .homestay-table {
+            width: 100%;
+            border-collapse: collapse;
+            transition: transform 0.5s ease-in-out, opacity 0.3s ease-in-out;
+        }
+        
+        .homestay-table.slide-out {
+            transform: translateX(-100%);
+            opacity: 0;
+        }
+        
+        .homestay-table.slide-in {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        
+        .homestay-table.slide-in-active {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        
+        .homestay-table th, .homestay-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .homestay-table thead {
+            background-color: #0077B6;
+            color: white;
+        }
+        
+        .homestay-table tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .homestay-table tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 15px;
+        }
+        
+        .pagination button {
+            padding: 8px 12px;
+            margin-left: 5px;
+            border: 1px solid #ccc;
+            background-color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .pagination button:hover {
+            background-color: #e6f0ff;
+            border-color: #0077B6;
+        }
+        
+        .pagination button.active {
+            background-color: #0077B6;
+            color: white;
+            border-color: #0077B6;
+        }
+        
+        .pagination button:disabled {
+            background-color: #f5f5f5;
+            color: #999;
+            cursor: not-allowed;
+        }
+        
+        .charts-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .chart-card {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 10px;
+        }
+        
+        .chart-header select {
+            padding: 5px 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        
+        .chart-placeholder {
+            width: 100%;
+            height: 250px;
+            background-color: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+            border-radius: 5px;
+        }
+        
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(5px);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { 
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.9);
+            }
+            to { 
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+        
+        .modal-content {
+            background: var(--white);
+            padding: 32px;
+            border-radius: var(--border-radius-lg);
+            width: 480px;
+            max-width: 90vw;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: var(--shadow-xl);
+            border: 1px solid var(--border-color);
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        .modal h3 {
+            margin-top: 0;
+            color: var(--text-dark);
+            font-size: 24px;
+            font-weight: 700;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 16px;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .modal label {
+            display: block;
+            margin-bottom: 20px;
+            color: var(--text-dark);
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .modal input, .modal select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            margin-top: 8px;
+            box-sizing: border-box;
+            transition: var(--transition);
+            background: var(--white);
+        }
+
+        .modal input:focus, .modal select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 119, 182, 0.1);
+        }
+        
+        .modal button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            margin-right: 12px;
+            transition: var(--transition);
+        }
+        
+        .modal button[type="submit"] {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+        }
+
+        .modal button[type="submit"]:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .modal button[type="button"] {
+            background: var(--text-muted);
+            color: white;
+        }
+
+        .modal button[type="button"]:hover {
+            background: var(--text-dark);
+            transform: translateY(-2px);
+        }
+        
+        /* Status badges */
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .status-badge::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+        
+        .status-active {
+            background: rgba(39, 174, 96, 0.1);
+            color: var(--success-color);
+            border: 1px solid rgba(39, 174, 96, 0.2);
+        }
+
+        .status-active::before {
+            background: var(--success-color);
+        }
+        
+        .status-inactive {
+            background: rgba(231, 76, 60, 0.1);
+            color: var(--danger-color);
+            border: 1px solid rgba(231, 76, 60, 0.2);
+        }
+
+        .status-inactive::before {
+            background: var(--danger-color);
+        }
+        
+        .status-archived {
+            background: rgba(108, 117, 125, 0.1);
+            color: var(--text-muted);
+            border: 1px solid rgba(108, 117, 125, 0.2);
+        }
+
+        .status-archived::before {
+            background: var(--text-muted);
+        }
+        
+        /* Loading indicator */
+        .loading-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(5px);
+            padding: 20px;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .loading-spinner {
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--light-bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+
+        /* Enhanced button styles for suspend/unsuspend */
+        .suspend-btn, .unsuspend-btn {
+            font-size: 12px !important;
+            font-weight: 600 !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.5px !important;
+            transition: var(--transition) !important;
+        }
+
+        .suspend-btn:hover {
+            background: var(--warning-color) !important;
+            transform: translateY(-1px) !important;
+            box-shadow: var(--shadow-sm) !important;
+        }
+
+        .unsuspend-btn:hover {
+            background: var(--primary-dark) !important;
+            transform: translateY(-1px) !important;
+            box-shadow: var(--shadow-sm) !important;
+        }
+
+        /* Mobile-specific enhancements */
+        .user-name {
+            display: inline;
+        }
+
+        /* Smooth transitions for mobile menu */
+        .sidebar {
+            will-change: transform;
+        }
+
+        .mobile-overlay {
+            will-change: opacity;
+        }
+
+        /* Prevent body scroll when mobile menu is open */
+        body.mobile-menu-open {
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+        }
+
+        /* Enhanced touch targets */
+        @media (max-width: 768px) {
+            .sidebar-menu a {
+                min-height: 56px;
+                display: flex;
+                align-items: center;
+            }
+
+            .user-management-buttons button,
+            .user-tabs button {
+                min-height: 48px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            /* Improved form elements for mobile */
+            .modal input,
+            .modal select {
+                -webkit-appearance: none;
+                appearance: none;
+                background-color: var(--white);
+                border-radius: var(--border-radius);
+            }
+
+            .modal select {
+                background-image: url("data:image/svg+xml;charset=US-ASCII,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3e%3cpath fill='%23666' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e");
+                background-repeat: no-repeat;
+                background-position: right 12px center;
+                background-size: 12px;
+                padding-right: 40px;
+            }
+        }
+
+        /* Enhanced table styling */
+        .homestay-list-container {
+            background: var(--white);
+            padding: 32px;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-xl);
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Mobile menu toggle button */
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        .mobile-menu-toggle:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Mobile overlay for sidebar */
+        .mobile-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .mobile-overlay.active {
+            opacity: 1;
+        }
+
+        /* Touch-friendly improvements */
+        @media (hover: none) and (pointer: coarse) {
+            .sidebar-menu a {
+                padding: 20px 28px;
+                font-size: 16px;
+            }
+
+            .user-management-buttons button {
+                padding: 16px 24px;
+                font-size: 16px;
+                min-height: 48px;
+            }
+
+            .action-icons i {
+                padding: 12px;
+                font-size: 20px;
+            }
+
+            .user-tabs button {
+                padding: 18px 24px;
+                font-size: 18px;
+                min-height: 54px;
+            }
+        }
+
+        /* Responsive design */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 240px;
+            }
+            
+            .main-content {
+                margin-left: 240px;
+            }
+
+            .dashboard-stats {
+                grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            }
+
+            .content-area {
+                padding: 24px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-toggle {
+                display: block;
+            }
+
+            .sidebar {
+                width: 280px;
+                position: fixed;
+                top: 0;
+                left: -280px;
+                height: 100vh;
+                z-index: 1000;
+                transition: var(--transition);
+                padding-top: 100px;
+                background: var(--white);
+                box-shadow: var(--shadow-xl);
+            }
+
+            .sidebar.mobile-open {
+                left: 0;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .header-bar {
+                padding: 0 20px;
+                justify-content: space-between;
+            }
+
+            .header-logo {
+                order: 2;
+            }
+
+            .user-profile {
+                order: 3;
+                padding: 8px 12px;
+            }
+
+            .mobile-menu-toggle {
+                order: 1;
+            }
+
+            .header-logo-title {
+                font-size: 1.4rem;
+            }
+            
+            .dashboard-stats {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 16px;
+            }
+            
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+
+            .content-area {
+                padding: 20px;
+            }
+
+            .user-management-container {
+                padding: 20px;
+                border-radius: var(--border-radius);
+            }
+
+            /* Mobile table improvements */
+            .user-table {
+                font-size: 14px;
+            }
+
+            .user-table th,
+            .user-table td {
+                padding: 12px 8px;
+            }
+
+            /* Hide less important columns on tablets */
+            .user-table th:nth-child(4),
+            .user-table td:nth-child(4) {
+                display: none;
+            }
+
+            /* Horizontal scroll for tables */
+            .table-container {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .user-table {
+                min-width: 600px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .header-bar {
+                height: 70px;
+                padding: 0 16px;
+            }
+
+            .header-logo-icon {
+                width: 40px;
+                height: 40px;
+                margin-right: 8px;
+            }
+
+            .header-logo-title {
+                font-size: 1.2rem;
+                display: none;
+            }
+
+            .user-profile {
+                font-size: 14px;
+                padding: 6px 10px;
+            }
+
+            .user-profile i {
+                font-size: 20px;
+                margin-right: 6px;
+            }
+
+            .sidebar {
+                width: 100vw;
+                left: -100vw;
+                padding-top: 80px;
+            }
+
+            .sidebar.mobile-open {
+                left: 0;
+            }
+            
+            .content-area {
+                margin-top: 70px;
+                padding: 12px;
+            }
+
+            .dashboard-container {
+                padding: 16px;
+            }
+
+            .dashboard-container h2 {
+                font-size: 24px;
+                margin-bottom: 20px;
+                text-align: center;
+            }
+
+            .dashboard-stats {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .stat-card {
+                padding: 20px 16px;
+            }
+
+            .stat-card i {
+                font-size: 36px;
+                padding: 16px;
+            }
+
+            .stat-card .number {
+                font-size: 28px;
+            }
+
+            .user-management-container {
+                padding: 16px;
+                margin: 0 -4px;
+            }
+
+            .user-management-header {
+                flex-direction: column;
+                gap: 16px;
+                align-items: stretch;
+            }
+
+            .user-management-header h2 {
+                font-size: 22px;
+                text-align: center;
+            }
+
+            .user-management-buttons {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .user-management-buttons button {
+                justify-content: center;
+                min-height: 48px;
+                font-size: 16px;
+            }
+
+            .user-tabs {
+                flex-wrap: wrap;
+                gap: 4px;
+            }
+
+            .user-tabs button {
+                flex: 1;
+                min-width: auto;
+                padding: 14px 12px;
+                font-size: 14px;
+                text-align: center;
+            }
+
+            /* Mobile table - card layout */
+            .user-table {
+                display: none;
+            }
+
+            .mobile-user-cards {
+                display: block;
+            }
+
+            .user-card {
+                background: var(--white);
+                border: 1px solid var(--border-color);
+                border-radius: var(--border-radius);
+                padding: 16px;
+                margin-bottom: 12px;
+                box-shadow: var(--shadow-sm);
+                transition: var(--transition);
+            }
+
+            .user-card:hover {
+                box-shadow: var(--shadow-md);
+                transform: translateY(-2px);
+            }
+
+            .user-card-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                margin-bottom: 12px;
+            }
+
+            .user-card-title {
+                font-weight: 600;
+                font-size: 16px;
+                color: var(--text-dark);
+                margin-bottom: 4px;
+            }
+
+            .user-card-subtitle {
+                font-size: 14px;
+                color: var(--text-muted);
+            }
+
+            .user-card-info {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+                margin-bottom: 12px;
+            }
+
+            .user-card-field {
+                font-size: 13px;
+            }
+
+            .user-card-field strong {
+                display: block;
+                color: var(--text-muted);
+                font-weight: 500;
+                margin-bottom: 2px;
+            }
+
+            .user-card-actions {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding-top: 12px;
+                border-top: 1px solid var(--border-color);
+            }
+
+            .modal-content {
+                width: 95vw;
+                padding: 20px;
+                margin: 20px;
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+
+            .modal h3 {
+                font-size: 20px;
+                text-align: center;
+            }
+
+            .modal label {
+                margin-bottom: 16px;
+            }
+
+            .modal input,
+            .modal select {
+                padding: 14px 16px;
+                font-size: 16px; /* Prevents zoom on iOS */
+            }
+
+            .modal button {
+                width: 100%;
+                margin-bottom: 8px;
+                margin-right: 0;
+                min-height: 48px;
+                font-size: 16px;
+            }
+
+            /* Loading states for mobile */
+            .loading-indicator {
+                padding: 24px;
+            }
+
+            .loading-spinner {
+                width: 32px;
+                height: 32px;
+            }
+
+            /* Toast notifications positioning */
+            .toast {
+                bottom: 20px;
+                left: 20px;
+                right: 20px;
+                top: auto;
+            }
+        }
+
+        /* Extra small devices */
+        @media (max-width: 320px) {
+            .header-bar {
+                height: 60px;
+                padding: 0 12px;
+            }
+
+            .content-area {
+                padding: 8px;
+                margin-top: 60px;
+            }
+
+            .dashboard-container {
+                padding: 12px;
+            }
+
+            .user-management-container {
+                padding: 12px;
+            }
+
+            .stat-card {
+                padding: 16px 12px;
+            }
+
+            .user-card {
+                padding: 12px;
+            }
+
+            .modal-content {
+                padding: 16px;
+                margin: 16px;
+            }
+        }
+
+        /* Landscape orientation optimizations */
+        @media (max-width: 768px) and (orientation: landscape) {
+            .header-bar {
+                height: 60px;
+            }
+
+            .content-area {
+                margin-top: 60px;
+            }
+
+            .sidebar {
+                padding-top: 70px;
+            }
+
+            .dashboard-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            .sidebar,
+            .mobile-menu-toggle,
+            .user-management-buttons,
+            .action-icons {
+                display: none !important;
+            }
+
+            .main-content {
+                margin-left: 0 !important;
+            }
+
+            .header-bar {
+                position: static !important;
+                background: var(--white) !important;
+                color: var(--text-dark) !important;
+                box-shadow: none !important;
+            }
+
+            .content-area {
+                margin-top: 0 !important;
+                padding: 0 !important;
+            }
+        }
+
+        /* Page transition animations */
+        .page-content {
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Enhanced form focus states */
+        .modal input:focus,
+        .modal select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 119, 182, 0.1);
+            transform: scale(1.02);
+        }
+
+        /* Table row animation on load */
+        .user-table tbody tr {
+            animation: slideInRow 0.3s ease-out;
+            animation-fill-mode: both;
+        }
+
+        @keyframes slideInRow {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Stagger animation for multiple rows */
+        .user-table tbody tr:nth-child(1) { animation-delay: 0.1s; }
+        .user-table tbody tr:nth-child(2) { animation-delay: 0.2s; }
+        .user-table tbody tr:nth-child(3) { animation-delay: 0.3s; }
+        .user-table tbody tr:nth-child(4) { animation-delay: 0.4s; }
+        .user-table tbody tr:nth-child(5) { animation-delay: 0.5s; }
+
+        /* Enhanced button hover effects */
+        .user-management-buttons button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .user-management-buttons button {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .user-management-buttons button:hover::before {
+            left: 100%;
+        }
+
+        /* Improved empty state styling */
+        .empty-message td {
+            padding: 60px 20px !important;
+            background: var(--light-bg) !important;
+            border-radius: var(--border-radius) !important;
+            position: relative;
+        }
+
+        .empty-message td::before {
+            content: '📭';
+            font-size: 48px;
+            display: block;
+            margin-bottom: 16px;
+        }
+
+        /* Loading state for tables */
+        .table-loading {
+            position: relative;
+        }
+
+        .table-loading::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 5;
+        }
+
+        /* Enhanced tooltip styles */
+        [title] {
+            position: relative;
+        }
+
+        [title]:hover::after {
+            content: attr(title);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--text-dark);
+            color: white;
+            padding: 8px 12px;
+            border-radius: var(--border-radius);
+            font-size: 12px;
+            white-space: nowrap;
+            z-index: 1000;
+            animation: tooltipFade 0.2s ease-out;
+        }
+
+        @keyframes tooltipFade {
+            from { opacity: 0; transform: translateX(-50%) translateY(5px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+</head>
+<body>
+    <div class="header-bar">
+        <button class="mobile-menu-toggle" id="mobile-menu-toggle">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="header-logo">
+            <div class="header-logo-icon" style="background:none; margin-right:8px; padding:0;">
+                <img src="{% static 'tourism/images/tingloy.png' %}" alt="Logo" style="width:48px; height:48px; border-radius:50%; object-fit:cover; display:block;">
+            </div>
+            <span class="header-logo-title">DigiTrack</span>
+        </div>
+        <div class="user-profile">
+            <i class="fas fa-user-circle"></i>
+            <span class="user-name">Admin</span>
+        </div>
+    </div>
+    
+    <div class="mobile-overlay" id="mobile-overlay"></div>
+    <div class="sidebar">
+        <!-- Sidebar header removed, logo is now in header-bar -->
+        <ul class="sidebar-menu">
+            <li><a href="#" id="dashboard-link" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="#" id="user-management-link"><i class="fas fa-users-cog"></i> User Management</a></li>
+            <li>
+                <a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <div class="content-area">
+            <!-- Dashboard Page -->
+            <div id="dashboard-page" class="page-content">
+                <div class="dashboard-container">
+                    <h2>User Management Dashboard</h2>
+                    <div class="dashboard-stats">
+                        <div class="stat-card">
+                            <i class="fas fa-users"></i>
+                            <div class="number" id="user-count"></div>
+                            <div class="label">Total Users</div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-home"></i>
+                            <div class="number" id="homestay-count"></div>
+                            <div class="label">Registered Homestays</div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-user-check"></i>
+                            <div class="number" id="active-user-count"></div>
+                            <div class="label">Active Users</div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-user-slash"></i>
+                            <div class="number" id="inactive-user-count"></div>
+                            <div class="label">Inactive Users</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- User Management Page -->
+            <div id="user-management-page" class="page-content" style="display:none;">
+                <div class="user-management-container">
+                    <div class="user-management-header">
+                        <h2>User Management</h2>
+                        <div class="user-management-buttons">
+                            <button id="export-users-btn"><i class="fas fa-file-export"></i> Export Users</button>
+                            <button id="add-new-user-btn"><i class="fas fa-plus"></i> Add New</button>
+                        </div>
+                    </div>
+                    <div class="user-tabs" style="display: flex; align-items: center;">
+    <button class="active-tab" data-tab="users" style="border-bottom-color: #0077B6;">Users</button>
+    <button data-tab="manage" id="manage-account-btn" style="margin-left:0; border:none; background:none; padding:10px 20px; font-size:16px; cursor:pointer; border-bottom:2px solid transparent; color:#333; transition:all 0.3s;">
+        Manage User Accounts
+    </button>
+    <button data-tab="archive">Archive</button>
+</div>
+<!-- Users Tab Content -->
+<div id="users-tab" class="tab-content active">
+    <div class="table-container">
+        <table class="user-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Homestay Name</th>
+                    <th>Owner's Name</th>
+                    <th>Address</th>
+                    <th>Username</th>
+                    <th>Password</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="user-table-body">
+                <!-- User rows should be rendered dynamically from context, not hardcoded -->
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Mobile Card Layout (hidden on desktop) -->
+    <div class="mobile-user-cards" id="mobile-user-cards" style="display: none;">
+        <!-- Mobile cards will be populated by JavaScript -->
+    </div>
+</div>
+<!-- Manage User Accounts Tab Content -->
+<div id="manage-tab" class="tab-content">
+    <table class="user-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Homestay Name</th>
+                <th>Owner's Name</th>
+                <th>Address</th>
+                <th>Username</th>
+                <th>Password</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="manage-table-body">
+            <!-- Will be filled by JS, same as users -->
+        </tbody>
+    </table>
+</div>
+<!-- Archive Tab Content -->
+<div id="archive-tab" class="tab-content">
+    <table class="user-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Homestay Name</th>
+                                    <th>Owner's Name</th>
+                                    <th>Address</th>
+                                    <th>Username</th>
+                                    <th>Status</th>
+                                    <th>Archived Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="archive-table-body">
+                                <!-- Archived users will appear here -->
+                            </tbody>
+                        </table>
+</div>
+                </div>
+            </div>
+            <!-- Add/Edit User Modal -->
+            <div id="addUserModal" class="modal">
+                <div class="modal-content">
+                    <h3 id="modal-title">Add New User</h3>
+                    <form id="addUserForm">
+                        <label>Homestay Name:<br><input type="text" id="inputHomestayName" required></label>
+                        <label>Owner's Name:<br><input type="text" id="inputOwnerName" required></label>
+                        <label>Address:<br><input type="text" id="inputAddress" required></label>
+                        <label>Username:<br><input type="text" id="inputUsername" required></label>
+                        <label>Password:<br><input type="password" id="inputPassword" required></label>
+                        <label>Status:<br>
+                            <select id="inputStatus" required>
+                                <option value="Active" selected>Active</option>
+                                <option value="Inactive">Inactive</option>
+                            </select>
+                        </label>
+                        <div style="margin-top: 20px;">
+                            <button type="submit" id="submit-btn">Add User</button>
+                            <button type="button" onclick="closeAddUserModal()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentEditingRow = null;
+        let currentHomestayPage = 1;
+        const itemsPerPage = 3;
+
+        // Initialize the dashboard
+        // Fetch all homestay users from backend and render in User Management table
+        async function fetchAndRenderHomestayUsers() {
+            // Get CSRF token from cookie
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+            const csrftoken = getCookie('csrftoken');
+            try {
+                const response = await fetch('/api/homestay_users/', {
+                    method: 'GET',
+                    headers: {
+                        'X-CSRFToken': csrftoken
+                    },
+                    credentials: 'same-origin'
+                });
+                const result = await response.json();
+                console.log('Full API response:', result);
+                const tbody = document.getElementById('user-table-body');
+                tbody.innerHTML = '';
+                if (result.success && Array.isArray(result.users) && result.users.length > 0) {
+                    result.users.forEach((user, idx) => {
+                        const row = tbody.insertRow();
+                        row.innerHTML = `
+                            <td>${idx + 1}</td>
+                            <td>${user.homestayName}</td>
+                            <td>${user.ownerName}</td>
+                            <td>${user.address}</td>
+                            <td>${user.username}</td>
+                            <td>••••••••</td>
+                            <td><span class="status-badge status-${user.status.toLowerCase()}">${user.status}</span></td>
+                            <td class="action-icons">
+                                <i class="fas fa-edit edit-icon" title="Edit" onclick="editUser(this)"></i>
+                                <i class="fas fa-trash delete-icon" title="Delete" onclick="deleteUser(this)"></i>
+                            </td>
+                        `;
+                    });
+                } else if (result.success && Array.isArray(result.users) && result.users.length === 0) {
+                    const emptyRow = document.createElement('tr');
+                    emptyRow.innerHTML = `<td colspan="8" style="text-align:center; color:#888; font-style:italic;">No users found in the database.</td>`;
+                    tbody.appendChild(emptyRow);
+                } else {
+                    const errorRow = document.createElement('tr');
+                    errorRow.innerHTML = `<td colspan="8" style="text-align:center; color:#c00; font-style:italic;">Error loading users: ${result.error || 'Unknown error'}</td>`;
+                    tbody.appendChild(errorRow);
+                }
+                updateDashboardStats && updateDashboardStats();
+                renderManageUserTable && renderManageUserTable();
+            } catch (err) {
+                console.error('Error fetching users:', err);
+                const tbody = document.getElementById('user-table-body');
+                tbody.innerHTML = '';
+                const errorRow = document.createElement('tr');
+                errorRow.innerHTML = `<td colspan="8" style="text-align:center; color:#c00; font-style:italic;">Error fetching users from backend.</td>`;
+                tbody.appendChild(errorRow);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Always show dashboard on login
+            document.getElementById('dashboard-page').style.display = 'block';
+            var userMgmt = document.getElementById('user-management-page');
+            if (userMgmt) userMgmt.style.display = 'none';
+            initializeNavigation();
+            initializeUserManagement();
+            initializeMobileMenu();
+            fetchAndRenderHomestayUsers();
+            updateDashboardStats();
+            handleResponsiveLayout();
+            
+            // Handle window resize
+            window.addEventListener('resize', handleResponsiveLayout);
+        });
+
+        // Navigation functions
+        function initializeNavigation() {
+            const navLinks = {
+                'dashboard-link': 'dashboard-page',
+                'user-management-link': 'user-management-page'
+            };
+            Object.keys(navLinks).forEach(linkId => {
+                document.getElementById(linkId).addEventListener('click', function(e) {
+                    e.preventDefault();
+                    showPage(navLinks[linkId]);
+                    setActiveNavLink(linkId);
+                    // Fetch users every time User Management tab is clicked
+                    if (linkId === 'user-management-link') {
+                        fetchAndRenderHomestayUsers();
+                    }
+                });
+            });
+        }
+
+        function showPage(pageId) {
+            // Hide all pages
+            const pages = document.querySelectorAll('.page-content');
+            pages.forEach(page => page.style.display = 'none');
+            
+            // Show selected page
+            document.getElementById(pageId).style.display = 'block';
+        }
+
+        function setActiveNavLink(activeLinkId) {
+            // Remove active class from all links
+            const links = document.querySelectorAll('.sidebar-menu a');
+            links.forEach(link => link.classList.remove('active'));
+            
+            // Add active class to selected link
+            document.getElementById(activeLinkId).classList.add('active');
+        }
+
+        // User Management functions
+        function initializeUserManagement() {
+            // Tab switching
+            const tabButtons = document.querySelectorAll('.user-tabs button');
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const tabName = this.getAttribute('data-tab');
+                    switchTab(tabName);
+                });
+            });
+
+            // Add new user button
+            document.getElementById('add-new-user-btn').addEventListener('click', function() {
+                openAddUserModal();
+            });
+
+            // Export users button
+            document.getElementById('export-users-btn').addEventListener('click', function() {
+                exportUsers();
+            });
+
+            // Form submission
+            document.getElementById('addUserForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveUser();
+            });
+
+            // Close modal when clicking outside
+            document.getElementById('addUserModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeAddUserModal();
+                }
+            });
+
+            // Populate manage user table on load and on user changes
+    renderManageUserTable();
+        }
+
+        function switchTab(tabName) {
+            // Remove active class and blue line from all tabs
+            document.querySelectorAll('.user-tabs button').forEach(btn => {
+                btn.classList.remove('active-tab');
+                btn.style.borderBottomColor = 'transparent';
+            });
+            
+            // Add active class and blue line to clicked tab
+            const activeBtn = document.querySelector(`[data-tab="${tabName}"]`);
+            if (activeBtn) {
+                activeBtn.classList.add('active-tab');
+                activeBtn.style.borderBottomColor = '#0077B6';
+            }
+            
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+
+            // Always fetch users when switching to Users tab
+
+            if (tabName === 'users') {
+                fetchAndRenderHomestayUsers();
+            }
+            if (tabName === 'adminlog') {
+                fetchAndRenderAdminLog();
+            }
+        // Fetch and render admin log entries for users
+        async function fetchAndRenderAdminLog() {
+            const tbody = document.getElementById('adminlog-table-body');
+            tbody.innerHTML = '';
+            try {
+                const response = await fetch('/api/admin_log_users/', {
+                    method: 'GET',
+                    credentials: 'same-origin'
+                });
+                const result = await response.json();
+                if (result.success && Array.isArray(result.logs)) {
+                    result.logs.forEach(log => {
+                        const row = tbody.insertRow();
+                        row.innerHTML = `
+                            <td>${log.id}</td>
+                            <td>${log.action_time}</td>
+                            <td>${log.user_id}</td>
+                            <td>${log.object_repr}</td>
+                            <td>${log.action_flag === 1 ? 'Add' : log.action_flag === 2 ? 'Change' : log.action_flag === 3 ? 'Delete' : log.action_flag}</td>
+                            <td>${log.object_id}</td>
+                            <td>${log.change_message}</td>
+                        `;
+                    });
+                } else {
+                    const emptyRow = document.createElement('tr');
+                    emptyRow.innerHTML = `<td colspan="7" style="text-align:center; color:#888; font-style:italic;">No admin log entries found.</td>`;
+                    tbody.appendChild(emptyRow);
+                }
+            } catch (err) {
+                const errorRow = document.createElement('tr');
+                errorRow.innerHTML = `<td colspan="7" style="text-align:center; color:#c00; font-style:italic;">Error fetching admin log.</td>`;
+                tbody.appendChild(errorRow);
+            }
+        }
+
+            // Check if archive tab is empty and show message
+            if (tabName === 'archive') {
+                checkArchiveEmpty();
+            }
+        }
+
+        function checkArchiveEmpty() {
+            const archiveTableBody = document.getElementById('archive-table-body');
+            const rows = archiveTableBody.querySelectorAll('tr:not(.empty-message)');
+            
+            // Remove existing empty message
+            const existingMessage = archiveTableBody.querySelector('.empty-message');
+            if (existingMessage) {
+                existingMessage.remove();
+            }
+            
+            // Add empty message if no rows
+            if (rows.length === 0) {
+                const emptyRow = document.createElement('tr');
+                emptyRow.className = 'empty-message';
+                emptyRow.innerHTML = `
+                    <td colspan="8" style="text-align: center; color: #666; font-style: italic; padding: 40px;">
+                        No archived users found.
+                    </td>
+                `;
+                archiveTableBody.appendChild(emptyRow);
+            }
+        }
+
+        function openAddUserModal(editMode = false) {
+            const modal = document.getElementById('addUserModal');
+            const title = document.getElementById('modal-title');
+            const submitBtn = document.getElementById('submit-btn');
+            
+            if (modal.style.display === 'flex') {
+                // Modal already open, do not reset form
+                return;
+            }
+            if (editMode) {
+                title.textContent = 'Edit User';
+                submitBtn.textContent = 'Update User';
+            } else {
+                title.textContent = 'Add New User';
+                submitBtn.textContent = 'Add User';
+                document.getElementById('addUserForm').reset();
+            }
+            modal.style.display = 'flex';
+        }
+
+        function closeAddUserModal() {
+            document.getElementById('addUserModal').style.display = 'none';
+            currentEditingRow = null;
+            document.getElementById('addUserForm').reset();
+        }
+
+        function saveUser() {
+            const userData = {
+                homestayName: document.getElementById('inputHomestayName').value,
+                ownerName: document.getElementById('inputOwnerName').value,
+                address: document.getElementById('inputAddress').value,
+                username: document.getElementById('inputUsername').value,
+                password: document.getElementById('inputPassword').value,
+                status: document.getElementById('inputStatus').value
+            };
+
+            // Determine if we're editing or adding
+            const isEdit = document.getElementById('modal-title').textContent === 'Edit User';
+            const csrftoken = (document.querySelector('[name=csrfmiddlewaretoken]') || {}).value || '';
+
+            if (isEdit && currentEditingRow) {
+                // Editing existing user
+                fetch('/api/edit_homestay_user/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken
+                    },
+                    body: JSON.stringify(userData)
+                })
+                .then(response => response.json())
+                .then(result => {
+                    console.log('Edit user API result:', result);
+                    if (result.success) {
+                        updateUserRow(currentEditingRow, userData);
+                        updateDashboardStats && updateDashboardStats();
+                        renderManageUserTable && renderManageUserTable();
+                        updateUserCount && updateUserCount();
+                        renderMobileUserCards && renderMobileUserCards();
+                        closeAddUserModal();
+                        alert('User updated successfully!');
+                    } else {
+                        alert('Failed to update user.\n' + (result.error || 'No error details from backend.'));
+                    }
+                })
+                .catch(async (err) => {
+                    let errorMsg = 'Error updating user.';
+                    if (err && err.response) {
+                        try {
+                            const data = await err.response.json();
+                            errorMsg += '\n' + (data.error || JSON.stringify(data));
+                        } catch {}
+                    }
+                    alert(errorMsg);
+                });
+            } else {
+                // Adding new user
+                fetch('/api/add_homestay_user/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken
+                    },
+                    body: JSON.stringify(userData)
+                })
+                .then(response => response.json())
+                .then(result => {
+                    console.log('Add user API result:', result);
+                    if (result.success) {
+                        // Add the new user row to the table immediately
+                        const tbody = document.getElementById('user-table-body');
+                        const rowCount = tbody.rows.length;
+                        const newId = rowCount + 1;
+                        const row = tbody.insertRow();
+                        row.innerHTML = `
+                            <td>${newId}</td>
+                            <td>${result.homestayName}</td>
+                            <td>${result.ownerName}</td>
+                            <td>${result.address}</td>
+                            <td>${result.username}</td>
+                            <td>••••••••</td>
+                            <td><span class="status-badge status-${result.status.toLowerCase()}">${result.status}</span></td>
+                            <td class="action-icons">
+                                <i class="fas fa-edit edit-icon" title="Edit" onclick="editUser(this)"></i>
+                                <i class="fas fa-trash delete-icon" title="Delete" onclick="deleteUser(this)"></i>
+                            </td>
+                        `;
+                        updateDashboardStats && updateDashboardStats();
+                        renderManageUserTable && renderManageUserTable();
+                        updateUserCount && updateUserCount();
+                        renderMobileUserCards && renderMobileUserCards();
+                        closeAddUserModal();
+                        alert('User added successfully!');
+                    } else if (result.suggested_username) {
+                        // Username taken, show error and suggest username
+                        alert('Username already exists. Suggested: ' + result.suggested_username);
+                        document.getElementById('inputUsername').value = result.suggested_username;
+                        document.getElementById('inputUsername').focus();
+                    } else {
+                        // Show backend error message in alert
+                        alert('Failed to add user.\n' + (result.error || 'No error details from backend.'));
+                    }
+                })
+                .catch(async (err) => {
+                    let errorMsg = 'Error saving user.';
+                    if (err && err.response) {
+                        try {
+                            const data = await err.response.json();
+                            errorMsg += '\n' + (data.error || JSON.stringify(data));
+                        } catch {}
+                    }
+                    alert(errorMsg);
+                });
+            }
+        }
+
+        function addNewUserRow(userData) {
+            const tbody = document.getElementById('user-table-body');
+            const rowCount = tbody.rows.length;
+            const newId = rowCount + 1;
+
+            const row = tbody.insertRow();
+            row.innerHTML = `
+                <td>${newId}</td>
+                <td>${userData.homestayName}</td>
+                <td>${userData.ownerName}</td>
+                <td>${userData.address}</td>
+                <td>${userData.username}</td>
+                <td>••••••••</td>
+                <td><span class="status-badge status-${userData.status.toLowerCase()}">${userData.status}</span></td>
+                <td class="action-icons">
+                    <i class="fas fa-edit edit-icon" title="Edit" onclick="editUser(this)"></i>
+                    <i class="fas fa-trash delete-icon" title="Delete" onclick="deleteUser(this)"></i>
+                </td>
+            `;
+            updateDashboardStats();
+            renderManageUserTable();
+        }
+
+        function updateUserRow(row, userData) {
+            const cells = row.cells;
+            cells[1].textContent = userData.homestayName;
+            cells[2].textContent = userData.ownerName;
+            cells[3].textContent = userData.address;
+            cells[4].textContent = userData.username;
+            cells[6].innerHTML = `<span class="status-badge status-${userData.status.toLowerCase()}">${userData.status}</span>`;
+            updateDashboardStats();
+            renderManageUserTable();
+        }
+
+        function editUser(icon) {
+            const row = icon.closest('tr');
+            const cells = row.cells;
+            
+            currentEditingRow = row;
+            
+            document.getElementById('inputHomestayName').value = cells[1].textContent;
+            document.getElementById('inputOwnerName').value = cells[2].textContent;
+            document.getElementById('inputAddress').value = cells[3].textContent;
+            document.getElementById('inputUsername').value = cells[4].textContent;
+            document.getElementById('inputPassword').value = '';
+            document.getElementById('inputStatus').value = cells[6].textContent.trim();
+            
+            openAddUserModal(true);
+        }
+
+        function deleteUser(icon) {
+            // Remove alert
+            const row = icon.closest('tr');
+            const cells = row.cells;
+            // Move to archive
+            const archiveTableBody = document.getElementById('archive-table-body');
+            // Remove empty message if it exists
+            const emptyMessage = archiveTableBody.querySelector('.empty-message');
+            if (emptyMessage) {
+                emptyMessage.remove();
+            }
+            const archiveRow = archiveTableBody.insertRow();
+            const currentDate = new Date().toLocaleDateString();
+            archiveRow.innerHTML = `
+                <td>${cells[0].textContent}</td>
+                <td>${cells[1].textContent}</td>
+                <td>${cells[2].textContent}</td>
+                <td>${cells[3].textContent}</td>
+                <td>${cells[4].textContent}</td>
+                <td><span class="status-badge status-archived">Archived</span></td>
+                <td>${currentDate}</td>
+                <td class="action-icons">
+                    <i class="fas fa-undo restore-icon" title="Restore" onclick="restoreUser(this)"></i>
+                </td>
+            `;
+            // Remove from active users
+            row.remove();
+            updateUserCount();
+            updateDashboardStats();
+            renderManageUserTable();
+        }
+
+        function restoreUser(icon) {
+            // Remove alert
+            const row = icon.closest('tr');
+            const cells = row.cells;
+            // Move back to active users
+            const userTableBody = document.getElementById('user-table-body');
+            const userRow = userTableBody.insertRow();
+            userRow.innerHTML = `
+                <td>${cells[0].textContent}</td>
+                <td>${cells[1].textContent}</td>
+                <td>${cells[2].textContent}</td>
+                <td>${cells[3].textContent}</td>
+                <td>${cells[4].textContent}</td>
+                <td>••••••••</td>
+                <td><span class="status-badge status-active">Active</span></td>
+                <td class="action-icons">
+                    <i class="fas fa-edit edit-icon" title="Edit" onclick="editUser(this)"></i>
+                    <i class="fas fa-trash delete-icon" title="Delete" onclick="deleteUser(this)"></i>
+                </td>
+            `;
+            // Remove from archive
+            row.remove();
+            updateUserCount();
+            updateDashboardStats();
+            renderManageUserTable();
+            // Check if archive is now empty
+            checkArchiveEmpty();
+        }
+
+        function exportUsers() {
+            // Simple CSV export functionality
+            const users = [];
+            const rows = document.querySelectorAll('#user-table-body tr');
+            
+            rows.forEach(row => {
+                const cells = row.cells;
+                users.push({
+                    id: cells[0].textContent,
+                    homestayName: cells[1].textContent,
+                    ownerName: cells[2].textContent,
+                    address: cells[3].textContent,
+                    username: cells[4].textContent,
+                    status: cells[6].textContent.trim()
+                });
+            });
+
+            const csvContent = "data:text/csv;charset=utf-8," 
+                + "ID,Homestay Name,Owner Name,Address,Username,Status\n"
+                + users.map(user => `${user.id},"${user.homestayName}","${user.ownerName}","${user.address}",${user.username},${user.status}`).join('\n');
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement('a');
+            link.setAttribute('href', encodedUri);
+            link.setAttribute('download', 'users_export.csv');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function updateUserCount() {
+            const userCount = document.querySelectorAll('#user-table-body tr').length;
+            document.getElementById('user-count').textContent = userCount;
+        }
+
+        // Dashboard functions
+        function initializeDashboard() {
+            loadHomestayData();
+        }
+
+        function loadHomestayData() {
+            const startIndex = (currentHomestayPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const pageData = homestayData.slice(startIndex, endIndex);
+            
+            displayHomestayData(pageData);
+            updatePagination();
+        }
+
+        function displayHomestayData(data) {
+            const tbody = document.getElementById('homestay-table-body');
+            
+            tbody.innerHTML = '';
+            
+            data.forEach(homestay => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${homestay.name}</td>
+                    <td>${homestay.owner}</td>
+                    <td>${homestay.rooms}</td>
+                    <td><span class="status-badge status-${homestay.status.toLowerCase()}">${homestay.status}</span></td>
+                `;
+            });
+        }
+
+        function updatePagination() {
+            const totalPages = Math.ceil(homestayData.length / itemsPerPage);
+            const paginationDiv = document.getElementById('homestay-pagination');
+            
+            // Update pagination buttons
+            const pageButtons = paginationDiv.querySelectorAll('button:not([id])');
+            pageButtons.forEach((btn, index) => {
+                const pageNum = index + 1;
+                if (pageNum <= totalPages) {
+                    btn.style.display = 'inline-block';
+                    btn.classList.toggle('active', pageNum === currentHomestayPage);
+                } else {
+                    btn.style.display = 'none';
+                }
+            });
+
+            // Update prev/next buttons
+            document.getElementById('prev-btn').disabled = currentHomestayPage === 1;
+            document.getElementById('next-btn').disabled = currentHomestayPage === totalPages;
+        }
+
+        function goToHomestayPage(page) {
+            const totalPages = Math.ceil(homestayData.length / itemsPerPage);
+            
+            if (page === 'prev' && currentHomestayPage > 1) {
+                currentHomestayPage--;
+            } else if (page === 'next' && currentHomestayPage < totalPages) {
+                currentHomestayPage++;
+            } else if (typeof page === 'number' && page >= 1 && page <= totalPages) {
+                currentHomestayPage = page;
+            }
+
+            // Add loading animation
+            const loadingIndicator = document.getElementById('loading-indicator');
+            const homestayTable = document.getElementById('homestay-table');
+            
+            loadingIndicator.style.display = 'block';
+            homestayTable.classList.add('slide-out');
+            
+            setTimeout(() => {
+                loadHomestayData();
+                homestayTable.classList.remove('slide-out');
+                homestayTable.classList.add('slide-in-active');
+                loadingIndicator.style.display = 'none';
+                
+                setTimeout(() => {
+                    homestayTable.classList.remove('slide-in-active');
+                }, 500);
+            }, 300);
+        }
+
+        function searchHomestays() {
+            const searchTerm = document.getElementById('homestay-search').value.toLowerCase();
+            const filteredData = homestayData.filter(homestay => 
+                homestay.name.toLowerCase().includes(searchTerm) ||
+                homestay.owner.toLowerCase().includes(searchTerm)
+            );
+            
+            displayHomestayData(filteredData);
+        }
+
+        // Mobile menu functions
+        function initializeMobileMenu() {
+            const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+            const sidebar = document.querySelector('.sidebar');
+            const mobileOverlay = document.getElementById('mobile-overlay');
+            
+            if (mobileMenuToggle) {
+                mobileMenuToggle.addEventListener('click', function() {
+                    toggleMobileMenu();
+                });
+            }
+            
+            if (mobileOverlay) {
+                mobileOverlay.addEventListener('click', function() {
+                    closeMobileMenu();
+                });
+            }
+            
+            // Close mobile menu when clicking on sidebar links
+            const sidebarLinks = document.querySelectorAll('.sidebar-menu a');
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth <= 768) {
+                        closeMobileMenu();
+                    }
+                });
+            });
+        }
+        
+        function toggleMobileMenu() {
+            const sidebar = document.querySelector('.sidebar');
+            const mobileOverlay = document.getElementById('mobile-overlay');
+            const toggleIcon = document.querySelector('.mobile-menu-toggle i');
+            
+            sidebar.classList.toggle('mobile-open');
+            mobileOverlay.classList.toggle('active');
+            
+            if (sidebar.classList.contains('mobile-open')) {
+                toggleIcon.classList.remove('fa-bars');
+                toggleIcon.classList.add('fa-times');
+                document.body.style.overflow = 'hidden';
+            } else {
+                toggleIcon.classList.remove('fa-times');
+                toggleIcon.classList.add('fa-bars');
+                document.body.style.overflow = '';
+            }
+        }
+        
+        function closeMobileMenu() {
+            const sidebar = document.querySelector('.sidebar');
+            const mobileOverlay = document.getElementById('mobile-overlay');
+            const toggleIcon = document.querySelector('.mobile-menu-toggle i');
+            
+            sidebar.classList.remove('mobile-open');
+            mobileOverlay.classList.remove('active');
+            toggleIcon.classList.remove('fa-times');
+            toggleIcon.classList.add('fa-bars');
+            document.body.style.overflow = '';
+        }
+        
+        // Handle responsive layout changes
+        function handleResponsiveLayout() {
+            const isMobile = window.innerWidth <= 576;
+            const userTable = document.querySelector('.user-table');
+            const mobileCards = document.getElementById('mobile-user-cards');
+            
+            if (isMobile) {
+                if (userTable) userTable.style.display = 'none';
+                if (mobileCards) {
+                    mobileCards.style.display = 'block';
+                    renderMobileUserCards();
+                }
+            } else {
+                if (userTable) userTable.style.display = 'table';
+                if (mobileCards) mobileCards.style.display = 'none';
+                closeMobileMenu();
+            }
+        }
+        
+        // Render mobile user cards
+        function renderMobileUserCards() {
+            const mobileCards = document.getElementById('mobile-user-cards');
+            const userTableBody = document.getElementById('user-table-body');
+            
+            if (!mobileCards || !userTableBody) return;
+            
+            mobileCards.innerHTML = '';
+            
+            const rows = userTableBody.querySelectorAll('tr');
+            rows.forEach((row, index) => {
+                const cells = row.cells;
+                if (cells.length === 0) return;
+                
+                const card = document.createElement('div');
+                card.className = 'user-card';
+                
+                const homestayName = cells[1]?.textContent || '';
+                const ownerName = cells[2]?.textContent || '';
+                const address = cells[3]?.textContent || '';
+                const username = cells[4]?.textContent || '';
+                const status = cells[6]?.innerHTML || '';
+                
+                card.innerHTML = `
+                    <div class="user-card-header">
+                        <div>
+                            <div class="user-card-title">${homestayName}</div>
+                            <div class="user-card-subtitle">${ownerName}</div>
+                        </div>
+                        <div>${status}</div>
+                    </div>
+                    <div class="user-card-info">
+                        <div class="user-card-field">
+                            <strong>Address</strong>
+                            ${address}
+                        </div>
+                        <div class="user-card-field">
+                            <strong>Username</strong>
+                            ${username}
+                        </div>
+                    </div>
+                    <div class="user-card-actions">
+                        <div class="action-icons">
+                            <i class="fas fa-edit edit-icon" title="Edit" onclick="editUserFromCard(this, ${index})"></i>
+                            <i class="fas fa-trash delete-icon" title="Delete" onclick="deleteUserFromCard(this, ${index})"></i>
+                        </div>
+                    </div>
+                `;
+                
+                mobileCards.appendChild(card);
+            });
+            
+            // Show empty state if no cards
+            if (rows.length === 0) {
+                mobileCards.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+                        <i class="fas fa-users" style="font-size: 48px; margin-bottom: 16px; opacity: 0.5;"></i>
+                        <p>No users found</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Edit user from mobile card
+        function editUserFromCard(icon, rowIndex) {
+            const userTableBody = document.getElementById('user-table-body');
+            const row = userTableBody.querySelectorAll('tr')[rowIndex];
+            if (row) {
+                editUser(row.querySelector('.edit-icon'));
+            }
+        }
+        
+        // Delete user from mobile card
+        function deleteUserFromCard(icon, rowIndex) {
+            const userTableBody = document.getElementById('user-table-body');
+            const row = userTableBody.querySelectorAll('tr')[rowIndex];
+            if (row) {
+                deleteUser(row.querySelector('.delete-icon'));
+                // Re-render mobile cards after deletion
+                setTimeout(() => {
+                    renderMobileUserCards();
+                }, 100);
+            }
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case 'n':
+                        e.preventDefault();
+                        if (document.getElementById('user-management-page').style.display !== 'none') {
+                            openAddUserModal();
+                        }
+                        break;
+                    case 'e':
+                        e.preventDefault();
+                        if (document.getElementById('user-management-page').style.display !== 'none') {
+                            exportUsers();
+                        }
+                        break;
+                }
+            }
+            
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('addUserModal');
+                if (modal.style.display === 'flex') {
+                    closeAddUserModal();
+                } else {
+                    closeMobileMenu();
+                }
+            }
+        });
+
+        // Add dashboard stats update for active/inactive users
+        function updateDashboardStats() {
+            // Count users by status
+            let active = 0, inactive = 0, total = 0;
+            document.querySelectorAll('#user-table-body tr').forEach(row => {
+                const statusCell = row.cells[6];
+                if (statusCell) {
+                    const status = statusCell.textContent.trim().toLowerCase();
+                    if (status === 'active') active++;
+                    else if (status === 'inactive') inactive++;
+                    total++;
+                }
+            });
+            document.getElementById('active-user-count').textContent = active;
+            document.getElementById('inactive-user-count').textContent = inactive;
+            document.getElementById('user-count').textContent = total;
+
+            // Registered Homestays = number of unique homestay names in user table
+            const homestayNames = new Set();
+            document.querySelectorAll('#user-table-body tr').forEach(row => {
+                const cell = row.cells[1];
+                if (cell) homestayNames.add(cell.textContent.trim());
+            });
+            document.getElementById('homestay-count').textContent = homestayNames.size;
+        }
+
+        function renderManageUserTable() {
+    const users = document.querySelectorAll('#user-table-body tr');
+    const manageBody = document.getElementById('manage-table-body');
+    manageBody.innerHTML = '';
+    users.forEach(row => {
+        const clone = row.cloneNode(true);
+        // Replace actions with Suspend/Unsuspend button
+        const actionsCell = clone.querySelector('.action-icons');
+        if (actionsCell) {
+            // Determine status
+            const statusText = clone.cells[6].textContent.trim().toLowerCase();
+            if (statusText === 'inactive') {
+                actionsCell.innerHTML = `
+                    <button class="unsuspend-btn" style="background:#0077B6;color:#fff;border:none;padding:6px 14px;border-radius:4px;cursor:pointer;" onclick="unsuspendUser(this)">Unsuspend</button>
+                `;
+            } else {
+                actionsCell.innerHTML = `
+                    <button class="suspend-btn" style="background:#e67e22;color:#fff;border:none;padding:6px 14px;border-radius:4px;cursor:pointer;" onclick="suspendUser(this)">Suspend</button>
+                `;
+            }
+        }
+        manageBody.appendChild(clone);
+    });
+}
+
+function suspendUser(btn) {
+    const row = btn.closest('tr');
+    const username = row.cells[4].textContent;
+    // Gather user data for API
+    const userData = {
+        username: row.cells[4].textContent,
+        homestayName: row.cells[1].textContent,
+        ownerName: row.cells[2].textContent,
+        address: row.cells[3].textContent,
+        status: 'Inactive'
+    };
+    const csrftoken = (document.querySelector('[name=csrfmiddlewaretoken]') || {}).value || '';
+    fetch('/api/edit_homestay_user/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken
+        },
+        body: JSON.stringify(userData)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            // Update UI
+            const statusCell = row.cells[6];
+            if (statusCell) {
+                statusCell.innerHTML = '<span class="status-badge status-inactive">Inactive</span>';
+            }
+            document.querySelectorAll('#user-table-body tr').forEach(userRow => {
+                if (userRow.cells[4].textContent === username) {
+                    userRow.cells[6].innerHTML = '<span class="status-badge status-inactive">Inactive</span>';
+                }
+            });
+            updateDashboardStats();
+            renderManageUserTable();
+        } else {
+            alert('Failed to suspend user. ' + (result.error || ''));
+        }
+    })
+    .catch(() => {
+        alert('Error suspending user.');
+    });
+}
+
+function unsuspendUser(btn) {
+    const row = btn.closest('tr');
+    const username = row.cells[4].textContent;
+    // Gather user data for API
+    const userData = {
+        username: row.cells[4].textContent,
+        homestayName: row.cells[1].textContent,
+        ownerName: row.cells[2].textContent,
+        address: row.cells[3].textContent,
+        status: 'Active'
+    };
+    const csrftoken = (document.querySelector('[name=csrfmiddlewaretoken]') || {}).value || '';
+    fetch('/api/edit_homestay_user/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken
+        },
+        body: JSON.stringify(userData)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            // Update UI
+            const statusCell = row.cells[6];
+            if (statusCell) {
+                statusCell.innerHTML = '<span class="status-badge status-active">Active</span>';
+            }
+            document.querySelectorAll('#user-table-body tr').forEach(userRow => {
+                if (userRow.cells[4].textContent === username) {
+                    userRow.cells[6].innerHTML = '<span class="status-badge status-active">Active</span>';
+                }
+            });
+            updateDashboardStats();
+            renderManageUserTable();
+        } else {
+            alert('Failed to unsuspend user. ' + (result.error || ''));
+        }
+    })
+    .catch(() => {
+        alert('Error unsuspending user.');
+    });
+}
+    </script>
+</body>
+</html>
+</html>

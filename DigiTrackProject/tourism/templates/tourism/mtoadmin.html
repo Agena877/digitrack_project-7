@@ -1,0 +1,2804 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DigiTrack - MTO STAFF</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --primary-color: #0077B6;
+            --primary-dark: #005577;
+            --primary-light: #e6f3ff;
+            --secondary-color: #f39c12;
+            --success-color: #27ae60;
+            --warning-color: #e67e22;
+            --danger-color: #e74c3c;
+            --light-bg: #f8fafc;
+            --white: #ffffff;
+            --text-dark: #2c3e50;
+            --text-muted: #6c757d;
+            --border-color: #e1e8ed;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.06);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+            --shadow-xl: 0 20px 25px rgba(0,0,0,0.1);
+            --border-radius: 8px;
+            --border-radius-lg: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            display: flex;
+            height: 100vh;
+            font-weight: 400;
+            line-height: 1.6;
+            color: var(--text-dark);
+        }
+        
+        /* Sidebar styles */
+        .sidebar {
+            width: 280px;
+            background: var(--white);
+            backdrop-filter: blur(10px);
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            flex-direction: column;
+            padding: 30px 0;
+            position: fixed;
+            left: 0;
+            top: 90px;
+            height: calc(100vh - 90px);
+            z-index: 1000;
+            transition: var(--transition);
+            border-right: 1px solid var(--border-color);
+        }
+        
+        .sidebar-header {
+            display: none;
+        }
+        
+        .sidebar-logo {
+            width: 80px;
+            height: 80px;
+            background-color: #4a90e2;
+            border-radius: 50%;
+            margin: 0 auto;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='50' x='50' text-anchor='middle' dominant-baseline='middle' fill='white' font-size='20' font-weight='bold'%3EMTO%3C/text%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+        
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 16px 28px;
+            text-decoration: none;
+            color: var(--text-dark);
+            font-size: 15px;
+            font-weight: 500;
+            transition: var(--transition);
+            border-radius: 0 25px 25px 0;
+            margin: 4px 0;
+            margin-right: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar-menu a::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: var(--primary-color);
+            transform: scaleY(0);
+            transition: var(--transition);
+        }
+        
+        .sidebar-menu a:hover {
+            background: var(--primary-light);
+            color: var(--primary-color);
+            transform: translateX(8px);
+        }
+
+        .sidebar-menu a:hover::before,
+        .sidebar-menu a.active::before {
+            transform: scaleY(1);
+        }
+        
+        .sidebar-menu a.active {
+            background: linear-gradient(135deg, var(--primary-light) 0%, rgba(0, 119, 182, 0.1) 100%);
+            color: var(--primary-color);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .sidebar-menu a i {
+            margin-right: 16px;
+            font-size: 18px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        /* Main content styles */
+        .main-content {
+            flex-grow: 1;
+            margin-left: 280px;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            transition: var(--transition);
+        }
+        
+        /* Header bar styles */
+        .header-bar {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-lg);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 90px;
+            z-index: 1100;
+            backdrop-filter: blur(10px);
+        }
+        
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .header-logo-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--secondary-color) 0%, #e67e22 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: #fff;
+            margin-right: 16px;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+            padding: 0;
+        }
+
+        .header-logo-icon:hover {
+            transform: scale(1.05) rotate(5deg);
+        }
+        
+        .header-logo-icon img {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .header-logo-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: 1.2px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .header-bar .title {
+            display: none;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 12px 20px;
+            border-radius: var(--border-radius-lg);
+            transition: var(--transition);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            font-weight: 500;
+        }
+
+        .user-profile:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .user-profile i {
+            font-size: 26px;
+            margin-right: 12px;
+        }
+        
+        /* Content area */
+        .content-area {
+            margin-top: 90px;
+            padding: 40px;
+            overflow-y: auto;
+            flex-grow: 1;
+            background: transparent;
+        }
+        
+        /* User Management styles */
+        .user-management-container {
+            background: var(--white);
+            padding: 32px;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-xl);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+        }
+        
+        .user-management-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #e6e6e6;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .user-management-header h2 {
+            font-size: 28px;
+            font-weight: 700;
+            margin: 0;
+            color: var(--text-dark);
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .user-management-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .user-management-buttons button {
+            padding: 12px 20px;
+            border: 2px solid var(--border-color);
+            background: var(--white);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+            font-weight: 500;
+            color: var(--text-dark);
+            font-size: 14px;
+        }
+        
+        .user-management-buttons button:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .user-management-buttons button i {
+            font-size: 16px;
+        }
+        
+        .user-tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        
+        .user-tabs button {
+            padding: 10px 20px;
+            border: none;
+            background-color: transparent;
+            font-size: 16px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .user-tabs button.active-tab {
+            border-bottom-color: #4a90e2;
+            color: #4a90e2;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .user-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .user-table th, .user-table td {
+            padding: 16px 20px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .user-table thead {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+        }
+
+        .user-table thead th {
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .user-table tbody tr {
+            transition: var(--transition);
+        }
+
+        .user-table tbody tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+        
+        .user-table tbody tr:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .action-icons i {
+            cursor: pointer;
+            font-size: 18px;
+            margin-right: 12px;
+            padding: 8px;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .action-icons i:hover {
+            transform: scale(1.2);
+        }
+        
+        .action-icons .edit-icon {
+            color: var(--success-color);
+        }
+
+        .action-icons .edit-icon:hover {
+            background: rgba(39, 174, 96, 0.1);
+        }
+        
+        .action-icons .delete-icon {
+            color: var(--danger-color);
+        }
+
+        .action-icons .delete-icon:hover {
+            background: rgba(231, 76, 60, 0.1);
+        }
+        
+        .action-icons .restore-icon {
+            color: var(--primary-color);
+        }
+
+        .action-icons .restore-icon:hover {
+            background: var(--primary-light);
+        }
+        
+        /* Dashboard styles */
+        .dashboard-container {
+            padding: 32px;
+        }
+        
+        .dashboard-container h2 {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 32px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+        
+        .stat-card {
+            background: var(--white);
+            padding: 32px 24px;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-xl);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        }
+
+        .stat-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .stat-card i {
+            font-size: 48px;
+            color: var(--primary-color);
+            margin-bottom: 16px;
+            padding: 20px;
+            background: var(--primary-light);
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover i {
+            transform: scale(1.1) rotate(5deg);
+        }
+        
+        .stat-card .number {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+        
+        .stat-card .label {
+            font-size: 14px;
+            color: var(--text-muted);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .homestay-list-container {
+            background: var(--white);
+            padding: 32px;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-xl);
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+        
+        .list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .list-header h3 {
+            font-size: 20px;
+            font-weight: 500;
+            margin: 0;
+        }
+        
+        .search-container {
+            display: flex;
+            align-items: center;
+        }
+        
+        .search-container input {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+            margin-right: 5px;
+        }
+        
+        .search-container button {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .search-container button i {
+            font-size: 16px;
+        }
+        
+        /* Table container with slide animation */
+        .table-container {
+            position: relative;
+            overflow: hidden;
+            min-height: 200px;
+        }
+        
+        .homestay-table {
+            width: 100%;
+            border-collapse: collapse;
+            transition: transform 0.5s ease-in-out, opacity 0.3s ease-in-out;
+        }
+        
+        .homestay-table.slide-out {
+            transform: translateX(-100%);
+            opacity: 0;
+        }
+        
+        .homestay-table.slide-in {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        
+        .homestay-table.slide-in-active {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        
+        .homestay-table th, .homestay-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .homestay-table thead {
+            background-color: #4a90e2;
+            color: white;
+        }
+        
+        .homestay-table tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .homestay-table tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 15px;
+        }
+        
+        .pagination button {
+            padding: 8px 12px;
+            margin-left: 5px;
+            border: 1px solid #ccc;
+            background-color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .pagination button:hover {
+            background-color: #e6f0ff;
+            border-color: #4a90e2;
+        }
+        
+        .pagination button.active {
+            background-color: #4a90e2;
+            color: white;
+            border-color: #4a90e2;
+        }
+        
+        .pagination button:disabled {
+            background-color: #f5f5f5;
+            color: #999;
+            cursor: not-allowed;
+        }
+        
+        .charts-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .chart-card {
+            background: var(--white);
+            padding: 32px;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-xl);
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+
+        .chart-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 10px;
+        }
+        
+        .chart-header select {
+            padding: 5px 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        
+        .chart-placeholder {
+            width: 100%;
+            height: 250px;
+            background-color: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+            border-radius: 5px;
+        }
+        
+        /* Tourist Management styles */
+        .tourist-management-container {
+            background: var(--white);
+            padding: 32px;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-xl);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+        }
+        
+        .tourist-management-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #e6e6e6;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .tourist-management-header h2 {
+            font-size: 28px;
+            font-weight: 700;
+            margin: 0;
+            color: var(--text-dark);
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .tourist-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .tourist-table th, .tourist-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .tourist-table thead {
+            background-color: #4a90e2;
+            color: white;
+        }
+        
+        .tourist-table tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .tourist-table tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+        
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        
+        .modal-content {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            width: 400px;
+            position: relative;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .modal h3 {
+            margin-top: 0;
+            color: #333;
+            font-size: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        
+        .modal label {
+            display: block;
+            margin-bottom: 15px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        .modal input, .modal select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            margin-top: 5px;
+            box-sizing: border-box;
+        }
+        
+        .modal button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+        
+        .modal button[type="submit"] {
+            background-color: #4a90e2;
+            color: white;
+        }
+        
+        .modal button[type="button"] {
+            background-color: #6c757d;
+            color: white;
+        }
+        
+        .modal button:hover {
+            opacity: 0.9;
+        }
+        
+        /* Status badges */
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .status-badge::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+        
+        .status-active {
+            background: rgba(39, 174, 96, 0.1);
+            color: var(--success-color);
+            border: 1px solid rgba(39, 174, 96, 0.2);
+        }
+
+        .status-active::before {
+            background: var(--success-color);
+        }
+        
+        .status-inactive {
+            background: rgba(231, 76, 60, 0.1);
+            color: var(--danger-color);
+            border: 1px solid rgba(231, 76, 60, 0.2);
+        }
+
+        .status-inactive::before {
+            background: var(--danger-color);
+        }
+        
+        .status-archived {
+            background: rgba(108, 117, 125, 0.1);
+            color: var(--text-muted);
+            border: 1px solid rgba(108, 117, 125, 0.2);
+        }
+
+        .status-archived::before {
+            background: var(--text-muted);
+        }
+
+        .status-reserved {
+            background: rgba(0, 119, 182, 0.1);
+            color: var(--primary-color);
+            border: 1px solid rgba(0, 119, 182, 0.2);
+        }
+
+        .status-reserved::before {
+            background: var(--primary-color);
+        }
+
+        .status-available {
+            background: rgba(243, 156, 18, 0.1);
+            color: var(--secondary-color);
+            border: 1px solid rgba(243, 156, 18, 0.2);
+        }
+
+        .status-available::before {
+            background: var(--secondary-color);
+        }
+        
+        /* Loading indicator */
+        .loading-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+            z-index: 10;
+        }
+        
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #4a90e2;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Tourist Registration styles */
+        .form-container {
+            background: var(--white);
+            padding: 32px;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-xl);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+        }
+
+        .form-container h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 20px;
+            border-bottom: 2px solid #e6e6e6;
+            padding-bottom: 15px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group label {
+            font-weight: 500;
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+        .form-group input, .form-group select {
+            padding: 12px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            transition: var(--transition);
+            background: var(--white);
+        }
+        
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 119, 182, 0.1);
+            transform: scale(1.02);
+        }
+
+        .form-group .full-width {
+            grid-column: 1 / -1;
+        }
+        .submit-button {
+            grid-column: 1 / span 2;
+            margin-top: 18px;
+            padding: 13px 0;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: #fff;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1.13rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            letter-spacing: 1px;
+            box-shadow: var(--shadow-sm);
+        }
+        .submit-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        @media (max-width: 700px) {
+            .form-container {
+                padding: 18px 8px;
+                max-width: 98vw;
+            }
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 14px 0;
+            }
+            .submit-button {
+                grid-column: 1;
+            }
+        }
+        /* Mobile menu toggle button */
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        .mobile-menu-toggle:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Mobile overlay for sidebar */
+        .mobile-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .mobile-overlay.active {
+            opacity: 1;
+        }
+
+        /* Prevent body scroll when mobile menu is open */
+        body.mobile-menu-open {
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+        }
+
+        /* Enhanced responsive design */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 240px;
+            }
+            
+            .main-content {
+                margin-left: 240px;
+            }
+
+            .dashboard-stats {
+                grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            }
+
+            .content-area {
+                padding: 24px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-toggle {
+                display: block;
+            }
+
+            .sidebar {
+                width: 280px;
+                position: fixed;
+                top: 0;
+                left: -280px;
+                height: 100vh;
+                z-index: 1000;
+                transition: var(--transition);
+                padding-top: 100px;
+                background: var(--white);
+                box-shadow: var(--shadow-xl);
+            }
+
+            .sidebar.mobile-open {
+                left: 0;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .header-bar {
+                padding: 0 20px;
+                justify-content: space-between;
+            }
+
+            .header-logo {
+                order: 2;
+            }
+
+            .user-profile {
+                order: 3;
+                padding: 8px 12px;
+            }
+
+            .mobile-menu-toggle {
+                order: 1;
+            }
+
+            .header-logo-title {
+                font-size: 1.4rem;
+            }
+            
+            .dashboard-stats {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 16px;
+            }
+            
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+
+            .content-area {
+                padding: 20px;
+            }
+
+            .user-management-container {
+                padding: 20px;
+                border-radius: var(--border-radius);
+            }
+
+            /* Mobile table improvements */
+            .user-table {
+                font-size: 14px;
+            }
+
+            .user-table th,
+            .user-table td {
+                padding: 12px 8px;
+            }
+
+            /* Mobile card layout for tables */
+            .mobile-table-cards {
+                display: none;
+            }
+
+            .table-card {
+                background: var(--white);
+                border: 1px solid var(--border-color);
+                border-radius: var(--border-radius);
+                padding: 16px;
+                margin-bottom: 12px;
+                box-shadow: var(--shadow-sm);
+                transition: var(--transition);
+            }
+
+            .table-card:hover {
+                box-shadow: var(--shadow-md);
+                transform: translateY(-2px);
+            }
+
+            .table-card-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                margin-bottom: 12px;
+                padding-bottom: 8px;
+                border-bottom: 1px solid var(--border-color);
+            }
+
+            .table-card-title {
+                font-weight: 600;
+                font-size: 16px;
+                color: var(--text-dark);
+                margin-bottom: 4px;
+            }
+
+            .table-card-subtitle {
+                font-size: 14px;
+                color: var(--text-muted);
+            }
+
+            .table-card-info {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+                margin-bottom: 12px;
+            }
+
+            .table-card-field {
+                font-size: 13px;
+            }
+
+            .table-card-field strong {
+                display: block;
+                color: var(--text-muted);
+                font-weight: 500;
+                margin-bottom: 2px;
+                text-transform: uppercase;
+                font-size: 11px;
+                letter-spacing: 0.5px;
+            }
+
+            .table-card-actions {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding-top: 12px;
+                border-top: 1px solid var(--border-color);
+            }
+
+            /* Hide regular tables on small screens */
+            @media (max-width: 576px) {
+                .user-table,
+                .tourist-table,
+                .homestay-table {
+                    display: none !important;
+                }
+
+                .mobile-table-cards {
+                    display: block !important;
+                }
+            }
+
+            /* Horizontal scroll for tables on medium screens */
+            .table-container {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .user-table,
+            .tourist-table,
+            .homestay-table {
+                min-width: 600px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .header-bar {
+                height: 70px;
+                padding: 0 16px;
+            }
+
+            .header-logo-icon {
+                width: 40px;
+                height: 40px;
+                margin-right: 8px;
+            }
+
+            .header-logo-title {
+                font-size: 1.2rem;
+                display: none;
+            }
+
+            .user-profile {
+                font-size: 14px;
+                padding: 6px 10px;
+            }
+
+            .user-profile i {
+                font-size: 20px;
+                margin-right: 6px;
+            }
+
+            .sidebar {
+                width: 100vw;
+                left: -100vw;
+                padding-top: 80px;
+            }
+
+            .sidebar.mobile-open {
+                left: 0;
+            }
+            
+            .content-area {
+                margin-top: 70px;
+                padding: 12px;
+            }
+
+            .dashboard-container {
+                padding: 16px;
+            }
+
+            .dashboard-container h2 {
+                font-size: 24px;
+                margin-bottom: 20px;
+                text-align: center;
+            }
+
+            .dashboard-stats {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .stat-card {
+                padding: 20px 16px;
+            }
+
+            .stat-card i {
+                font-size: 36px;
+                padding: 16px;
+            }
+
+            .stat-card .number {
+                font-size: 28px;
+            }
+
+            .user-management-container,
+            .tourist-management-container,
+            .form-container {
+                padding: 16px;
+                margin: 0 -4px;
+            }
+
+            .user-management-header {
+                flex-direction: column;
+                gap: 16px;
+                align-items: stretch;
+            }
+
+            .user-management-header h2 {
+                font-size: 22px;
+                text-align: center;
+            }
+
+            .user-management-buttons {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .user-management-buttons button {
+                justify-content: center;
+                min-height: 48px;
+                font-size: 16px;
+            }
+
+            .user-tabs {
+                flex-wrap: wrap;
+                gap: 4px;
+            }
+
+            .user-tabs button {
+                flex: 1;
+                min-width: auto;
+                padding: 14px 12px;
+                font-size: 14px;
+                text-align: center;
+            }
+
+            /* Form improvements for mobile */
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 14px;
+            }
+
+            .submit-button {
+                grid-column: 1;
+                font-size: 16px;
+                min-height: 48px;
+            }
+
+            .form-group input,
+            .form-group select {
+                padding: 14px 16px;
+                font-size: 16px; /* Prevents zoom on iOS */
+            }
+
+            /* Modal improvements */
+            .modal-content {
+                width: 95vw;
+                padding: 20px;
+                margin: 20px;
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+
+            .modal h3 {
+                font-size: 20px;
+                text-align: center;
+            }
+
+            .modal input,
+            .modal select {
+                padding: 14px 16px;
+                font-size: 16px;
+            }
+
+            .modal button {
+                width: 100%;
+                margin-bottom: 8px;
+                margin-right: 0;
+                min-height: 48px;
+                font-size: 16px;
+            }
+        }
+
+        /* Extra small devices */
+        @media (max-width: 320px) {
+            .header-bar {
+                height: 60px;
+                padding: 0 12px;
+            }
+
+            .content-area {
+                padding: 8px;
+                margin-top: 60px;
+            }
+
+            .dashboard-container,
+            .user-management-container {
+                padding: 12px;
+            }
+
+            .stat-card {
+                padding: 16px 12px;
+            }
+
+            .modal-content {
+                padding: 16px;
+                margin: 16px;
+            }
+        }
+
+        /* Touch-friendly improvements */
+        @media (hover: none) and (pointer: coarse) {
+            .sidebar-menu a {
+                padding: 20px 28px;
+                font-size: 16px;
+                min-height: 56px;
+            }
+
+            .user-management-buttons button {
+                padding: 16px 24px;
+                font-size: 16px;
+                min-height: 48px;
+            }
+
+            .action-icons i {
+                padding: 12px;
+                font-size: 20px;
+                min-width: 44px;
+                min-height: 44px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .user-tabs button {
+                padding: 18px 24px;
+                font-size: 18px;
+                min-height: 54px;
+            }
+
+            .form-group input,
+            .form-group select {
+                min-height: 48px;
+                font-size: 16px; /* Prevents zoom on iOS */
+            }
+
+            .submit-button {
+                min-height: 48px;
+                font-size: 16px;
+            }
+
+            .table-card {
+                padding: 20px;
+                margin-bottom: 16px;
+            }
+        }
+
+        /* Focus states for accessibility */
+        .sidebar-menu a:focus,
+        .user-management-buttons button:focus,
+        .user-tabs button:focus,
+        .submit-button:focus,
+        .mobile-menu-toggle:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        /* Reduce motion for users who prefer it */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+            .sidebar-menu a {
+                border: 1px solid;
+            }
+
+            .user-management-buttons button {
+                border: 2px solid;
+            }
+
+            .status-badge {
+                border: 2px solid;
+            }
+        }
+
+        /* Landscape orientation optimizations */
+        @media (max-width: 768px) and (orientation: landscape) {
+            .header-bar {
+                height: 60px;
+            }
+
+            .content-area {
+                margin-top: 60px;
+            }
+
+            .sidebar {
+                padding-top: 70px;
+            }
+
+            .dashboard-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+</head>
+<body>
+    <div class="sidebar">
+        <!-- Sidebar header removed, logo is now in header-bar -->
+        <ul class="sidebar-menu">
+            <li><a href="#" id="tourist-registration-link" class="active"><i class="fas fa-user-plus"></i> Tourist Registration</a></li>
+            <li><a href="#" id="tourist-management-link"><i class="fas fa-user-friends"></i> Tourist Management</a></li>
+            <li><a href="#" id="dashboard-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li>
+                <a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <div class="header-bar">
+            <button class="mobile-menu-toggle" id="mobile-menu-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="header-logo">
+                <div class="header-logo-icon">
+                    <img src="{% static 'tourism/images/tingloy.png' %}" alt="Logo" style="width:48px; height:48px; border-radius:50%; object-fit:cover; display:block;">
+                </div>
+                <span class="header-logo-title">DigiTrack</span>
+            </div>
+            <div class="user-profile">
+                <i class="fas fa-user-circle"></i>
+                <span class="user-name">MTO STAFF</span>
+            </div>
+        </div>
+        
+        <div class="mobile-overlay" id="mobile-overlay"></div>
+        <div class="content-area">
+            <!-- Tourist Registration Page -->
+            <div id="registration-page" class="page-content" {% if show_management %}style="display:none;"{% endif %}>
+                <div class="form-container">
+                    <h2>Tourist Information Fill-Up Form</h2>
+                    <form class="form-grid" id="tourist-registration-form" autocomplete="off">
+                        <div class="form-group full-width">
+                            <label for="name">Name<span style="color:red;">*</span></label>
+                            <input type="text" id="name" name="name" required autocomplete="off">
+                        </div>
+                        <div class="form-group">
+                            <label for="homestayName">Homestay Name<span style="color:red;">*</span></label>
+                            <select id="homestayName" name="homestayName" required>
+                                <option value="">Choose Homestay</option>
+                                {% for homestay in homestays %}
+                                    <option value="{{ homestay.name }}">{{ homestay.name }}</option>
+                                {% endfor %}
+
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="contactNumber">Contact Number<span style="color:red;">*</span></label>
+                            <input type="text" id="contactNumber" name="contactNumber" required maxlength="11" minlength="11" pattern="[0-9]{11}" title="Contact number must be exactly 11 digits">
+                        </div>
+                        <div class="form-group">
+                            <label for="region">Region<span style="color:red;">*</span></label>
+                            <select id="region" name="region" required>
+                                <option value="">Choose Region</option>
+                                <!-- Static fallback if regions is empty -->
+                                <option value="Region I - Ilocos Region">Region I - Ilocos Region</option>
+                                <option value="Region II - Cagayan Valley">Region II - Cagayan Valley</option>
+                                <option value="Region III - Central Luzon">Region III - Central Luzon</option>
+                                <option value="Region IV-A - CALABARZON">Region IV-A - CALABARZON</option>
+                                <option value="Region IV-B - MIMAROPA">Region IV-B - MIMAROPA</option>
+                                <option value="Region V - Bicol Region">Region V - Bicol Region</option>
+                                <option value="Region VI - Western Visayas">Region VI - Western Visayas</option>
+                                <option value="Region VII - Central Visayas">Region VII - Central Visayas</option>
+                                <option value="Region VIII - Eastern Visayas">Region VIII - Eastern Visayas</option>
+                                <option value="Region IX - Zamboanga Peninsula">Region IX - Zamboanga Peninsula</option>
+                                <option value="Region X - Northern Mindanao">Region X - Northern Mindanao</option>
+                                <option value="Region XI - Davao Region">Region XI - Davao Region</option>
+                                <option value="Region XII - SOCCSKSARGEN">Region XII - SOCCSKSARGEN</option>
+                                <option value="Region XIII - Caraga">Region XIII - Caraga</option>
+                                <option value="NCR - National Capital Region">NCR - National Capital Region</option>
+                                <option value="CAR - Cordillera Administrative Region">CAR - Cordillera Administrative Region</option>
+                                <option value="BARMM - Bangsamoro Autonomous Region in Muslim Mindanao">BARMM - Bangsamoro Autonomous Region in Muslim Mindanao</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="province">Province<span style="color:red;">*</span></label>
+                            <input type="text" id="province" name="province" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="city">City/Municipality<span style="color:red;">*</span></label>
+                            <input type="text" id="city" name="city" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="barangay">Barangay<span style="color:red;">*</span></label>
+                            <input type="text" id="barangay" name="barangay" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="dateArrival">Date of Arrival<span style="color:red;">*</span></label>
+                            <input type="date" id="dateArrival" name="dateArrival" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="dateDeparture">Date of Departure<span style="color:red;">*</span></label>
+                            <input type="date" id="dateDeparture" name="dateDeparture" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="numTourist">No. of Tourist<span style="color:red;">*</span></label>
+                            <input type="number" id="numTourist" name="numTourist" required min="1">
+                        </div>
+                        <button type="submit" class="submit-button">Submit</button>
+                        <div id="registration-message" style="margin-top:10px;"></div>
+                    </form>
+                </div>
+            </div>
+            <!-- end Tourist Registration Page -->
+            <!-- Tourist Management Page -->
+            <div id="tourist-management-page" class="page-content" {% if show_management %}style="display:block;"{% else %}style="display: none;"{% endif %}>
+                                <!-- Debug outputs removed for clean UI -->
+                <div class="tourist-management-container">
+                    <div class="tourist-management-header">
+                        <h2>Tourist Management</h2>
+                        <div class="search-container">
+                            <input type="text" id="tourist-search" placeholder="Search tourists..." />
+                            <button onclick="searchTourists()"><i class="fas fa-search"></i></button>
+                        </div>
+                    </div>
+                    <table class="user-table" id="tourist-list-table">
+                        <thead>
+                            <tr>
+                                <th>Guest Name</th>
+                                <th>Contact Number</th>
+                                <th>Homestay</th>
+                                <th>Booking Date</th>
+                                <th>No. of Guests</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tourist-table-body">
+                            <!-- Table rows will be rendered by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- end Tourist Management Page -->
+            <!-- Dashboard Page -->
+            <div id="dashboard-page" class="page-content" style="display: none;">
+                <div class="dashboard-container">
+                    <h2>Dashboard</h2>
+
+                    <div class="dashboard-stats">
+                        <div class="stat-card">
+                            <i class="fas fa-users"></i>
+                            <div class="number" id="tourist-count"></div>
+                            <div class="label">Total Tourists</div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-home"></i>
+                            <div class="number" id="homestay-count"></div>
+                            <div class="label">Registered Homestays</div>
+                        </div>
+                    </div>
+
+
+
+                    <!-- Homestay List Table (Restored Original) -->
+                    <div class="homestay-list-container">
+                        <div class="list-header">
+                            <h3>Homestay List</h3>
+                            <div class="search-container">
+                                <input type="text" id="homestay-search" placeholder="Search homestays..." />
+                                <button onclick="searchHomestays()"><i class="fas fa-search"></i></button>
+                            </div>
+                        </div>
+                        <div class="table-container">
+                            <div class="loading-indicator" id="loading-indicator">
+                                <div class="loading-spinner"></div>
+                            </div>
+                            <table class="homestay-table" id="homestay-table">
+                                <thead>
+                                    <tr>
+                                        <th>Homestay Name</th>
+                                        <th>Homestay Owner</th>
+                                        <th>No. of Tourist</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="homestay-table-body">
+                                    <!-- Homestay rows will be rendered here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="charts-container">
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <select id="monthly-trend-select"></select>
+                            </div>
+                            <h4>Trends of Tourist per Month</h4>
+                            <canvas id="tourist-monthly-chart"></canvas>
+                        </div>
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <select id="yearly-trend-select">
+                                    <option value="5_years">Last 5 Years</option>
+                                    <option value="10_years">Last 10 Years</option>
+                                </select>
+                            </div>
+                            <h4>Trends of Tourist per Year</h4>
+                            <canvas id="tourist-yearly-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- end Dashboard Page -->
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+    <script>
+    // Load tourist data from backend and render table and dashboard
+    async function loadTouristTableAndDashboard() {
+        const tbody = document.getElementById('tourist-table-body');
+        const touristCountDiv = document.getElementById('tourist-count');
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#888;">Loading...</td></tr>';
+        try {
+            const resp = await fetch('/api/tourist-list/');
+            const data = await resp.json();
+            // Dashboard: total guests
+            let totalGuests = 0;
+            if (Array.isArray(data)) {
+                data.forEach(t => {
+                    const n = parseInt(t.num_people);
+                    if (!isNaN(n)) totalGuests += n;
+                });
+            }
+            if (touristCountDiv) touristCountDiv.textContent = totalGuests;
+            // Table
+            if (!Array.isArray(data) || data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#888;">No tourists found.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = '';
+            data.forEach(t => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${t.guest_name || '-'}</td>
+                    <td>${t.contact_number || '-'}</td>
+                    <td>${t.homestay__name || '-'}</td>
+                    <td>${t.date || '-'}</td>
+                    <td>${t.num_people || '-'}</td>
+                    <td>
+                        ${t.status === 'reserved' ? '<span class="status-badge status-reserved">Reserved</span>' :
+                          t.status === 'available' ? '<span class="status-badge status-available">Available</span>' :
+                          `<span class="status-badge status-archived">${t.status ? t.status.charAt(0).toUpperCase() + t.status.slice(1) : '-'}</span>`}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        } catch (err) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:red;">Error loading data.</td></tr>';
+            if (touristCountDiv) touristCountDiv.textContent = '-';
+        }
+    }
+    document.addEventListener('DOMContentLoaded', loadTouristTableAndDashboard);
+
+    // AJAX Tourist Registration
+    // Mobile menu functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeMobileMenu();
+        handleResponsiveLayout();
+        window.addEventListener('resize', handleResponsiveLayout);
+        
+        const form = document.getElementById('tourist-registration-form');
+        if (form) {
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const messageDiv = document.getElementById('registration-message');
+                messageDiv.textContent = '';
+                const formData = new FormData(form);
+                const data = {};
+                formData.forEach((v, k) => data[k] = v);
+                // Fix date format for dateArrival and dateDeparture (convert DD/MM/YYYY to YYYY-MM-DD if needed)
+                function toIsoDate(val) {
+                    if (/^\d{2}\/\d{2}\/\d{4}$/.test(val)) {
+                        const [d, m, y] = val.split('/');
+                        return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
+                    }
+                    return val;
+                }
+                if (data.dateArrival) data.dateArrival = toIsoDate(data.dateArrival);
+                if (data.dateDeparture) data.dateDeparture = toIsoDate(data.dateDeparture);
+                try {
+                    console.log('[DEBUG] Sending registration data:', data);
+                    const response = await fetch('/api/register-tourist/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(data)
+                    });
+                    let result, text;
+                    try {
+                        text = await response.text();
+                        result = JSON.parse(text);
+                    } catch (parseErr) {
+                        messageDiv.style.color = 'red';
+                        messageDiv.textContent = 'Server error: ' + (text || parseErr);
+                        return;
+                    }
+                    if (result.success) {
+                        messageDiv.style.color = 'green';
+                        messageDiv.textContent = result.message || 'Registration successful!';
+                        form.reset();
+                        // Switch to management tab and refresh table using AJAX
+                        setTimeout(() => {
+                            showPage('tourist-management-page');
+                            loadTouristTableAndDashboard();
+                            renderTouristCharts && renderTouristCharts();
+                            loadHomestayData && loadHomestayData();
+                        }, 300);
+                    } else {
+                        messageDiv.style.color = 'red';
+                        messageDiv.textContent = (result.error ? result.error : 'Registration failed.') + (result.debug ? '\n' + result.debug : '');
+                    }
+                } catch (err) {
+                    messageDiv.style.color = 'red';
+                    messageDiv.textContent = 'Error submitting form: ' + err;
+                }
+            });
+        }
+    });
+
+    // (fetchTouristTable removed, use loadTouristTableAndDashboard instead)
+        // Global variables
+        let currentEditingRow = null;
+        let currentHomestayPage = 1;
+        const itemsPerPage = 3;
+        
+
+    // Homestay data will be loaded from backend
+    let homestayData = [];
+
+        // Initialize the dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeNavigation();
+            initializeDashboard();
+            loadHomestayData();
+        });
+
+        // Navigation functions
+        function initializeNavigation() {
+            const navLinks = {
+                'dashboard-link': 'dashboard-page',
+                'tourist-registration-link': 'registration-page',
+                'tourist-management-link': 'tourist-management-page'
+            };
+
+            Object.keys(navLinks).forEach(linkId => {
+                document.getElementById(linkId).addEventListener('click', function(e) {
+                    e.preventDefault();
+                    showPage(navLinks[linkId]);
+                    setActiveNavLink(linkId);
+                });
+            });
+        }
+
+        function showPage(pageId) {
+            // Hide all pages
+            const pages = document.querySelectorAll('.page-content');
+            pages.forEach(page => page.style.display = 'none');
+            
+            // Show selected page
+            document.getElementById(pageId).style.display = 'block';
+        }
+
+        function setActiveNavLink(activeLinkId) {
+            // Remove active class from all links
+            const links = document.querySelectorAll('.sidebar-menu a');
+            links.forEach(link => link.classList.remove('active'));
+            
+            // Add active class to selected link
+            document.getElementById(activeLinkId).classList.add('active');
+        }
+
+        // User Management functions
+        function initializeUserManagement() {
+            // Tab switching
+            const tabButtons = document.querySelectorAll('.user-tabs button');
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const tabName = this.getAttribute('data-tab');
+                    switchTab(tabName);
+                });
+            });
+
+            // Add new user button
+            document.getElementById('add-new-user-btn').addEventListener('click', function() {
+                openAddUserModal();
+            });
+
+            // Export users button
+            document.getElementById('export-users-btn').addEventListener('click', function() {
+                exportUsers();
+            });
+
+            // Form submission
+            document.getElementById('addUserForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveUser();
+            });
+
+            // Close modal when clicking outside
+            document.getElementById('addUserModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeAddUserModal();
+                }
+            });
+        }
+
+        function switchTab(tabName) {
+            // Remove active class from all tabs
+            document.querySelectorAll('.user-tabs button').forEach(btn => {
+                btn.classList.remove('active-tab');
+            });
+            
+            // Add active class to clicked tab
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active-tab');
+            
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+            
+            // Check if archive tab is empty and show message
+            if (tabName === 'archive') {
+                checkArchiveEmpty();
+            }
+        }
+
+        function checkArchiveEmpty() {
+            const archiveTableBody = document.getElementById('archive-table-body');
+            const rows = archiveTableBody.querySelectorAll('tr:not(.empty-message)');
+            
+            // Remove existing empty message
+            const existingMessage = archiveTableBody.querySelector('.empty-message');
+            if (existingMessage) {
+                existingMessage.remove();
+            }
+            
+            // Add empty message if no rows
+            if (rows.length === 0) {
+                const emptyRow = document.createElement('tr');
+                emptyRow.className = 'empty-message';
+                emptyRow.innerHTML = `
+                    <td colspan="8" style="text-align: center; color: #666; font-style: italic; padding: 40px;">
+                        No archived users found.
+                    </td>
+                `;
+                archiveTableBody.appendChild(emptyRow);
+            }
+        }
+
+        function openAddUserModal(editMode = false) {
+            const modal = document.getElementById('addUserModal');
+            const title = document.getElementById('modal-title');
+            const submitBtn = document.getElementById('submit-btn');
+            
+            if (editMode) {
+                title.textContent = 'Edit User';
+                submitBtn.textContent = 'Update User';
+            } else {
+                title.textContent = 'Add New User';
+                submitBtn.textContent = 'Add User';
+                document.getElementById('addUserForm').reset();
+            }
+            
+            modal.style.display = 'flex';
+        }
+
+        function closeAddUserModal() {
+            document.getElementById('addUserModal').style.display = 'none';
+            currentEditingRow = null;
+            document.getElementById('addUserForm').reset();
+        }
+
+        function saveUser() {
+            const form = document.getElementById('addUserForm');
+            const formData = new FormData(form);
+            
+            const userData = {
+                homestayName: document.getElementById('inputHomestayName').value,
+                ownerName: document.getElementById('inputOwnerName').value,
+                address: document.getElementById('inputAddress').value,
+                username: document.getElementById('inputUsername').value,
+                password: document.getElementById('inputPassword').value,
+                status: document.getElementById('inputStatus').value
+            };
+
+            if (currentEditingRow) {
+                updateUserRow(currentEditingRow, userData);
+            } else {
+                addNewUserRow(userData);
+                updateUserCount();
+            }
+
+            closeAddUserModal();
+        }
+
+        function addNewUserRow(userData) {
+            const tbody = document.getElementById('user-table-body');
+            const rowCount = tbody.rows.length;
+            const newId = rowCount + 1;
+
+            const row = tbody.insertRow();
+            row.innerHTML = `
+                <td>${newId}</td>
+                <td>${userData.homestayName}</td>
+                <td>${userData.ownerName}</td>
+                <td>${userData.address}</td>
+                <td>${userData.username}</td>
+                <td>••••••••</td>
+                <td><span class="status-badge status-${userData.status.toLowerCase()}">${userData.status}</span></td>
+                <td class="action-icons">
+                    <i class="fas fa-edit edit-icon" title="Edit" onclick="editUser(this)"></i>
+                    <i class="fas fa-trash delete-icon" title="Delete" onclick="deleteUser(this)"></i>
+                </td>
+            `;
+        }
+
+        function updateUserRow(row, userData) {
+            const cells = row.cells;
+            cells[1].textContent = userData.homestayName;
+            cells[2].textContent = userData.ownerName;
+            cells[3].textContent = userData.address;
+            cells[4].textContent = userData.username;
+            cells[6].innerHTML = `<span class="status-badge status-${userData.status.toLowerCase()}">${userData.status}</span>`;
+        }
+
+        function editUser(icon) {
+            const row = icon.closest('tr');
+            const cells = row.cells;
+            
+            currentEditingRow = row;
+            
+            document.getElementById('inputHomestayName').value = cells[1].textContent;
+            document.getElementById('inputOwnerName').value = cells[2].textContent;
+            document.getElementById('inputAddress').value = cells[3].textContent;
+            document.getElementById('inputUsername').value = cells[4].textContent;
+            document.getElementById('inputPassword').value = '';
+            document.getElementById('inputStatus').value = cells[6].textContent.trim();
+            
+            openAddUserModal(true);
+        }
+
+        function deleteUser(icon) {
+            if (confirm('Are you sure you want to delete this user?')) {
+                const row = icon.closest('tr');
+                const cells = row.cells;
+                
+                // Move to archive
+                const archiveTableBody = document.getElementById('archive-table-body');
+                
+                // Remove empty message if it exists
+                const emptyMessage = archiveTableBody.querySelector('.empty-message');
+                if (emptyMessage) {
+                    emptyMessage.remove();
+                }
+                
+                const archiveRow = archiveTableBody.insertRow();
+                const currentDate = new Date().toLocaleDateString();
+                
+                archiveRow.innerHTML = `
+                    <td>${cells[0].textContent}</td>
+                    <td>${cells[1].textContent}</td>
+                    <td>${cells[2].textContent}</td>
+                    <td>${cells[3].textContent}</td>
+                    <td>${cells[4].textContent}</td>
+                    <td><span class="status-badge status-archived">Archived</span></td>
+                    <td>${currentDate}</td>
+                    <td class="action-icons">
+                        <i class="fas fa-undo restore-icon" title="Restore" onclick="restoreUser(this)"></i>
+                    </td>
+                `;
+                
+                // Remove from active users
+                row.remove();
+                updateUserCount();
+            }
+        }
+
+        function restoreUser(icon) {
+            if (confirm('Are you sure you want to restore this user?')) {
+                const row = icon.closest('tr');
+                const cells = row.cells;
+                
+                // Move back to active users
+                const userTableBody = document.getElementById('user-table-body');
+                const userRow = userTableBody.insertRow();
+                
+                userRow.innerHTML = `
+                    <td>${cells[0].textContent}</td>
+                    <td>${cells[1].textContent}</td>
+                    <td>${cells[2].textContent}</td>
+                    <td>${cells[3].textContent}</td>
+                    <td>${cells[4].textContent}</td>
+                    <td>••••••••</td>
+                    <td><span class="status-badge status-active">Active</span></td>
+                    <td class="action-icons">
+                        <i class="fas fa-edit edit-icon" title="Edit" onclick="editUser(this)"></i>
+                        <i class="fas fa-trash delete-icon" title="Delete" onclick="deleteUser(this)"></i>
+                    </td>
+                `;
+                
+                // Remove from archive
+                row.remove();
+                updateUserCount();
+                
+                // Check if archive is now empty
+                checkArchiveEmpty();
+            }
+        }
+
+        function exportUsers() {
+            // Simple CSV export functionality
+            const users = [];
+            const rows = document.querySelectorAll('#user-table-body tr');
+            
+            rows.forEach(row => {
+                const cells = row.cells;
+                users.push({
+                    id: cells[0].textContent,
+                    homestayName: cells[1].textContent,
+                    ownerName: cells[2].textContent,
+                    address: cells[3].textContent,
+                    username: cells[4].textContent,
+                    status: cells[6].textContent.trim()
+                });
+            });
+
+            const csvContent = "data:text/csv;charset=utf-8," 
+                + "ID,Homestay Name,Owner Name,Address,Username,Status\n"
+                + users.map(user => `${user.id},"${user.homestayName}","${user.ownerName}","${user.address}",${user.username},${user.status}`).join('\n');
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement('a');
+            link.setAttribute('href', encodedUri);
+            link.setAttribute('download', 'users_export.csv');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function updateUserCount() {
+            const userCount = document.querySelectorAll('#user-table-body tr').length;
+            document.getElementById('user-count').textContent = userCount;
+        }
+
+        // Dashboard functions
+        function initializeDashboard() {
+            loadHomestayData();
+        }
+
+
+        // Fetch homestay data from backend and render
+        async function loadHomestayData() {
+            try {
+                const resp = await fetch('/api/homestay_users/');
+                const result = await resp.json();
+                if (result.success && Array.isArray(result.users)) {
+                    homestayData = result.users.map(u => ({
+                        name: u.homestayName,
+                        owner: u.ownerName,
+                        totalGuests: u.totalGuests || 0,
+                        status: u.status
+                    }));
+                } else {
+                    homestayData = [];
+                }
+            } catch (err) {
+                homestayData = [];
+            }
+            // Update registered homestay count in dashboard
+            const homestayCountDiv = document.getElementById('homestay-count');
+            if (homestayCountDiv) {
+                homestayCountDiv.textContent = homestayData.length;
+            }
+            const startIndex = (currentHomestayPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const pageData = homestayData.slice(startIndex, endIndex);
+            displayHomestayData(pageData);
+            updatePagination();
+        }
+
+        function displayHomestayData(data) {
+            const tbody = document.getElementById('homestay-table-body');
+            tbody.innerHTML = '';
+            if (!data || data.length === 0) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td colspan="4" style="text-align:center;color:#888;">No registered homestays.</td>`;
+                tbody.appendChild(tr);
+                return;
+            }
+            data.forEach(homestay => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${homestay.name || ''}</td>
+                    <td>${homestay.owner || ''}</td>
+                    <td>${homestay.totalGuests || 0}</td>
+                    <td><span class=\"status-badge status-${(homestay.status||'').toLowerCase()}\">${homestay.status || ''}</span></td>
+                `;
+            });
+        }
+
+        function updatePagination() {
+            const totalPages = Math.ceil(homestayData.length / itemsPerPage);
+            const paginationDiv = document.getElementById('homestay-pagination');
+            if (!paginationDiv) return; // Fix: Don't run if element is missing
+            // Update pagination buttons
+            const pageButtons = paginationDiv.querySelectorAll('button:not([id])');
+            pageButtons.forEach((btn, index) => {
+                const pageNum = index + 1;
+                if (pageNum <= totalPages) {
+                    btn.style.display = 'inline-block';
+                    btn.classList.toggle('active', pageNum === currentHomestayPage);
+                } else {
+                    btn.style.display = 'none';
+                }
+            });
+
+            // Update prev/next buttons
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            if (prevBtn) prevBtn.disabled = currentHomestayPage === 1;
+            if (nextBtn) nextBtn.disabled = currentHomestayPage === totalPages;
+        }
+
+        function goToHomestayPage(page) {
+            const totalPages = Math.ceil(homestayData.length / itemsPerPage);
+            
+            if (page === 'prev' && currentHomestayPage > 1) {
+                currentHomestayPage--;
+            } else if (page === 'next' && currentHomestayPage < totalPages) {
+                currentHomestayPage++;
+            } else if (typeof page === 'number' && page >= 1 && page <= totalPages) {
+                currentHomestayPage = page;
+            }
+
+            // Add loading animation
+            const loadingIndicator = document.getElementById('loading-indicator');
+            const homestayTable = document.getElementById('homestay-table');
+            
+            loadingIndicator.style.display = 'block';
+            homestayTable.classList.add('slide-out');
+            
+            setTimeout(() => {
+                loadHomestayData();
+                homestayTable.classList.remove('slide-out');
+                homestayTable.classList.add('slide-in-active');
+                loadingIndicator.style.display = 'none';
+                
+                setTimeout(() => {
+                    homestayTable.classList.remove('slide-in-active');
+                }, 500);
+            }, 300);
+        }
+
+        function searchHomestays() {
+            const searchTerm = document.getElementById('homestay-search').value.toLowerCase();
+            const rows = document.querySelectorAll('#dashboard-page #homestay-table-body tr');
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        }
+
+        function searchTourists() {
+            const searchTerm = document.getElementById('tourist-search').value.toLowerCase();
+            const rows = document.querySelectorAll('#tourist-table-body tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                alert('Logout functionality would redirect to login page');
+                // window.location.href = 'login.html';
+            }
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case 'n':
+                        e.preventDefault();
+                        if (document.getElementById('user-management-page').style.display !== 'none') {
+                            openAddUserModal();
+                        }
+                        break;
+                    case 'e':
+                        e.preventDefault();
+                        if (document.getElementById('user-management-page').style.display !== 'none') {
+                            exportUsers();
+                        }
+                        break;
+                }
+            }
+            
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('addUserModal');
+                if (modal.style.display === 'flex') {
+                    closeAddUserModal();
+                }
+            }
+        });
+
+        // Store tourists in memory for this session (simulate DB for frontend only)
+        let tourists = [];
+
+        // --- Dashboard Data Update ---
+        function updateDashboardStatsAndCharts() {
+            // Update tourist count (sum of all guests)
+            const totalGuests = tourists.reduce((sum, t) => sum + (parseInt(t.numTourist) || 0), 0);
+            document.getElementById('tourist-count').textContent = totalGuests;
+
+            // Update homestay count (unique homestays from tourists)
+            const homestaySet = new Set(tourists.map(t => t.homestayName));
+            document.getElementById('homestay-count').textContent = homestaySet.size;
+
+            // Update homestay list table
+            renderHomestayList();
+
+            // Update charts
+            updateTouristCharts();
+        }
+
+        // Example: Add homestay owner and status per homestay
+    // For demo, we use a static mapping for owner/status per homestay name
+    const homestayInfo = {
+        "Seaside Haven Homestay": { owner: "Ana Cruz", status: "Active" },
+        "Mountain Breeze Homestay": { owner: "Ben Santos", status: "Active" },
+        "Sunset Bay Homestay": { owner: "Carla Reyes", status: "Inactive" },
+        "Palm Grove Homestay": { owner: "Dino Lim", status: "Active" },
+        "Lakeside Retreat Homestay": { owner: "Ella Ramos", status: "Active" },
+        "Coral Reef Homestay": { owner: "Faye Tan", status: "Active" },
+        "Golden Fields Homestay": { owner: "Gino dela Cruz", status: "Inactive" },
+        "Harbor View Homestay": { owner: "Hannah Uy", status: "Active" },
+        "Hilltop Haven Homestay": { owner: "Ivan Lee", status: "Active" },
+        "Riverside Bliss Homestay": { owner: "Jessa Go", status: "Active" },
+        "Garden Escape Homestay": { owner: "Kiko Torres", status: "Active" },
+        "Coconut Grove Homestay": { owner: "Liza Mendoza", status: "Active" },
+        "Starfish Cove Homestay": { owner: "Manny Cruz", status: "Inactive" },
+        "Lagoon Breeze Homestay": { owner: "Nina Santos", status: "Active" },
+        "Ocean Pearl Homestay": { owner: "Omar Villanueva", status: "Active" },
+        "Bamboo Hideaway Homestay": { owner: "Pia Lim", status: "Active" },
+        "Mango Grove Homestay": { owner: "Quinn Reyes", status: "Active" }
+    };
+
+    function renderHomestayList() {
+        const tbody = document.getElementById('homestay-table-body');
+        tbody.innerHTML = '';
+        // Count guests per homestay
+        const homestayMap = {};
+        tourists.forEach(t => {
+            if (!homestayMap[t.homestayName]) {
+                homestayMap[t.homestayName] = {
+                    count: 0,
+                    owner: (homestayInfo[t.homestayName] && homestayInfo[t.homestayName].owner) || "N/A",
+                    status: (homestayInfo[t.homestayName] && homestayInfo[t.homestayName].status) || "Active"
+                };
+            }
+            homestayMap[t.homestayName].count += parseInt(t.numTourist) || 1;
+        });
+        const homestayNames = Object.keys(homestayMap);
+        if (homestayNames.length === 0) {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td colspan="4" style="text-align:center;color:#888;">No registered homestays.</td>`;
+            tbody.appendChild(tr);
+            return;
+        }
+        homestayNames.forEach(name => {
+            const info = homestayMap[name];
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${name}</td>
+                <td>${info.owner}</td>
+                <td>${info.count}</td>
+                <td><span class="status-badge status-${info.status.toLowerCase()}">${info.status}</span></td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+
+        function renderTouristTable() {
+            const tbody = document.getElementById('tourist-table-body');
+            tbody.innerHTML = '';
+            if (tourists.length === 0) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td colspan="7" style="text-align:center;color:#888;">No tourists found.</td>`;
+                tbody.appendChild(tr);
+                return;
+            }
+            tourists.forEach(tourist => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${tourist.id}</td>
+                    <td>${tourist.name}</td>
+                    <td>${tourist.homestayName}</td>
+                    <td>${tourist.dateArrival}</td>
+                    <td>${tourist.dateDeparture}</td>
+                    <td>${tourist.numTourist}</td>
+                    <td><span class="status-badge status-active">${tourist.status}</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // --- Tourist Trends Chart Data Calculation ---
+        function getMonthlyTrends() {
+            // Returns {labels: [...], data: [...]}
+            const months = [
+                'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+            ];
+            const counts = Array(12).fill(0);
+            tourists.forEach(t => {
+                if (t.dateArrival) {
+                    const d = new Date(t.dateArrival);
+                    if (!isNaN(d)) {
+                        counts[d.getMonth()] += parseInt(t.numTourist) || 1;
+                    }
+                }
+            });
+            return { labels: months, data: counts };
+        }
+
+        function getYearlyTrends() {
+            // Returns {labels: [...], data: [...]}
+            const yearMap = {};
+            tourists.forEach(t => {
+                if (t.dateArrival) {
+                    const d = new Date(t.dateArrival);
+                    if (!isNaN(d)) {
+                        const y = d.getFullYear();
+                        yearMap[y] = (yearMap[y] || 0) + (parseInt(t.numTourist) || 1);
+                    }
+                }
+            });
+            const years = Object.keys(yearMap).sort();
+            return { labels: years, data: years.map(y => yearMap[y]) };
+        }
+
+        // --- Chart.js Integration ---
+        let monthlyChart, yearlyChart;
+        function updateTouristCharts() {
+            const monthly = getMonthlyTrends();
+            const yearly = getYearlyTrends();
+
+            // Monthly Chart
+            const ctxMonth = document.getElementById('tourist-monthly-chart').getContext('2d');
+            if (window.dashboardMonthlyChart) {
+                window.dashboardMonthlyChart.destroy();
+                window.dashboardMonthlyChart = null;
+            }
+            window.dashboardMonthlyChart = new Chart(ctxMonth, {
+                type: 'line',
+                data: {
+                    labels: monthly.labels,
+                    datasets: [{
+                        label: 'Tourists per Month',
+                        data: monthly.data,
+                        borderColor: '#0077B6',
+                        backgroundColor: 'rgba(0,119,182,0.1)',
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: true },
+                        datalabels: {
+                            display: true,
+                            color: '#222',
+                            font: { weight: 'bold' },
+                            anchor: 'end',
+                            align: 'top',
+                            formatter: function(value) { return value > 0 ? value : ''; }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            suggestedMax: Math.max(...monthly.data, 10)
+                        }
+                    }
+                },
+                plugins: [window.ChartDataLabels]
+            });
+
+            // Yearly Chart
+            const ctxYear = document.getElementById('tourist-yearly-chart').getContext('2d');
+            if (window.dashboardYearlyChart) {
+                window.dashboardYearlyChart.destroy();
+                window.dashboardYearlyChart = null;
+            }
+            window.dashboardYearlyChart = new Chart(ctxYear, {
+                type: 'line',
+                data: {
+                    labels: yearly.labels,
+                    datasets: [{
+                        label: 'Tourists per Year',
+                        data: yearly.data,
+                        borderColor: '#4a90e2',
+                        backgroundColor: 'rgba(74,144,226,0.1)',
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: true },
+                        datalabels: {
+                            display: true,
+                            color: '#222',
+                            font: { weight: 'bold' },
+                            anchor: 'end',
+                            align: 'top',
+                            formatter: function(value) { return value > 0 ? value : ''; }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            suggestedMax: Math.max(...yearly.data, 10)
+                        }
+                    }
+                },
+                plugins: [window.ChartDataLabels]
+            });
+        }
+
+        // Chart.js instance holders (global)
+        var dashboardMonthlyChart = null;
+        var dashboardYearlyChart = null;
+
+        // --- Initial Render ---
+        document.addEventListener('DOMContentLoaded', function() {
+            renderTouristTable();
+            updateDashboardStatsAndCharts();
+        });
+
+        // New renderTouristCharts function
+        async function renderTouristCharts() {
+        // Get selected year and range from dropdowns
+        const monthlySelect = document.getElementById('monthly-trend-select');
+        const yearlySelect = document.getElementById('yearly-trend-select');
+        const currentYear = new Date().getFullYear();
+        const year = parseInt(monthlySelect && monthlySelect.value) || currentYear;
+        let yearRange = 5;
+        if (yearlySelect && yearlySelect.value === '10_years') yearRange = 10;
+        // Fetch chart data from new API
+        let chartData = { monthly: {}, yearly: {} };
+        try {
+            const resp = await fetch(`/api/tourist-chart-data/?year=${year}&year_range=${yearRange}`);
+            chartData = await resp.json();
+        } catch (err) {
+            // fallback: empty data
+        }
+        // Prepare data for Chart.js
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const monthlyLabels = months;
+        const monthlyData = months.map(m => chartData.monthly[m] || 0);
+        // Yearly labels and data (ensure sorted by year)
+        const yearlyLabels = Object.keys(chartData.yearly || {}).sort();
+        const yearlyData = yearlyLabels.map(y => chartData.yearly[y] || 0);
+        // Debug: Log chart data to verify
+        console.log('Monthly Data:', monthlyLabels, monthlyData);
+        console.log('Yearly Data:', yearlyLabels, yearlyData);
+        // Render Monthly Chart
+        // Fix: Properly destroy Chart.js instances and replace canvas to avoid 'Canvas is already in use' error
+        if (window.dashboardMonthlyChart) {
+            window.dashboardMonthlyChart.destroy();
+            window.dashboardMonthlyChart = null;
+        }
+        const ctxMonth = document.getElementById('tourist-monthly-chart').getContext('2d');
+        window.dashboardMonthlyChart = new Chart(ctxMonth, {
+            type: 'line',
+            data: {
+                labels: monthlyLabels,
+                datasets: [{
+                    label: 'Tourists per Month',
+                    data: monthlyData,
+                    borderColor: '#0077B6',
+                    backgroundColor: 'rgba(0,119,182,0.1)',
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { enabled: true },
+                    datalabels: {
+                        display: true,
+                        color: '#222',
+                        font: { weight: 'bold' },
+                        anchor: 'end',
+                        align: 'top',
+                        formatter: function(value) { return value > 0 ? value : ''; }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        suggestedMax: Math.max(...monthlyData, 10)
+                    }
+                }
+            },
+            plugins: [window.ChartDataLabels]
+        });
+        if (window.dashboardYearlyChart) {
+            window.dashboardYearlyChart.destroy();
+            window.dashboardYearlyChart = null;
+        }
+        const ctxYear = document.getElementById('tourist-yearly-chart').getContext('2d');
+        window.dashboardYearlyChart = new Chart(ctxYear, {
+            type: 'line',
+            data: {
+                labels: yearlyLabels,
+                datasets: [{
+                    label: 'Tourists per Year',
+                    data: yearlyData,
+                    borderColor: '#4a90e2',
+                    backgroundColor: 'rgba(74,144,226,0.1)',
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { enabled: true },
+                    datalabels: {
+                        display: true,
+                        color: '#222',
+                        font: { weight: 'bold' },
+                        anchor: 'end',
+                        align: 'top',
+                        formatter: function(value) { return value > 0 ? value : ''; }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        suggestedMax: Math.max(...yearlyData, 10)
+                    }
+                }
+            },
+            plugins: [window.ChartDataLabels]
+        });
+        // Load Chart.js datalabels plugin if not already loaded
+        if (!window.ChartDataLabels) {
+            var script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js';
+            script.onload = function() {
+                if (typeof renderTouristCharts === 'function') renderTouristCharts();
+            };
+            document.head.appendChild(script);
+        }
+    }
+
+    // Mobile menu functionality
+    function initializeMobileMenu() {
+        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+        const sidebar = document.querySelector('.sidebar');
+        const mobileOverlay = document.getElementById('mobile-overlay');
+        const body = document.body;
+
+        if (mobileMenuToggle) {
+            mobileMenuToggle.addEventListener('click', function() {
+                toggleMobileMenu();
+            });
+        }
+
+        if (mobileOverlay) {
+            mobileOverlay.addEventListener('click', function() {
+                closeMobileMenu();
+            });
+        }
+
+        // Close mobile menu when clicking on sidebar links
+        const sidebarLinks = document.querySelectorAll('.sidebar-menu a');
+        sidebarLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                if (window.innerWidth <= 768) {
+                    closeMobileMenu();
+                }
+            });
+        });
+
+        function toggleMobileMenu() {
+            sidebar.classList.toggle('mobile-open');
+            mobileOverlay.classList.toggle('active');
+            body.classList.toggle('mobile-menu-open');
+            
+            if (mobileOverlay.classList.contains('active')) {
+                mobileOverlay.style.display = 'block';
+            } else {
+                setTimeout(() => {
+                    mobileOverlay.style.display = 'none';
+                }, 300);
+            }
+        }
+
+        function closeMobileMenu() {
+            sidebar.classList.remove('mobile-open');
+            mobileOverlay.classList.remove('active');
+            body.classList.remove('mobile-menu-open');
+            setTimeout(() => {
+                mobileOverlay.style.display = 'none';
+            }, 300);
+        }
+
+        // Close mobile menu on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && sidebar.classList.contains('mobile-open')) {
+                closeMobileMenu();
+            }
+        });
+    }
+
+    function handleResponsiveLayout() {
+        const sidebar = document.querySelector('.sidebar');
+        const mobileOverlay = document.getElementById('mobile-overlay');
+        
+        if (window.innerWidth > 768) {
+            sidebar.classList.remove('mobile-open');
+            mobileOverlay.classList.remove('active');
+            mobileOverlay.style.display = 'none';
+            document.body.classList.remove('mobile-menu-open');
+        }
+    }
+
+
+
+    // Populate the monthly trend year dropdown dynamically
+    async function populateMonthlyTrendSelect() {
+        const select = document.getElementById('monthly-trend-select');
+        if (!select) return;
+        // Always show years 2020 to 2030, select current year if in range
+        select.innerHTML = '';
+        const currentYear = new Date().getFullYear();
+        for (let y = 2020; y <= 2030; y++) {
+            const opt = document.createElement('option');
+            opt.value = y;
+            opt.textContent = y;
+            if (y === currentYear) opt.selected = true;
+            select.appendChild(opt);
+        }
+    }
+
+    // Attach event listeners for dropdowns
+    document.addEventListener('DOMContentLoaded', async function() {
+        await populateMonthlyTrendSelect();
+        renderTouristCharts();
+        // Re-render charts when dashboard tab is shown
+        const dashboardLink = document.getElementById('dashboard-link');
+        if (dashboardLink) {
+            dashboardLink.addEventListener('click', function() {
+                setTimeout(renderTouristCharts, 200); // slight delay to ensure canvas is visible
+            });
+        }
+        // Add event listeners for chart dropdowns
+        const monthlySelect = document.getElementById('monthly-trend-select');
+        const yearlySelect = document.getElementById('yearly-trend-select');
+        if (monthlySelect) {
+            monthlySelect.addEventListener('change', renderTouristCharts);
+        }
+        if (yearlySelect) {
+            yearlySelect.addEventListener('change', renderTouristCharts);
+        }
+    });
+    </script>
+</body>
+</html>

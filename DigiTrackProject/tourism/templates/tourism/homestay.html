@@ -1,0 +1,2852 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DigiTrack - Homestay Account</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --primary-color: #0077B6;
+            --primary-dark: #005577;
+            --primary-light: #e6f3ff;
+            --secondary-color: #f39c12;
+            --success-color: #27ae60;
+            --warning-color: #e67e22;
+            --danger-color: #e74c3c;
+            --light-bg: #f8fafc;
+            --white: #ffffff;
+            --text-dark: #2c3e50;
+            --text-muted: #6c757d;
+            --border-color: #e1e8ed;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.06);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+            --shadow-xl: 0 20px 25px rgba(0,0,0,0.1);
+            --border-radius: 8px;
+            --border-radius-lg: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            display: flex;
+            height: 100vh;
+            font-weight: 400;
+            line-height: 1.6;
+            color: var(--text-dark);
+        }
+
+        /* Sidebar styles */
+        .sidebar {
+            width: 280px;
+            background: var(--white);
+            backdrop-filter: blur(10px);
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            flex-direction: column;
+            padding: 30px 0;
+            position: fixed;
+            left: 0;
+            top: 90px;
+            height: calc(100vh - 90px);
+            z-index: 1000;
+            transition: var(--transition);
+            border-right: 1px solid var(--border-color);
+        }
+
+        .sidebar-header {
+            display: none;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 16px 28px;
+            text-decoration: none;
+            color: var(--text-dark);
+            font-size: 15px;
+            font-weight: 500;
+            transition: var(--transition);
+            border-radius: 0 25px 25px 0;
+            margin: 4px 0;
+            margin-right: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar-menu a::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: var(--primary-color);
+            transform: scaleY(0);
+            transition: var(--transition);
+        }
+
+        .sidebar-menu a:hover {
+            background: var(--primary-light);
+            color: var(--primary-color);
+            transform: translateX(8px);
+        }
+
+        .sidebar-menu a:hover::before,
+        .sidebar-menu a.active::before {
+            transform: scaleY(1);
+        }
+
+        .sidebar-menu a.active {
+            background: linear-gradient(135deg, var(--primary-light) 0%, rgba(0, 119, 182, 0.1) 100%);
+            color: var(--primary-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .sidebar-menu a i {
+            margin-right: 16px;
+            font-size: 18px;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Main content styles */
+        .main-content {
+            flex-grow: 1;
+            margin-left: 280px;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            transition: var(--transition);
+        }
+
+        /* Header bar styles */
+        .header-bar {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-lg);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 90px;
+            z-index: 1100;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header-logo-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--secondary-color) 0%, #e67e22 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: #fff;
+            margin-right: 16px;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+            overflow: hidden;
+        }
+
+        .header-logo-icon:hover {
+            transform: scale(1.05) rotate(5deg);
+        }
+
+        .header-logo-icon img {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .header-logo-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: 1.2px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header-bar .title {
+            display: none;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 12px 20px;
+            border-radius: var(--border-radius-lg);
+            transition: var(--transition);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            font-weight: 500;
+        }
+
+        .user-profile:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .user-profile i {
+            font-size: 26px;
+            margin-right: 12px;
+        }
+
+        /* Content area */
+        .content-area {
+            margin-top: 90px;
+            padding: 40px;
+            overflow-y: auto;
+            flex-grow: 1;
+            background: transparent;
+        }
+
+        /* Dashboard Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: var(--white);
+            padding: 32px 24px;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-xl);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        }
+
+        .stat-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .stat-number {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-muted);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Room Status Table */
+        .room-table-container {
+            background: var(--white);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-xl);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+        }
+
+        .room-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .room-table th, .room-table td {
+            padding: 16px 20px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .room-table thead {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+        }
+
+        .room-table thead th {
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .room-table tbody tr {
+            transition: var(--transition);
+        }
+
+        .room-table tbody tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+
+        .room-table tbody tr:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Status Badges */
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .status-badge::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+
+        .status-available {
+            background: rgba(39, 174, 96, 0.1);
+            color: var(--success-color);
+            border: 1px solid rgba(39, 174, 96, 0.2);
+        }
+
+        .status-available::before {
+            background: var(--success-color);
+        }
+
+        .status-reserved {
+            background: rgba(243, 156, 18, 0.1);
+            color: var(--secondary-color);
+            border: 1px solid rgba(243, 156, 18, 0.2);
+        }
+
+        .status-reserved::before {
+            background: var(--secondary-color);
+        }
+
+        .status-occupied {
+            background: rgba(231, 76, 60, 0.1);
+            color: var(--danger-color);
+            border: 1px solid rgba(231, 76, 60, 0.2);
+        }
+
+        .status-occupied::before {
+            background: var(--danger-color);
+        }
+
+        .status-active {
+            background: rgba(39, 174, 96, 0.1);
+            color: var(--success-color);
+            border: 1px solid rgba(39, 174, 96, 0.2);
+        }
+
+        .status-active::before {
+            background: var(--success-color);
+        }
+
+        .status-checked-out {
+            background: rgba(231, 76, 60, 0.1);
+            color: var(--danger-color);
+            border: 1px solid rgba(231, 76, 60, 0.2);
+        }
+
+        .status-checked-out::before {
+            background: var(--danger-color);
+        }
+
+        .status-inactive {
+            background: rgba(231, 76, 60, 0.1);
+            color: var(--danger-color);
+            border: 1px solid rgba(231, 76, 60, 0.2);
+        }
+
+        .status-inactive::before {
+            background: var(--danger-color);
+        }
+
+        .status-archived {
+            background: rgba(108, 117, 125, 0.1);
+            color: var(--text-muted);
+            border: 1px solid rgba(108, 117, 125, 0.2);
+        }
+
+        .status-archived::before {
+            background: var(--text-muted);
+        }
+
+        /* Action Buttons */
+        .action-icons i {
+            cursor: pointer;
+            font-size: 18px;
+            margin-right: 12px;
+            padding: 8px;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .action-icons i:hover {
+            transform: scale(1.2);
+        }
+
+        .action-icons .edit-icon {
+            color: var(--success-color);
+        }
+
+        .action-icons .edit-icon:hover {
+            background: rgba(39, 174, 96, 0.1);
+        }
+
+        .action-icons .delete-icon {
+            color: var(--danger-color);
+        }
+
+        .action-icons .delete-icon:hover {
+            background: rgba(231, 76, 60, 0.1);
+        }
+
+        .action-icons .restore-icon {
+            color: var(--primary-color);
+        }
+
+        .action-icons .restore-icon:hover {
+            background: var(--primary-light);
+        }
+
+        /* Inline editing styles */
+        .editable-cell {
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .editable-cell:hover {
+            background-color: #f8f9fa;
+        }
+
+        .editable-cell input {
+            width: 100%;
+            padding: 5px 8px;
+            border: 2px solid #4a90e2;
+            border-radius: 4px;
+            font-size: 14px;
+            background: #fff;
+            outline: none;
+        }
+
+        .editable-cell select {
+            width: 100%;
+            padding: 5px 8px;
+            border: 2px solid #4a90e2;
+            border-radius: 4px;
+            font-size: 14px;
+            background: #fff;
+            outline: none;
+        }
+
+        /* Forms */
+        .form-container {
+            background: var(--white);
+            padding: 32px;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-xl);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-dark);
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            transition: var(--transition);
+            box-sizing: border-box;
+            background: var(--white);
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 119, 182, 0.1);
+            transform: scale(1.02);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Hidden sections */
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        /* Success/Error Messages */
+        .message {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .message-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Mobile menu toggle button */
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        .mobile-menu-toggle:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Mobile overlay for sidebar */
+        .mobile-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .mobile-overlay.active {
+            opacity: 1;
+        }
+
+        /* Mobile-specific improvements */
+        .user-name {
+            display: inline;
+        }
+
+        /* Smooth transitions for mobile menu */
+        .sidebar {
+            will-change: transform;
+        }
+
+        .mobile-overlay {
+            will-change: opacity;
+        }
+
+        /* Prevent body scroll when mobile menu is open */
+        body.mobile-menu-open {
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+        }
+
+        /* Enhanced touch targets */
+        @media (max-width: 768px) {
+            .sidebar-menu a {
+                min-height: 56px;
+                display: flex;
+                align-items: center;
+            }
+
+            /* Improved form elements for mobile */
+            .form-input,
+            .form-select {
+                -webkit-appearance: none;
+                appearance: none;
+                background-color: var(--white);
+                border-radius: var(--border-radius);
+            }
+
+            .form-select {
+                background-image: url("data:image/svg+xml;charset=US-ASCII,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3e%3cpath fill='%23666' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e");
+                background-repeat: no-repeat;
+                background-position: right 12px center;
+                background-size: 12px;
+                padding-right: 40px;
+            }
+        }
+
+        /* Touch-friendly improvements */
+        @media (hover: none) and (pointer: coarse) {
+            .sidebar-menu a {
+                padding: 20px 28px;
+                font-size: 16px;
+            }
+
+            .action-icons i {
+                padding: 12px;
+                font-size: 20px;
+            }
+        }
+
+        /* Responsive design */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 240px;
+            }
+            
+            .main-content {
+                margin-left: 240px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            }
+
+            .content-area {
+                padding: 24px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-toggle {
+                display: block;
+            }
+
+            .sidebar {
+                width: 280px;
+                position: fixed;
+                top: 0;
+                left: -280px;
+                height: 100vh;
+                z-index: 1000;
+                transition: var(--transition);
+                padding-top: 100px;
+                background: var(--white);
+                box-shadow: var(--shadow-xl);
+            }
+
+            .sidebar.mobile-open {
+                left: 0;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .header-bar {
+                padding: 0 20px;
+                justify-content: space-between;
+            }
+
+            .header-logo {
+                order: 2;
+            }
+
+            .user-profile {
+                order: 3;
+                padding: 8px 12px;
+            }
+
+            .mobile-menu-toggle {
+                order: 1;
+            }
+
+            .header-logo-title {
+                font-size: 1.4rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 16px;
+            }
+
+            .content-area {
+                padding: 20px;
+            }
+
+            .tourist-management-container,
+            .form-container {
+                padding: 20px;
+                border-radius: var(--border-radius);
+            }
+
+            /* Mobile table improvements */
+            .room-table, .tourist-table {
+                font-size: 14px;
+            }
+
+            .room-table th, .room-table td,
+            .tourist-table th, .tourist-table td {
+                padding: 12px 8px;
+            }
+
+            /* Hide less important columns on tablets */
+            .room-table th:nth-child(4),
+            .room-table td:nth-child(4) {
+                display: none;
+            }
+
+            /* Mobile card layout for tables */
+            .mobile-room-cards,
+            .mobile-tourist-cards {
+                display: none;
+            }
+
+            /* Horizontal scroll for tables */
+            .room-table-container,
+            .tourist-management-container .table-container {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .room-table, .tourist-table {
+                min-width: 600px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .header-bar {
+                height: 70px;
+                padding: 0 16px;
+            }
+
+            .header-logo-icon {
+                width: 40px;
+                height: 40px;
+                margin-right: 8px;
+            }
+
+            .header-logo-title {
+                font-size: 1.2rem;
+                display: none;
+            }
+
+            .user-profile {
+                font-size: 14px;
+                padding: 6px 10px;
+            }
+
+            .user-profile i {
+                font-size: 20px;
+                margin-right: 6px;
+            }
+
+            .sidebar {
+                width: 100vw;
+                left: -100vw;
+                padding-top: 80px;
+            }
+
+            .sidebar.mobile-open {
+                left: 0;
+            }
+            
+            .content-area {
+                margin-top: 70px;
+                padding: 12px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .stat-card {
+                padding: 20px 16px;
+            }
+
+            .tourist-management-container,
+            .form-container {
+                padding: 16px;
+                margin: 0 -4px;
+            }
+
+            .tourist-management-header {
+                flex-direction: column;
+                gap: 16px;
+                align-items: stretch;
+            }
+
+            .tourist-management-header h2 {
+                font-size: 22px;
+                text-align: center;
+            }
+
+            #tourist-search {
+                width: 100%;
+                margin-right: 0;
+                margin-bottom: 8px;
+            }
+
+            .form-input,
+            .form-select {
+                padding: 14px 16px;
+                font-size: 16px; /* Prevents zoom on iOS */
+            }
+
+            .btn-primary {
+                width: 100%;
+                min-height: 48px;
+                font-size: 16px;
+            }
+
+            /* Mobile table - card layout */
+            .room-table, .tourist-table {
+                display: none;
+            }
+
+            .mobile-room-cards,
+            .mobile-tourist-cards {
+                display: block;
+            }
+
+            .room-card, .tourist-card {
+                background: var(--white);
+                border: 1px solid var(--border-color);
+                border-radius: var(--border-radius);
+                padding: 16px;
+                margin-bottom: 12px;
+                box-shadow: var(--shadow-sm);
+                transition: var(--transition);
+            }
+
+            .room-card:hover, .tourist-card:hover {
+                box-shadow: var(--shadow-md);
+                transform: translateY(-2px);
+            }
+
+            .card-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                margin-bottom: 12px;
+            }
+
+            .card-title {
+                font-weight: 600;
+                font-size: 16px;
+                color: var(--text-dark);
+                margin-bottom: 4px;
+            }
+
+            .card-subtitle {
+                font-size: 14px;
+                color: var(--text-muted);
+            }
+
+            .card-info {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+                margin-bottom: 12px;
+            }
+
+            .card-field {
+                font-size: 13px;
+            }
+
+            .card-field strong {
+                display: block;
+                color: var(--text-muted);
+                font-weight: 500;
+                margin-bottom: 2px;
+            }
+
+            .card-actions {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding-top: 12px;
+                border-top: 1px solid var(--border-color);
+            }
+        }
+
+        /* Extra small devices */
+        @media (max-width: 320px) {
+            .header-bar {
+                height: 60px;
+                padding: 0 12px;
+            }
+
+            .content-area {
+                padding: 8px;
+                margin-top: 60px;
+            }
+
+            .tourist-management-container,
+            .form-container {
+                padding: 12px;
+            }
+
+            .stat-card {
+                padding: 16px 12px;
+            }
+        }
+
+        /* Landscape orientation optimizations */
+        @media (max-width: 768px) and (orientation: landscape) {
+            .header-bar {
+                height: 60px;
+            }
+
+            .content-area {
+                margin-top: 60px;
+            }
+
+            .sidebar {
+                padding-top: 70px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Enhanced animations and micro-interactions */
+        .page-content {
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Table row animation on load */
+        .room-table tbody tr,
+        .tourist-table tbody tr {
+            animation: slideInRow 0.3s ease-out;
+            animation-fill-mode: both;
+        }
+
+        @keyframes slideInRow {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Stagger animation for multiple rows */
+        .room-table tbody tr:nth-child(1),
+        .tourist-table tbody tr:nth-child(1) { animation-delay: 0.1s; }
+        .room-table tbody tr:nth-child(2),
+        .tourist-table tbody tr:nth-child(2) { animation-delay: 0.2s; }
+        .room-table tbody tr:nth-child(3),
+        .tourist-table tbody tr:nth-child(3) { animation-delay: 0.3s; }
+        .room-table tbody tr:nth-child(4),
+        .tourist-table tbody tr:nth-child(4) { animation-delay: 0.4s; }
+        .room-table tbody tr:nth-child(5),
+        .tourist-table tbody tr:nth-child(5) { animation-delay: 0.5s; }
+
+        /* Enhanced button hover effects */
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-primary {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        /* Loading states */
+        .loading {
+            position: relative;
+        }
+
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 5;
+        }
+
+        /* Enhanced tooltip styles */
+        [title] {
+            position: relative;
+        }
+
+        [title]:hover::after {
+            content: attr(title);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--text-dark);
+            color: white;
+            padding: 8px 12px;
+            border-radius: var(--border-radius);
+            font-size: 12px;
+            white-space: nowrap;
+            z-index: 1000;
+            animation: tooltipFade 0.2s ease-out;
+        }
+
+        @keyframes tooltipFade {
+            from { opacity: 0; transform: translateX(-50%) translateY(5px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--light-bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+
+        /* Tourist Management Styles */
+        .tourist-management-container {
+            background: var(--white);
+            padding: 32px;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-xl);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+        }
+
+        .tourist-management-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #e6e6e6;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .tourist-management-header h2 {
+            font-size: 28px;
+            font-weight: 700;
+            margin: 0;
+            color: var(--text-dark);
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .search-container {
+            display: flex;
+            align-items: center;
+        }
+
+        #tourist-search {
+            padding: 12px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius);
+            margin-right: 10px;
+            width: 300px;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        #tourist-search:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 119, 182, 0.1);
+        }
+
+        .tourist-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .tourist-table th, .tourist-table td {
+            padding: 16px 20px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tourist-table thead {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+        }
+
+        .tourist-table thead th {
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .tourist-table tbody tr {
+            transition: var(--transition);
+        }
+
+        .tourist-table tbody tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+
+        .tourist-table tbody tr:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+</head>
+<body>
+    <!-- Sidebar - Match mtoadmin.html structure -->
+    <div class="sidebar">
+        <ul class="sidebar-menu">
+            <li><a href="#" id="dashboard-link" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="#" id="room-management-link"><i class="fas fa-bed"></i> Room Management</a></li>
+            <li><a href="#" id="tourist-management-link"><i class="fas fa-users"></i> Tourist Management</a></li>
+            <li><a href="#" id="date-availability-link"><i class="fas fa-calendar-alt"></i> Date Availability</a></li>
+            <li><a href="#" id="features-link"><i class="fas fa-list"></i> Homestay Features</a></li>
+            <li><a href="#" id="logout-link"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </div>
+
+    <!-- Mobile overlay for sidebar -->
+    <div class="mobile-overlay" id="mobile-overlay"></div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header-bar">
+            <button class="mobile-menu-toggle" id="mobile-menu-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="header-logo">
+                <div class="header-logo-icon">
+                    <img src="{% static 'tourism/images/tingloy.png' %}" alt="Logo" style="width:56px; height:56px; border-radius:50%; object-fit:cover; display:block;">
+                </div>
+                <span class="header-logo-title">DigiTrack</span>
+            </div>
+            <div class="user-profile">
+                <i class="fas fa-user-circle"></i>
+                <span class="user-name">{{ homestay.name|default:"Homestay Owner" }}</span>
+            </div>
+        </div>
+        <div class="content-area">
+            <!-- Homestay Features Section -->
+            <div id="features-section" class="content-section" style="display;">
+                <h2 style="margin-bottom: 20px;">Homestay Features</h2>
+                    <div class="features-list">
+                        <div class="feature-item">
+                            <span class="feature-icon">👥</span>
+                            <span class="feature-label">Maximum Guests</span>
+                            <input type="number" class="feature-toggle" id="feature-guests" min="1" max="99" value="{{ max_guests|default:4 }}">
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">📶</span>
+                            <span class="feature-label">WiFi Available</span>
+                            <label class="switch">
+                                <input type="checkbox" id="feature-wifi" {% if wifi_available %}checked{% endif %}>
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">🎤</span>
+                            <span class="feature-label">Videoke Available</span>
+                            <label class="switch">
+                                <input type="checkbox" id="feature-videoke" {% if videoke_available %}checked{% endif %}>
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">🐕</span>
+                            <span class="feature-label">Pet Friendly</span>
+                            <label class="switch">
+                                <input type="checkbox" id="feature-pet" {% if pet_friendly %}checked{% endif %}>
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">🏖️</span>
+                            <span class="feature-label">Beach Front</span>
+                            <label class="switch">
+                                <input type="checkbox" id="feature-beachfront" {% if beach_front %}checked{% endif %}>
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" id="save-features-btn" style="margin-top:20px;">Save Features</button>
+                    <div id="features-save-status" style="margin-top:10px;"></div>
+                    <style>
+                        .features-list {
+                            max-width: 500px;
+                            margin: 0 auto;
+                        }
+                        .feature-item {
+                            display: flex;
+                            align-items: center;
+                            justify-content: space-between;
+                            background: #f9fcff;
+                            border-radius: 10px;
+                            margin-bottom: 16px;
+                            padding: 16px 20px;
+                            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+                        }
+                        .feature-icon {
+                            font-size: 1.5em;
+                            margin-right: 12px;
+                        }
+                        .feature-label {
+                            flex: 1;
+                            font-weight: 500;
+                        }
+                        .feature-toggle, .switch {
+                            margin-left: 16px;
+                        }
+                        /* Toggle Switch CSS */
+                        .switch {
+                          position: relative;
+                          display: inline-block;
+                          width: 46px;
+                          height: 24px;
+                        }
+                        .switch input {display:none;}
+                        .slider {
+                          position: absolute;
+                          cursor: pointer;
+                          top: 0; left: 0; right: 0; bottom: 0;
+                          background-color: #ccc;
+                          transition: .4s;
+                          border-radius: 24px;
+                        }
+                        .slider:before {
+                          position: absolute;
+                          content: "";
+                          height: 18px;
+                          width: 18px;
+                          left: 3px;
+                          bottom: 3px;
+                          background-color: white;
+                          transition: .4s;
+                          border-radius: 50%;
+                        }
+                        input:checked + .slider {
+                          background-color: #7ed957;
+                        }
+                        input:checked + .slider:before {
+                          transform: translateX(22px);
+                        }
+                    </style>
+                    <script>
+                    document.getElementById('save-features-btn').onclick = function() {
+                        // Collect feature values
+                        const features = {
+                            max_guests: document.getElementById('feature-guests').value,
+                            wifi_available: document.getElementById('feature-wifi').checked,
+                            videoke_available: document.getElementById('feature-videoke').checked,
+                            pet_friendly: document.getElementById('feature-pet').checked,
+                            beach_front: document.getElementById('feature-beachfront').checked
+                        };
+                        fetch('/api/update_homestay_features/', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': getCSRFToken()
+                            },
+                            body: JSON.stringify(features)
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                document.getElementById('features-save-status').innerHTML = '<span style="color:green;">Features saved successfully!</span>';
+                            } else {
+                                document.getElementById('features-save-status').innerHTML = '<span style="color:red;">Failed to save features: ' + (data.error || 'Unknown error') + '</span>';
+                            }
+                            setTimeout(() => {
+                                document.getElementById('features-save-status').innerHTML = '';
+                            }, 2000);
+                        })
+                        .catch(() => {
+                            document.getElementById('features-save-status').innerHTML = '<span style="color:red;">Failed to save features (network error)</span>';
+                            setTimeout(() => {
+                                document.getElementById('features-save-status').innerHTML = '';
+                            }, 2000);
+                        });
+                    };
+
+                    function getCSRFToken() {
+                        let cookieValue = null;
+                        if (document.cookie && document.cookie !== '') {
+                            const cookies = document.cookie.split(';');
+                            for (let i = 0; i < cookies.length; i++) {
+                                const cookie = cookies[i].trim();
+                                if (cookie.substring(0, 10) === ('csrftoken=')) {
+                                    cookieValue = decodeURIComponent(cookie.substring(10));
+                                    break;
+                                }
+                            }
+                        }
+                        return cookieValue;
+                    }
+                    </script>
+            </div>
+            <!-- Dashboard Section -->
+            <div id="dashboard" class="content-section active">
+                <h2 style="margin-bottom: 20px;">Dashboard</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalRooms"></div>
+                        <div class="stat-label">Total Rooms</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="availableRooms"></div>
+                        <div class="stat-label">Available</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="reservedRooms"></div>
+                        <div class="stat-label">Reserved</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="occupancyRate"></div>
+                        <div class="stat-label">Occupancy Rate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalTourists">0</div>
+                        <div class="stat-label">Total Tourists</div>
+                    </div>
+                </div>
+                <!-- Room Status Overview Table (should remain in dashboard) -->
+                <div class="room-table-container">
+                    <table class="room-table">
+                        <thead>
+                            <tr>
+                                <th>Room No.</th>
+                                <th>Room Capacity</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="roomTableBody">
+                            <!-- Room rows will be dynamically rendered here -->
+                        </tbody>
+                    </table>
+                    
+                    <!-- Mobile Card Layout (hidden on desktop) -->
+                    <div class="mobile-room-cards" id="mobile-room-cards" style="display: none;">
+                        <!-- Mobile cards will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Tourist Trends Charts -->
+                <div class="charts-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 2rem;">
+                    <div class="chart-card" style="background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                        <div class="chart-header" style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
+                            <select id="monthly-trend-year-select" style="padding: 5px 10px; border: 1px solid #ccc; border-radius: 5px;"></select>
+                        </div>
+                        <h4>Trends of Tourist per Month</h4>
+                        <canvas id="tourist-monthly-chart"></canvas>
+                    </div>
+                    <div class="chart-card" style="background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                        <div class="chart-header" style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
+                            <select id="yearly-trend-range-select" style="padding: 5px 10px; border: 1px solid #ccc; border-radius: 5px;">
+                                <option value="5">Last 5 Years</option>
+                                <option value="10">Last 10 Years</option>
+                            </select>
+                        </div>
+                        <h4>Trends of Tourist per Year</h4>
+                        <canvas id="tourist-yearly-chart"></canvas>
+                    </div>
+                </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+    <script>
+    // Tourist Trends Chart Logic
+    function populateMonthlyTrendYearSelect(currentYear) {
+        const select = document.getElementById('monthly-trend-year-select');
+        select.innerHTML = '';
+        for (let y = currentYear - 5; y <= 2030; y++) {
+            const opt = document.createElement('option');
+            opt.value = y;
+            opt.textContent = y;
+            if (y === currentYear) opt.selected = true;
+            select.appendChild(opt);
+        }
+    }
+
+    async function fetchTouristTrends(year, yearRange) {
+        const resp = await fetch(`/api/my-tourist-chart-data/?year=${year}&year_range=${yearRange}`);
+        return await resp.json();
+    }
+
+    let monthlyChart, yearlyChart;
+    async function renderTouristCharts() {
+        const currentYear = new Date().getFullYear();
+        const year = parseInt(document.getElementById('monthly-trend-year-select').value) || currentYear;
+        const yearRange = parseInt(document.getElementById('yearly-trend-range-select').value) || 5;
+        const data = await fetchTouristTrends(year, yearRange);
+        // Monthly
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const monthlyData = months.map(m => data.monthly[m] || 0);
+        const ctxMonth = document.getElementById('tourist-monthly-chart').getContext('2d');
+        if (monthlyChart) { monthlyChart.destroy(); }
+        monthlyChart = new Chart(ctxMonth, {
+            type: 'line',
+            data: {
+                labels: months,
+                datasets: [{
+                    label: 'Guests per Month',
+                    data: monthlyData,
+                    borderColor: '#0077B6',
+                    backgroundColor: 'rgba(0,119,182,0.1)',
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { enabled: true },
+                    datalabels: {
+                        display: true,
+                        color: '#222',
+                        font: { weight: 'bold' },
+                        anchor: 'end',
+                        align: 'top',
+                        formatter: function(value) { return value > 0 ? value : ''; }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        suggestedMax: Math.max(...monthlyData, 10)
+                    }
+                }
+            },
+            plugins: [ChartDataLabels]
+        });
+        // Yearly (ensure full range is shown)
+        const startYear = year - yearRange + 1;
+        const endYear = year;
+        const years = [];
+        for (let y = startYear; y <= endYear; y++) years.push(y.toString());
+        const yearlyData = years.map(y => data.yearly && data.yearly[y] ? data.yearly[y] : 0);
+        const ctxYear = document.getElementById('tourist-yearly-chart').getContext('2d');
+        if (yearlyChart) { yearlyChart.destroy(); }
+        yearlyChart = new Chart(ctxYear, {
+            type: 'line',
+            data: {
+                labels: years,
+                datasets: [{
+                    label: 'Guests per Year',
+                    data: yearlyData,
+                    borderColor: '#43aa8b',
+                    backgroundColor: 'rgba(67,170,139,0.1)',
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { enabled: true },
+                    datalabels: {
+                        display: true,
+                        color: '#222',
+                        font: { weight: 'bold' },
+                        anchor: 'end',
+                        align: 'top',
+                        formatter: function(value) { return value > 0 ? value : ''; }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        suggestedMax: Math.max(...yearlyData, 10)
+                    }
+                }
+            },
+            plugins: [ChartDataLabels]
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Populate year/range selects
+        const currentYear = new Date().getFullYear();
+        populateMonthlyTrendYearSelect(currentYear);
+        document.getElementById('yearly-trend-range-select').value = 5;
+        renderTouristCharts();
+        document.getElementById('monthly-trend-year-select').addEventListener('change', renderTouristCharts);
+        document.getElementById('yearly-trend-range-select').addEventListener('change', renderTouristCharts);
+    });
+    </script>
+            </div>
+
+            <!-- Room Management Section -->
+            <div id="available-room" class="content-section">
+                <h2 style="margin-bottom: 20px;">Room Management</h2>
+
+                <!-- Add/Edit Room Form -->
+                <div class="form-container">
+                    <h3>Add New Room</h3>
+                    <form id="roomForm">
+                        <div class="form-group">
+                            <label class="form-label" for="roomNumber">Room Number</label>
+                            <input type="text" class="form-input" id="roomNumber" name="roomNumber" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="roomCapacity">Room Capacity</label>
+                            <input type="number" class="form-input" id="roomCapacity" name="roomCapacity" required min="1">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="roomStatus">Room Status</label>
+                            <select class="form-select" id="roomStatus" name="roomStatus" required>
+                                <option value="available">Available</option>
+                                <option value="reserved">Reserved</option>
+                                <option value="occupied">Occupied</option>
+                                <option value="maintenance">Maintenance</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn-primary">Add Room</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Tourist Management Section -->
+            <div id="tourist-management" class="content-section">
+                <div class="tourist-management-container">
+                    <div class="tourist-management-header">
+                        <h2>Tourist Management</h2>
+                        <div class="search-container">
+                            <input type="text" id="tourist-search" placeholder="Search tourists..." onkeyup="filterTouristTable()" />
+                            <button onclick="filterTouristTable()"><i class="fas fa-search"></i></button>
+                        </div>
+                    </div>
+                    <table class="tourist-table" id="tourist-list-table">
+                        <thead>
+                            <tr>
+                                <th>Guest Name</th>
+                                <th>Contact Number</th>
+                                <th>Homestay Name</th>
+                                <th>Booking Date</th>
+                                <th>No. of Guests</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tourist-table-body">
+                            <!-- Table rows will be rendered by JS -->
+                        </tbody>
+                    </table>
+                    
+                    <!-- Mobile Card Layout (hidden on desktop) -->
+                    <div class="mobile-tourist-cards" id="mobile-tourist-cards" style="display: none;">
+                        <!-- Mobile cards will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+<script>
+// Load tourist data for this homestay from backend and render table
+async function loadMyTouristTable() {
+    const tbody = document.getElementById('tourist-table-body');
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#888;">Loading...</td></tr>';
+    try {
+        const resp = await fetch('/api/my-tourists/');
+        const data = await resp.json();
+        console.log('[DEBUG] /api/my-tourists/ response:', data);
+        if (!Array.isArray(data) || data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#888;">No tourists found.</td></tr>';
+            return;
+        }
+        tbody.innerHTML = '';
+        data.forEach(t => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${t.guest_name || '-'}</td>
+                <td>${t.contact_number || '-'}</td>
+                <td>${t.homestay_name || '-'}</td>
+                <td>${t.date || '-'}</td>
+                <td>${t.num_people || '-'}</td>
+                <td>
+                    ${t.status === 'reserved' ? '<span class="status-badge status-active">Reserved</span>' :
+                      t.status === 'available' ? '<span class="status-badge status-inactive">Available</span>' :
+                      `<span class="status-badge status-archived">${t.status ? t.status.charAt(0).toUpperCase() + t.status.slice(1) : '-'}</span>`}
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    } catch (err) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:red;">Error loading data.</td></tr>';
+        console.error('[DEBUG] Error loading /api/my-tourists/:', err);
+    }
+}
+document.addEventListener('DOMContentLoaded', loadMyTouristTable);
+</script>
+
+            <!-- Date Availability Section -->
+            <div id="date-availability" class="content-section">
+                <h2 style="margin-bottom: 20px;">Date Availability</h2>
+                <div style="background:#fff; padding:2rem; border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,0.07);">
+                    <div style="margin-bottom:1rem;">
+                        <div style="display:flex; align-items:center; flex-wrap:wrap; justify-content:center; position:relative; min-height:40px;">
+                            <!-- Left: Previous button in red box position -->
+                            <div style="position:absolute; left:0; top:0; height:100%; display:flex; align-items:center;">
+                                <button id="calendar-prev-btn" class="calendar-nav-btn">&#8592; Prev</button>
+                            </div>
+                            <!-- Center: Month and Year selectors -->
+                            <div class="calendar-center-selectors">
+                                <label for="month-filter" class="calendar-center-label">Month:</label>
+                                <select id="month-filter" class="calendar-center-select">
+                                    <option value="all">All</option>
+                                    <option value="1">January</option>
+                                    <option value="2">February</option>
+                                    <option value="3">March</option>
+                                    <option value="4">April</option>
+                                    <option value="5">May</option>
+                                    <option value="6">June</option>
+                                    <option value="7">July</option>
+                                    <option value="8">August</option>
+                                    <option value="9">September</option>
+                                    <option value="10">October</option>
+                                    <option value="11">November</option>
+                                    <option value="12">December</option>
+                                </select>
+                                <label for="year-filter" class="calendar-center-label">Year:</label>
+                                <select id="year-filter" class="calendar-center-select"></select>
+                            </div>
+        <style>
+        /* ...existing code... */
+        .calendar-center-selectors {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0;
+            margin: 0 auto;
+            min-width: 0;
+            max-width: 100%;
+        }
+        .calendar-center-label {
+            font-weight: 600;
+            color: #0077B6;
+            font-size: 1rem;
+        }
+        .calendar-center-select {
+            padding: 6px 16px;
+            border-radius: 6px;
+            border: 1.5px solid #b5d6ea;
+            background: #fff;
+            color: #222;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: border 0.2s;
+        }
+        .calendar-center-select:focus {
+            border-color: #0077B6;
+            outline: none;
+        }
+        </style>
+                            <!-- Right: Next and Today buttons in red box position -->
+                            <div style="position:absolute; right:0; top:0; height:100%; display:flex; align-items:center; gap:8px;">
+                                <button id="calendar-today-btn" class="calendar-nav-btn">Today</button>
+                                <button id="calendar-next-btn" class="calendar-nav-btn">Next &#8594;</button>
+        <style>
+        /* ...existing code... */
+        .calendar-nav-btn {
+            padding: 6px 18px;
+            border-radius: 6px;
+            border: 1.5px solid #0077B6;
+            background: #fff;
+            color: #0077B6;
+            font-weight: 600;
+            font-size: 1rem;
+            margin: 0 2px;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            transition: background 0.2s, color 0.2s, border 0.2s;
+        }
+        .calendar-nav-btn:hover, .calendar-nav-btn:focus {
+            background: #0077B6;
+            color: #fff;
+            border-color: #005f8a;
+            outline: none;
+        }
+        </style>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="calendar-availability"></div>
+                    <!-- Reservation Modal -->
+                    <div id="reservation-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.4); z-index:2000; align-items:center; justify-content:center;">
+                        <div style="background:#fff; padding:2rem; border-radius:10px; min-width:320px; max-width:90vw; box-shadow:0 4px 24px rgba(0,0,0,0.18); position:relative;">
+                            <button id="close-reservation-modal" style="position:absolute; top:10px; right:10px; background:none; border:none; font-size:1.5rem; color:#888; cursor:pointer;">&times;</button>
+                            <h3 style="margin-top:0;">Reserve Date</h3>
+                            <form id="reservation-form">
+                                <div class="form-group">
+                                    <label class="form-label" for="reservation-date">Date</label>
+                                    <input type="text" class="form-input" id="reservation-date" name="reservation-date" readonly required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="guest-name">Guest Name</label>
+                                    <input type="text" class="form-input" id="guest-name" name="guest-name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="num-people">Number of People</label>
+                                    <input type="number" class="form-input" id="num-people" name="num-people" min="1" required>
+                                </div>
+                                <button type="submit" class="btn-primary">Reserve</button>
+                            </form>
+                            <script>
+                            document.getElementById('reservation-form').addEventListener('submit', async function(e) {
+                                e.preventDefault();
+                                // ...existing code to collect form data and send to backend...
+                                // After successful booking/registration:
+                                await loadMyTouristTable();
+                                await updateDashboardStats();
+                            });
+                            </script>
+                        </div>
+                    </div>
+                    <div id="calendar-legend" style="margin-top:1rem;">
+                        <span style="display:inline-block;width:16px;height:16px;background:#f8d7da;border-radius:4px;margin-right:6px;vertical-align:middle;"></span>
+                        <span style="vertical-align:middle;">Reserved</span>
+                    </div>
+                    <div style="margin-top:1rem;color:#666;font-size:14px;">
+                        <b>Instructions:</b> Click a date to edit its status. Reserved dates show guest name and number of people.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // Client-side search for tourist table
+    function filterTouristTable() {
+        const input = document.getElementById('tourist-search');
+        const filter = input.value.toLowerCase();
+        const table = document.getElementById('tourist-list-table');
+        const trs = table.querySelectorAll('tbody tr');
+        trs.forEach(tr => {
+            let text = tr.textContent.toLowerCase();
+            tr.style.display = text.includes(filter) ? '' : 'none';
+        });
+    }
+        // Year/Month Filter Logic
+        function populateYearFilter() {
+            const yearSelect = document.getElementById('year-filter');
+            yearSelect.innerHTML = '';
+            const currentYear = new Date().getFullYear();
+            for (let y = 2020; y <= 2030; y++) {
+                const opt = document.createElement('option');
+                opt.value = y;
+                opt.textContent = y;
+                yearSelect.appendChild(opt);
+            }
+            yearSelect.value = currentYear;
+        }
+        function getSelectedYear() {
+            return parseInt(document.getElementById('year-filter').value);
+        }
+        function getSelectedMonth() {
+            return document.getElementById('month-filter').value;
+        }
+        // Navigation Functions
+        function showSection(sectionName) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => section.classList.remove('active'));
+
+            // Remove active class from all sidebar links
+            const links = document.querySelectorAll('.sidebar-menu a');
+            links.forEach(link => link.classList.remove('active'));
+
+            // Show selected section
+            document.getElementById(sectionName).classList.add('active');
+
+            // Add active class to clicked link
+            event.target.closest('.sidebar-menu a').classList.add('active');
+
+            // No need to call renderTouristTable; table is rendered by loadMyTouristTable()
+        }
+
+        function logout() {
+            window.location.href = "/logout/";
+        }
+
+        // Room Management Functions
+        function toggleEdit(editButton) {
+            const row = editButton.closest('tr');
+            const isEditing = editButton.classList.contains('fa-save');
+
+            if (isEditing) {
+                // Save changes
+                saveRowChanges(row, editButton);
+            } else {
+                // Enter edit mode
+                enableRowEditing(row, editButton);
+            }
+        }
+
+        function enableRowEditing(row, editButton) {
+            const cells = row.querySelectorAll('.editable-cell');
+
+            cells.forEach(cell => {
+                const field = cell.dataset.field;
+                const currentValue = getCurrentCellValue(cell, field);
+
+                if (field === 'roomStatus') {
+                    // Create status dropdown
+                    const select = document.createElement('select');
+                    select.innerHTML = `
+                        <option value="available" ${currentValue === 'available' ? 'selected' : ''}>Available</option>
+                        <option value="reserved" ${currentValue === 'reserved' ? 'selected' : ''}>Reserved</option>
+                        <option value="occupied" ${currentValue === 'occupied' ? 'selected' : ''}>Occupied</option>
+                        <option value="maintenance" ${currentValue === 'maintenance' ? 'selected' : ''}>Maintenance</option>
+                    `;
+                    cell.innerHTML = '';
+                    cell.appendChild(select);
+                } else if (field === 'roomCapacity') {
+                    // Create number input
+                    const input = document.createElement('input');
+                    input.type = 'number';
+                    input.min = '1';
+                    input.value = currentValue;
+                    cell.innerHTML = '';
+                    cell.appendChild(input);
+                } else {
+                    // Create text input
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.value = currentValue;
+                    cell.innerHTML = '';
+                    cell.appendChild(input);
+                }
+            });
+
+            // Change edit icon to save icon
+            editButton.classList.remove('fa-edit');
+            editButton.classList.add('fa-save');
+            editButton.title = 'Save';
+        }
+
+        function saveRowChanges(row, editButton) {
+            const cells = row.querySelectorAll('.editable-cell');
+            let hasErrors = false;
+
+            cells.forEach(cell => {
+                const field = cell.dataset.field;
+                const input = cell.querySelector('input, select');
+                const newValue = input.value.trim();
+
+                // Validation
+                if (field === 'roomNumber' && !newValue) {
+                    alert('Room number is required');
+                    hasErrors = true;
+                    return;
+                }
+
+                if (field === 'roomCapacity' && (!newValue || newValue < 1)) {
+                    alert('Room capacity must be at least 1');
+                    hasErrors = true;
+                    return;
+                }
+            });
+
+            if (hasErrors) return;
+
+            // Save changes
+            cells.forEach(cell => {
+                const field = cell.dataset.field;
+                const input = cell.querySelector('input, select');
+                const newValue = input.value.trim();
+
+                if (field === 'roomStatus') {
+                    const statusClass = getStatusClass(newValue);
+                    const statusText = newValue.charAt(0).toUpperCase() + newValue.slice(1);
+                    cell.innerHTML = `<span class="status-badge ${statusClass}">${statusText}</span>`;
+                } else {
+                    cell.textContent = newValue;
+                }
+            });
+
+            // Change save icon back to edit icon
+            editButton.classList.remove('fa-save');
+            editButton.classList.add('fa-edit');
+            editButton.title = 'Edit';
+
+            // Update dashboard stats
+            updateDashboardStats();
+
+            alert('Room updated successfully!');
+        }
+
+        function getCurrentCellValue(cell, field) {
+            if (field === 'roomStatus') {
+                const badge = cell.querySelector('.status-badge');
+                return badge ? badge.textContent.toLowerCase().trim() : 'available';
+            }
+            return cell.textContent.trim();
+        }
+
+        function getStatusClass(status) {
+            switch(status.toLowerCase()) {
+                case 'available': return 'status-available';
+                case 'reserved': return 'status-reserved';
+                case 'occupied': return 'status-occupied';
+                case 'maintenance': return 'status-maintenance';
+                default: return 'status-available';
+            }
+        }
+
+        // Form Handling
+        document.getElementById('roomForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const roomNumber = document.getElementById('roomNumber').value;
+            const roomCapacity = document.getElementById('roomCapacity').value;
+            const roomStatus = document.getElementById('roomStatus').value;
+
+            try {
+                const response = await fetch('/api/room/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': (document.querySelector('[name=csrfmiddlewaretoken]') || {}).value || ''
+                    },
+                    body: JSON.stringify({
+                        room_number: roomNumber,
+                        capacity: roomCapacity,
+                        status: roomStatus
+                    })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    // Add room to table instantly
+                    addRoomToTable(roomNumber, roomCapacity, roomStatus);
+                    // Reset form
+                    this.reset();
+                    // Navigate back to dashboard
+                    showSection('dashboard');
+                } else {
+                    alert(result.error || 'Failed to save room.');
+                }
+            } catch (err) {
+                alert('Error saving room.');
+            }
+        });
+
+
+        // Function to add a single room row to the dashboard table
+        function addRoomToTable(roomNumber, roomCapacity, roomStatus) {
+            const tableBody = document.getElementById('roomTableBody');
+            let statusClass = '';
+            switch(roomStatus.toLowerCase()) {
+                case 'available': statusClass = 'status-available'; break;
+                case 'reserved': statusClass = 'status-reserved'; break;
+                case 'occupied': statusClass = 'status-occupied'; break;
+                case 'maintenance': statusClass = 'status-maintenance'; break;
+            }
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td class="editable-cell" data-field="roomNumber">${roomNumber}</td>
+                <td class="editable-cell" data-field="roomCapacity">${roomCapacity}</td>
+                <td class="editable-cell" data-field="roomStatus"><span class="status-badge ${statusClass}">${roomStatus.charAt(0).toUpperCase() + roomStatus.slice(1)}</span></td>
+                <td class="action-icons">
+                    <i class="fas fa-edit edit-icon" title="Edit" onclick="toggleEdit(this)"></i>
+                </td>
+            `;
+            tableBody.appendChild(newRow);
+            // Immediately update dashboard stats (including total tourists)
+            updateDashboardStats();
+        }
+
+        // Fetch all rooms from backend and render in table
+        async function fetchAndRenderRooms() {
+            const tableBody = document.getElementById('roomTableBody');
+            tableBody.innerHTML = '';
+            try {
+                const response = await fetch('/api/rooms/');
+                const result = await response.json();
+                if (result.success && Array.isArray(result.rooms)) {
+                    result.rooms.forEach(room => {
+                        addRoomToTable(room.room_number, room.capacity, room.status);
+                    });
+                }
+            } catch (err) {
+                // Optionally show error
+            }
+            updateDashboardStats();
+        }
+
+        // Function to update dashboard statistics
+        async function updateDashboardStats() {
+            const tableRows = document.querySelectorAll('#roomTableBody tr');
+            const totalRooms = tableRows.length;
+
+            let availableRooms = 0;
+            let reservedRooms = 0;
+            let occupiedRooms = 0;
+
+            tableRows.forEach(row => {
+                const statusBadge = row.querySelector('.status-badge');
+                const status = statusBadge.textContent.toLowerCase().trim();
+
+                if (status === 'available') availableRooms++;
+                else if (status === 'reserved') reservedRooms++;
+                else if (status === 'occupied') occupiedRooms++;
+            });
+
+            const occupancyRate = totalRooms > 0 ? Math.round(((reservedRooms + occupiedRooms) / totalRooms) * 100) : 0;
+
+            // Update dashboard stats
+            document.getElementById('totalRooms').textContent = totalRooms;
+            document.getElementById('availableRooms').textContent = availableRooms;
+            document.getElementById('reservedRooms').textContent = reservedRooms;
+            document.getElementById('occupancyRate').textContent = occupancyRate + '%';
+
+            // Fetch and update total guests for this homestay
+            try {
+                const resp = await fetch('/api/my-tourists/');
+                const data = await resp.json();
+                let totalGuests = 0;
+                if (Array.isArray(data)) {
+                    totalGuests = data.reduce((sum, booking) => {
+                        const n = parseInt(booking.num_people, 10);
+                        return sum + (isNaN(n) ? 0 : n);
+                    }, 0);
+                }
+                document.getElementById('totalTourists').textContent = totalGuests;
+            } catch (e) {
+                document.getElementById('totalTourists').textContent = '0';
+            }
+        }
+
+
+        // Tourist Management Functions (API-based rendering only)
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '';
+            const d = new Date(dateStr);
+            if (isNaN(d)) return dateStr;
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return d.toLocaleDateString('en-US', options);
+        }
+
+        function searchTourists() {
+            const searchTerm = document.getElementById('tourist-search').value.toLowerCase().trim();
+            const rows = document.querySelectorAll('#tourist-table-body tr');
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        }
+
+        // Render table on load and when switching to tourist management
+
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchAndRenderRooms();
+            console.log('Homestay dashboard loaded successfully.');
+        });
+
+        // Sidebar navigation: use event listeners instead of inline onclick
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.sidebar-menu a').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    // Only handle navigation for non-logout links
+                    if (this.id === 'logout-link') {
+                        e.preventDefault();
+                        logout();
+                        return;
+                    }
+                    e.preventDefault();
+                    // Remove active from all, add to clicked
+                    document.querySelectorAll('.sidebar-menu a').forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                    // Show the correct section
+                    let section = '';
+                    if (this.id === 'dashboard-link') section = 'dashboard';
+                    else if (this.id === 'room-management-link') section = 'available-room';
+                    else if (this.id === 'tourist-management-link') section = 'tourist-management';
+                    else if (this.id === 'date-availability-link') section = 'date-availability';
+                    else if (this.id === 'features-link') section = 'features-section';
+                    if (section) {
+                        // Hide all sections
+                        document.querySelectorAll('.content-section').forEach(sec => sec.classList.remove('active'));
+                        // Show selected section
+                        document.getElementById(section).classList.add('active');
+                        // Render calendar if needed
+                        if (section === 'date-availability') renderAvailabilityCalendar();
+                        // Always fetch and render rooms when switching to dashboard or room management
+                        if (section === 'dashboard' || section === 'available-room') fetchAndRenderRooms();
+                    }
+                });
+            });
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+    <script>
+        {% if bookings_json %}
+        const bookingsAvailability = {{ bookings_json|safe }};
+        {% else %}
+        const bookingsAvailability = [
+            {id: 1, status: "reserved", guest_name: "Juan Dela Cruz", num_people: 3, start: "2024-07-15", end: "2024-07-15"},
+            {id: 2, status: "available", start: "2024-07-16", end: "2024-07-16"},
+            {id: 3, status: "reserved", guest_name: "Maria Santos", num_people: 2, start: "2024-07-18", end: "2024-07-18"}
+        ];
+        {% endif %}
+
+            // Modal logic
+            // Show modal for new or edit reservation
+            function showReservationModal(startDate, endDate, reservationData = null) {
+                const modal = document.getElementById('reservation-modal');
+                const dateInput = document.getElementById('reservation-date');
+                dateInput.value = startDate;
+                window._selectedReservationDate = startDate;
+                // If editing, pre-fill fields
+                if (reservationData) {
+                    document.getElementById('guest-name').value = reservationData.guest_name || '';
+                    document.getElementById('num-people').value = reservationData.num_people || '';
+                    window._editingReservationId = reservationData.id;
+                } else {
+                    document.getElementById('guest-name').value = '';
+                    document.getElementById('num-people').value = '';
+                    window._editingReservationId = null;
+                }
+                modal.style.display = 'flex';
+            }
+            function closeReservationModal() {
+                document.getElementById('reservation-modal').style.display = 'none';
+                document.getElementById('reservation-form').reset();
+            }
+            document.addEventListener('DOMContentLoaded', function() {
+                const closeBtn = document.getElementById('close-reservation-modal');
+                if (closeBtn) closeBtn.onclick = closeReservationModal;
+                // Close modal when clicking outside the form
+                document.getElementById('reservation-modal').addEventListener('click', function(e) {
+                    if (e.target === this) closeReservationModal();
+                });
+                // Handle reservation form submit (AJAX to backend)
+                document.getElementById('reservation-form').addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    const guestName = document.getElementById('guest-name').value.trim();
+                    const numPeople = document.getElementById('num-people').value.trim();
+                    const date = window._selectedReservationDate;
+                    const editingId = window._editingReservationId;
+                    if (!guestName || !numPeople || !date) {
+                        alert('Please fill in all fields.');
+                        return;
+                    }
+                    try {
+                        let response, result;
+                        // Always use POST for both create and update
+                        let bodyData = {
+                            date: date,
+                            status: 'reserved',
+                            guest_name: guestName,
+                            num_people: numPeople
+                        };
+                        if (editingId) {
+                            bodyData.editingId = editingId;
+                        }
+                        response = await fetch('/api/booking/', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': (document.querySelector('[name=csrfmiddlewaretoken]') || {}).value || ''
+                            },
+                            body: JSON.stringify(bodyData)
+                        });
+                        result = await response.json();
+                        if (result.success) {
+                            if (editingId) {
+                                // Update in bookingsAvailability
+                                const idx = bookingsAvailability.findIndex(b => b.id == editingId);
+                                if (idx !== -1) {
+                                    bookingsAvailability[idx].guest_name = guestName;
+                                    bookingsAvailability[idx].num_people = numPeople;
+                                    bookingsAvailability[idx].start = date;
+                                    bookingsAvailability[idx].end = date;
+                                }
+                            } else {
+                                bookingsAvailability.push({
+                                    id: result.booking_id,
+                                    status: 'reserved',
+                                    guest_name: guestName,
+                                    num_people: numPeople,
+                                    start: date,
+                                    end: date
+                                });
+                            }
+                            renderAvailabilityCalendar();
+                            closeReservationModal();
+                        } else {
+                            alert(result.error || 'Failed to save reservation.');
+                        }
+                    } catch (err) {
+                        alert('Error saving reservation.');
+                    }
+                });
+            });
+
+        let calendarAvailabilityInstance = null;
+        let currentAvailabilityFilter = "all";
+
+        function filterCalendarEvents(events, filter) {
+            // Only filter by year/month
+            const year = getSelectedYear();
+            const month = getSelectedMonth();
+            return events.filter(ev => {
+                const d = new Date(ev.start);
+                if (isNaN(d)) return false;
+                if (d.getFullYear() !== year) return false;
+                if (month !== 'all' && (d.getMonth() + 1) != parseInt(month)) return false;
+                return true;
+            });
+        }
+
+
+        function renderAvailabilityCalendar() {
+            const calendarEl = document.getElementById('calendar-availability');
+            if (!calendarEl) return;
+
+            // Remove previous calendar if exists
+            if (calendarAvailabilityInstance) {
+                calendarAvailabilityInstance.destroy();
+            }
+
+            // Prepare events: Only add events for reserved dates
+            const allEvents = bookingsAvailability
+                .filter(b => b.status === 'reserved')
+                .map(b => ({
+                    id: b.id,
+                    title: `Reserved: ${b.guest_name} (${b.num_people})`,
+                    start: b.start,
+                    end: b.end,
+                    backgroundColor: getEventColor(b.status),
+                    borderColor: getEventColor(b.status),
+                    textColor: getTextColor(b.status),
+                    extendedProps: {
+                        status: b.status,
+                        guest_name: b.guest_name || '',
+                        num_people: b.num_people || ''
+                    }
+                }));
+
+            // Get selected year/month
+            const year = getSelectedYear();
+            const month = getSelectedMonth();
+
+            // Always show only one month at a time
+            let initialDate;
+            if (month === 'all') {
+                // If 'all', default to current month
+                const now = new Date();
+                initialDate = new Date(year, now.getMonth(), 1);
+            } else {
+                initialDate = new Date(year, parseInt(month) - 1, 1);
+            }
+
+            // Filter events for selected year/month
+            const filteredEvents = filterCalendarEvents(allEvents, currentAvailabilityFilter);
+
+            calendarAvailabilityInstance = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                height: 600,
+                selectable: true,
+                selectMirror: true,
+                editable: true,
+                selectLongPressDelay: 0,
+                initialDate: initialDate,
+                headerToolbar: {
+                    left: '',
+                    center: 'title',
+                    right: ''
+                },
+                events: filteredEvents,
+                select: function(info) {
+                    showReservationModal(info.startStr, info.endStr);
+                },
+                dateClick: function(info) {
+                    // Only open modal for new reservation if clicking on empty date (not on event)
+                    const reserved = bookingsAvailability.find(b => b.status === 'reserved' && b.start === info.dateStr);
+                    if (!reserved) {
+                        showReservationModal(info.dateStr, info.dateStr);
+                    }
+                },
+                eventClick: function(info) {
+                    // Open modal for editing the clicked reservation event
+                    const event = info.event;
+                    const reservationData = {
+                        id: event.id,
+                        guest_name: event.extendedProps.guest_name,
+                        num_people: event.extendedProps.num_people,
+                        start: event.startStr,
+                        end: event.endStr
+                    };
+                    showReservationModal(event.startStr, event.endStr, reservationData);
+                },
+                dayMaxEvents: true,
+                views: {
+                    dayGridMonth: {
+                        type: 'dayGridMonth',
+                        duration: { months: 1 }
+                    }
+                },
+                // Prevent navigation via keyboard arrows
+                validRange: function(nowDate) {
+                    return {
+                        start: initialDate,
+                        end: new Date(initialDate.getFullYear(), initialDate.getMonth() + 1, 1)
+                    };
+                },
+                navLinks: false,
+                navLinkDayClick: null
+            });
+            calendarAvailabilityInstance.render();
+
+            // Update the calendar title to match selected month/year
+            setTimeout(function() {
+                const calendarTitle = document.querySelector('.fc-toolbar-title');
+                if (calendarTitle) {
+                    if (month === 'all') {
+                        const now = new Date();
+                        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                        calendarTitle.textContent = monthNames[now.getMonth()] + ' ' + year;
+                    } else {
+                        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                        calendarTitle.textContent = monthNames[parseInt(month) - 1] + ' ' + year;
+                    }
+                }
+            }, 10);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // ...existing code...
+
+
+            // Date Availability Calendar with filter
+            if (document.getElementById('calendar-availability')) {
+                populateYearFilter();
+                // Set default month to current month
+                const monthSelect = document.getElementById('month-filter');
+                const yearSelect = document.getElementById('year-filter');
+                const now = new Date();
+                monthSelect.value = (now.getMonth() + 1).toString();
+                yearSelect.value = now.getFullYear();
+
+                // Render calendar for current month/year
+                renderAvailabilityCalendar();
+
+                // Add event listeners to year/month dropdowns
+                yearSelect.addEventListener('change', function() {
+                    renderAvailabilityCalendar();
+                });
+                monthSelect.addEventListener('change', function() {
+                    renderAvailabilityCalendar();
+                });
+
+                // Add event listener to FullCalendar's today button
+                setTimeout(function() {
+                    const todayBtn = document.querySelector('.fc-today-button');
+                    if (todayBtn) {
+                        todayBtn.addEventListener('click', function() {
+                            // Use MutationObserver to wait for calendar title update
+                            const calendarTitle = document.querySelector('.fc-toolbar-title');
+                            const observer = new MutationObserver(function() {
+                                const now = new Date();
+                                yearSelect.value = now.getFullYear();
+                                monthSelect.value = (now.getMonth() + 1).toString();
+                                renderAvailabilityCalendar();
+                                observer.disconnect();
+                            });
+                            if (calendarTitle) {
+                                observer.observe(calendarTitle, { childList: true });
+                            } else {
+                                // fallback if title not found
+                                const now = new Date();
+                                yearSelect.value = now.getFullYear();
+                                monthSelect.value = (now.getMonth() + 1).toString();
+                                renderAvailabilityCalendar();
+                            }
+                        });
+                    }
+                }, 500);
+            }
+
+            // ...existing code...
+        });
+
+        // --- Calendar Navigation Buttons (Year Filter Robust Fix) ---
+document.addEventListener('DOMContentLoaded', function() {
+    // Only add buttons if not already present
+    if (!document.getElementById('calendar-prev-btn')) {
+        const calendarNavContainer = document.createElement('div');
+        calendarNavContainer.style.display = 'flex';
+        calendarNavContainer.style.justifyContent = 'flex-start';
+        calendarNavContainer.style.alignItems = 'center';
+        calendarNavContainer.style.gap = '10px';
+        calendarNavContainer.style.marginBottom = '10px';
+        calendarNavContainer.innerHTML = `
+            <button id="calendar-prev-btn" style="padding:4px 12px; border-radius:6px; border:1px solid #e2e8f0; background:#f4f7f6; cursor:pointer;">&#8592; Previous</button>
+            <button id="calendar-today-btn" style="padding:4px 12px; border-radius:6px; border:1px solid #e2e8f0; background:#f4f7f6; cursor:pointer;">Today</button>
+            <button id="calendar-next-btn" style="padding:4px 12px; border-radius:6px; border:1px solid #e2e8f0; background:#f4f7f6; cursor:pointer;">Next &#8594;</button>
+        `;
+        const calendarSection = document.querySelector('#date-availability > div');
+        if (calendarSection) {
+            calendarSection.insertBefore(calendarNavContainer, calendarSection.firstChild);
+        }
+    }
+
+    // --- Calendar Navigation State ---
+    let calendarState = {
+        year: new Date().getFullYear(),
+        month: new Date().getMonth() + 1 // 1-based (Jan=1)
+    };
+
+    function setCalendarState(year, month, triggerDropdowns=true) {
+        calendarState.year = year;
+        calendarState.month = month;
+        // Update dropdowns if needed
+        if (triggerDropdowns) {
+            document.getElementById('year-filter').value = year;
+            document.getElementById('month-filter').value = String(month);
+        }
+        renderAvailabilityCalendar();
+    }
+
+    // --- Navigation Button Handlers ---
+    document.getElementById('calendar-prev-btn').onclick = function() {
+        let { year, month } = calendarState;
+        month--;
+        if (month < 1) {
+            month = 12;
+            year--;
+        }
+        setCalendarState(year, month);
+    };
+    document.getElementById('calendar-next-btn').onclick = function() {
+        let { year, month } = calendarState;
+        month++;
+        if (month > 12) {
+            month = 1;
+            year++;
+        }
+        setCalendarState(year, month);
+    };
+    document.getElementById('calendar-today-btn').onclick = function() {
+        const today = new Date();
+        setCalendarState(today.getFullYear(), today.getMonth() + 1);
+    };
+
+    // --- Dropdowns update navigation state ---
+    const yearFilter = document.getElementById('year-filter');
+    const monthFilter = document.getElementById('month-filter');
+    if (yearFilter._navListener !== true) {
+        yearFilter.addEventListener('change', function() {
+            calendarState.year = parseInt(this.value);
+            // Always update calendar, even if month is 'all'
+            renderAvailabilityCalendar();
+        });
+        yearFilter._navListener = true;
+    }
+    if (monthFilter._navListener !== true) {
+        monthFilter.addEventListener('change', function() {
+            const val = this.value;
+            if (val === 'all') {
+                renderAvailabilityCalendar();
+                return;
+            }
+            calendarState.month = parseInt(val);
+            renderAvailabilityCalendar();
+        });
+        monthFilter._navListener = true;
+    }
+
+    // --- Patch renderAvailabilityCalendar to use calendarState, but respect 'All' ---
+    const origRenderAvailabilityCalendar = window.renderAvailabilityCalendar;
+    window.renderAvailabilityCalendar = function() {
+        // Use calendarState.year and calendarState.month for rendering
+        const year = calendarState.year;
+        let month = calendarState.month;
+        // If month filter is 'all', use current month for calendar, but filter events for all months
+        const monthFilterVal = document.getElementById('month-filter').value;
+        if (monthFilterVal === 'all') {
+            month = new Date().getMonth() + 1;
+        }
+        // Update dropdowns if needed
+        document.getElementById('year-filter').value = year;
+        document.getElementById('month-filter').value = monthFilterVal;
+        // Call original, but override getSelectedYear/Month
+        const origGetSelectedYear = window.getSelectedYear;
+        const origGetSelectedMonth = window.getSelectedMonth;
+        window.getSelectedYear = () => year;
+        window.getSelectedMonth = () => monthFilterVal;
+        try {
+            origRenderAvailabilityCalendar();
+        } finally {
+            window.getSelectedYear = origGetSelectedYear;
+            window.getSelectedMonth = origGetSelectedMonth;
+        }
+    };
+
+    // On first load, sync to today
+    setCalendarState(calendarState.year, calendarState.month);
+});
+        function getEventColor(status) {
+            switch (status) {
+                case 'reserved':
+                    return '#f8d7da';
+                default:
+                    return '';
+            }
+        }
+
+        function getTextColor(status) {
+            return (status === 'reserved') ? '#333' : '#fff';
+        }
+
+        // Mobile menu functions
+        function initializeMobileMenu() {
+            const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+            const sidebar = document.querySelector('.sidebar');
+            const mobileOverlay = document.getElementById('mobile-overlay');
+            
+            if (mobileMenuToggle) {
+                mobileMenuToggle.addEventListener('click', function() {
+                    toggleMobileMenu();
+                });
+            }
+            
+            if (mobileOverlay) {
+                mobileOverlay.addEventListener('click', function() {
+                    closeMobileMenu();
+                });
+            }
+            
+            // Close mobile menu when clicking on sidebar links
+            const sidebarLinks = document.querySelectorAll('.sidebar-menu a');
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth <= 768) {
+                        closeMobileMenu();
+                    }
+                });
+            });
+        }
+        
+        function toggleMobileMenu() {
+            const sidebar = document.querySelector('.sidebar');
+            const mobileOverlay = document.getElementById('mobile-overlay');
+            const toggleIcon = document.querySelector('.mobile-menu-toggle i');
+            
+            sidebar.classList.toggle('mobile-open');
+            mobileOverlay.classList.toggle('active');
+            
+            if (sidebar.classList.contains('mobile-open')) {
+                toggleIcon.classList.remove('fa-bars');
+                toggleIcon.classList.add('fa-times');
+                document.body.classList.add('mobile-menu-open');
+            } else {
+                toggleIcon.classList.remove('fa-times');
+                toggleIcon.classList.add('fa-bars');
+                document.body.classList.remove('mobile-menu-open');
+            }
+        }
+        
+        function closeMobileMenu() {
+            const sidebar = document.querySelector('.sidebar');
+            const mobileOverlay = document.getElementById('mobile-overlay');
+            const toggleIcon = document.querySelector('.mobile-menu-toggle i');
+            
+            sidebar.classList.remove('mobile-open');
+            mobileOverlay.classList.remove('active');
+            toggleIcon.classList.remove('fa-times');
+            toggleIcon.classList.add('fa-bars');
+            document.body.classList.remove('mobile-menu-open');
+        }
+        
+        // Handle responsive layout changes
+        function handleResponsiveLayout() {
+            const isMobile = window.innerWidth <= 576;
+            const roomTable = document.querySelector('.room-table');
+            const touristTable = document.querySelector('.tourist-table');
+            const mobileRoomCards = document.getElementById('mobile-room-cards');
+            const mobileTouristCards = document.getElementById('mobile-tourist-cards');
+            
+            if (isMobile) {
+                if (roomTable) roomTable.style.display = 'none';
+                if (touristTable) touristTable.style.display = 'none';
+                if (mobileRoomCards) {
+                    mobileRoomCards.style.display = 'block';
+                    renderMobileRoomCards();
+                }
+                if (mobileTouristCards) {
+                    mobileTouristCards.style.display = 'block';
+                    renderMobileTouristCards();
+                }
+            } else {
+                if (roomTable) roomTable.style.display = 'table';
+                if (touristTable) touristTable.style.display = 'table';
+                if (mobileRoomCards) mobileRoomCards.style.display = 'none';
+                if (mobileTouristCards) mobileTouristCards.style.display = 'none';
+                closeMobileMenu();
+            }
+        }
+        
+        // Render mobile room cards
+        function renderMobileRoomCards() {
+            const mobileCards = document.getElementById('mobile-room-cards');
+            const roomTableBody = document.getElementById('roomTableBody');
+            
+            if (!mobileCards || !roomTableBody) return;
+            
+            mobileCards.innerHTML = '';
+            
+            const rows = roomTableBody.querySelectorAll('tr');
+            rows.forEach((row, index) => {
+                const cells = row.cells;
+                if (cells.length === 0) return;
+                
+                const card = document.createElement('div');
+                card.className = 'room-card';
+                
+                const roomNumber = cells[0]?.textContent || '';
+                const roomCapacity = cells[1]?.textContent || '';
+                const status = cells[2]?.innerHTML || '';
+                
+                card.innerHTML = `
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">Room ${roomNumber}</div>
+                            <div class="card-subtitle">Capacity: ${roomCapacity} guests</div>
+                        </div>
+                        <div>${status}</div>
+                    </div>
+                    <div class="card-actions">
+                        <div class="action-icons">
+                            <i class="fas fa-edit edit-icon" title="Edit" onclick="toggleEdit(this)"></i>
+                        </div>
+                    </div>
+                `;
+                
+                mobileCards.appendChild(card);
+            });
+            
+            // Show empty state if no cards
+            if (rows.length === 0) {
+                mobileCards.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+                        <i class="fas fa-bed" style="font-size: 48px; margin-bottom: 16px; opacity: 0.5;"></i>
+                        <p>No rooms found</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Render mobile tourist cards
+        function renderMobileTouristCards() {
+            const mobileCards = document.getElementById('mobile-tourist-cards');
+            const touristTableBody = document.getElementById('tourist-table-body');
+            
+            if (!mobileCards || !touristTableBody) return;
+            
+            mobileCards.innerHTML = '';
+            
+            const rows = touristTableBody.querySelectorAll('tr');
+            rows.forEach((row, index) => {
+                const cells = row.cells;
+                if (cells.length === 0) return;
+                
+                const card = document.createElement('div');
+                card.className = 'tourist-card';
+                
+                const guestName = cells[0]?.textContent || '';
+                const contactNumber = cells[1]?.textContent || '';
+                const homestayName = cells[2]?.textContent || '';
+                const bookingDate = cells[3]?.textContent || '';
+                const numGuests = cells[4]?.textContent || '';
+                const status = cells[5]?.innerHTML || '';
+                
+                card.innerHTML = `
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">${guestName}</div>
+                            <div class="card-subtitle">${homestayName}</div>
+                        </div>
+                        <div>${status}</div>
+                    </div>
+                    <div class="card-info">
+                        <div class="card-field">
+                            <strong>Contact</strong>
+                            ${contactNumber}
+                        </div>
+                        <div class="card-field">
+                            <strong>Guests</strong>
+                            ${numGuests}
+                        </div>
+                        <div class="card-field">
+                            <strong>Booking Date</strong>
+                            ${bookingDate}
+                        </div>
+                    </div>
+                `;
+                
+                mobileCards.appendChild(card);
+            });
+            
+            // Show empty state if no cards
+            if (rows.length === 0) {
+                mobileCards.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+                        <i class="fas fa-users" style="font-size: 48px; margin-bottom: 16px; opacity: 0.5;"></i>
+                        <p>No tourists found</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Initialize mobile functionality on DOM load
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeMobileMenu();
+            handleResponsiveLayout();
+            
+            // Handle window resize
+            window.addEventListener('resize', handleResponsiveLayout);
+            
+            // Update mobile cards when data changes
+            const originalAddRoomToTable = window.addRoomToTable;
+            if (originalAddRoomToTable) {
+                window.addRoomToTable = function(...args) {
+                    originalAddRoomToTable.apply(this, args);
+                    if (window.innerWidth <= 576) {
+                        renderMobileRoomCards();
+                    }
+                };
+            }
+
+            const originalLoadMyTouristTable = window.loadMyTouristTable;
+            if (originalLoadMyTouristTable) {
+                window.loadMyTouristTable = function(...args) {
+                    originalLoadMyTouristTable.apply(this, args);
+                    setTimeout(() => {
+                        if (window.innerWidth <= 576) {
+                            renderMobileTouristCards();
+                        }
+                    }, 100);
+                };
+            }
+        });
+    </script>
+</body>
+</html>
