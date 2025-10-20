@@ -34,36 +34,44 @@ class Homestay(models.Model):
     def __str__(self):
         return self.name
 
+# Dynamic Homestay Feature model
+class HomestayFeature(models.Model):
+    FEATURE_TYPE_CHOICES = [
+        ('text', 'Text'),
+        ('number', 'Number'),
+        ('boolean', 'Yes/No'),
+    ]
+    homestay = models.ForeignKey(Homestay, on_delete=models.CASCADE, related_name='features')
+    name = models.CharField(max_length=100)
+    type = models.CharField(max_length=10, choices=FEATURE_TYPE_CHOICES)
+    value = models.CharField(max_length=255, blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.homestay.name} - {self.name} ({self.type})"
+
 # Room model
 class Room(models.Model):
-    ROOM_STATUS_CHOICES = [
-        ('available', 'Available'),
-        ('reserved', 'Reserved'),
-        ('occupied', 'Occupied'),
-        ('maintenance', 'Under Maintenance'),
-    ]
     homestay = models.ForeignKey('Homestay', on_delete=models.CASCADE, related_name='rooms')
     room_number = models.CharField(max_length=50) # Can be '1', 'A', 'Suite 101'
     capacity = models.IntegerField()
-    # room_type and price_per_night removed
-    status = models.CharField(max_length=50, choices=ROOM_STATUS_CHOICES, default='available')
+    is_under_maintenance = models.BooleanField(default=False, help_text='True = Under Maintenance, False = Not Under Maintenance')
     # Add other room-specific fields like description, amenities, etc.
     def __str__(self):
         return f"{self.homestay.name} - Room {self.room_number}"
     @property
+    def get_status_display(self):
+        return 'Under Maintenance' if self.is_under_maintenance else 'Not Under Maintenance'
+    @property
     def get_status_class(self):
-        if self.status == 'available':
-            return 'status-available'
-        elif self.status == 'reserved':
-            return 'status-reserved'
-        elif self.status == 'occupied':
-            return 'status-occupied'
-        elif self.status == 'maintenance':
-            return 'status-maintenance'
-        return '' # Default or unknown status
+        return 'status-maintenance' if self.is_under_maintenance else 'status-available'
+    # NOTE: After this change, run makemigrations and migrate, and update old data accordingly.
 
 # Booking model
 class Booking(models.Model):
+    BOOKING_SOURCE_CHOICES = [
+        ('registration', 'Registration'),
+        ('calendar', 'Calendar'),
+    ]
     BOOKING_STATUS_CHOICES = [
         ('available', 'Available'),
         ('reserved', 'Reserved'),
@@ -77,6 +85,7 @@ class Booking(models.Model):
     contact_number = models.CharField(max_length=20, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    source = models.CharField(max_length=20, choices=BOOKING_SOURCE_CHOICES, default='registration')
     class Meta:
         pass  # Only one Meta class, no unique_together
     def __str__(self):

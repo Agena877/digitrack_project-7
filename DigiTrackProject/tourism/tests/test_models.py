@@ -1,8 +1,7 @@
-class Migration(migrations.Migration):
-    dependencies = [
-        ('tourism', '0004_previous_migration'),
-    ]
+from django.test import TestCase
 
-    operations = [
-        # Define your operations here
-    ]
+
+class TestModelsSmoke(TestCase):
+    def test_smoke(self):
+        # Basic smoke test to ensure test collection works.
+        self.assertTrue(True)

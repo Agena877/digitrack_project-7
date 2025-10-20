@@ -11,8 +11,8 @@ class HomestayAdmin(admin.ModelAdmin):
 
 @admin.register(Room)
 class RoomAdmin(admin.ModelAdmin):
-    list_display = ['homestay', 'room_number', 'capacity', 'status']
-    list_filter = ['status', 'homestay']
+    list_display = ['homestay', 'room_number', 'capacity', 'is_under_maintenance']
+    list_filter = ['is_under_maintenance', 'homestay']
     search_fields = ['room_number', 'homestay__name']
 
 @admin.register(Booking)

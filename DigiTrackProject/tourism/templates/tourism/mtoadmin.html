@@ -234,6 +234,36 @@
             font-size: 26px;
             margin-right: 12px;
         }
+        /* User dropdown styles */
+        #user-dropdown { position: absolute; z-index: 1500; }
+        #user-dropdown .ud-content { background: var(--white); border-radius: 10px; box-shadow: var(--shadow-md); padding: 6px; min-width:200px; }
+        #user-dropdown .ud-btn { display:block; width:100%; text-align:left; background:none; border:none; padding:10px 12px; cursor:pointer; border-radius:6px; color:var(--text-dark); font-weight:500; }
+        #user-dropdown .ud-btn:hover { background: var(--primary-light); color:var(--primary-color); }
+        /* Password input with icon */
+        .input-with-icon { position: relative; }
+        .input-with-icon input { width: 100%; padding-right: 40px; }
+        /* Make the eye icon plain (no box) */
+        .input-with-icon .show-pass {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: none;
+            background: transparent !important;
+            cursor: pointer;
+            color: var(--text-muted) !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            border-radius: 0 !important;
+            font-size: 1rem;
+            width: 24px;
+            height: 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .input-with-icon .show-pass i { background: none; display:inline-block; }
+        .input-with-icon .show-pass:focus { outline: none; box-shadow: none; }
         
         /* Content area */
         .content-area {
@@ -623,6 +653,61 @@
             color: #999;
             cursor: not-allowed;
         }
+
+        /* Enhanced styles for homestay list pagination (Prev/Next + indicator) */
+        #homestay-pagination {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 14px;
+            padding-top: 8px;
+        }
+
+        #homestay-pagination button {
+            padding: 8px 14px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: linear-gradient(180deg, var(--white), #fbfdff);
+            color: var(--text-dark);
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        #homestay-pagination button:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            background: linear-gradient(180deg, var(--primary-light), #fff);
+        }
+
+        #homestay-pagination button:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            color: var(--text-muted);
+            background: #fafafa;
+        }
+
+        #homestay-page-indicator {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            padding: 6px 10px;
+            border-radius: 8px;
+            background: rgba(0,0,0,0.03);
+            border: 1px solid rgba(0,0,0,0.03);
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            #homestay-pagination { justify-content: center; gap: 8px; }
+            #homestay-page-indicator { display: none; }
+        }
         
         .charts-container {
             display: grid;
@@ -699,6 +784,47 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
+        /* Export button style to match admin UI (refined) */
+        .export-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 14px;
+            min-height: 40px;
+            background: var(--white);
+            border: 1px solid #e6eef6;
+            border-radius: 10px;
+            color: var(--text-dark);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            box-shadow: 0 6px 16px rgba(16, 24, 40, 0.04);
+            transition: transform 0.14s ease, box-shadow 0.14s ease, background 0.14s ease;
+        }
+
+        .export-btn .icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: rgba(74,144,226,0.08);
+            color: var(--primary-color);
+            font-size: 14px;
+        }
+
+        .export-btn .label { display: inline-block; }
+
+        .export-btn:hover {
+            background: var(--primary-color);
+            color: #fff;
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .export-btn:hover .icon { background: rgba(255,255,255,0.15); color: #fff; }
         
         .tourist-table {
             width: 100%;
@@ -1528,9 +1654,17 @@
                 </div>
                 <span class="header-logo-title">DigiTrack</span>
             </div>
-            <div class="user-profile">
+            <div class="user-profile" id="user-profile-btn" tabindex="0" aria-haspopup="true" aria-expanded="false">
                 <i class="fas fa-user-circle"></i>
                 <span class="user-name">MTO STAFF</span>
+            </div>
+            <!-- Simple dropdown for user actions -->
+            <div id="user-dropdown" style="display:none;">
+                <div class="ud-content">
+                    <button id="change-password-btn" class="ud-btn">
+                        <i class="fas fa-key" style="margin-right:8px;"></i> Change password
+                    </button>
+                </div>
             </div>
         </div>
         
@@ -1619,9 +1753,17 @@
                 <div class="tourist-management-container">
                     <div class="tourist-management-header">
                         <h2>Tourist Management</h2>
-                        <div class="search-container">
-                            <input type="text" id="tourist-search" placeholder="Search tourists..." />
-                            <button onclick="searchTourists()"><i class="fas fa-search"></i></button>
+                        <div style="display:flex; gap:10px; align-items:center;">
+                            <div class="search-container">
+                                <input type="text" id="tourist-search" placeholder="Search tourists..." />
+                                <button onclick="searchTourists()"><i class="fas fa-search"></i></button>
+                            </div>
+                            <div>
+                                <a href="/api/export-tourists-all/" class="export-btn" target="_blank">
+                                    <span class="icon"><i class="fas fa-download"></i></span>
+                                    <span class="label">Export Users</span>
+                                </a>
+                            </div>
                         </div>
                     </div>
                     <table class="user-table" id="tourist-list-table">
@@ -1688,6 +1830,12 @@
                                     <!-- Homestay rows will be rendered here -->
                                 </tbody>
                             </table>
+                            <!-- Pagination controls for homestay list -->
+                            <div id="homestay-pagination" style="margin-top:12px;display:flex;align-items:center;gap:8px;justify-content:flex-end;">
+                                <button id="prev-btn" onclick="goToHomestayPage('prev')" style="padding:6px 10px;border-radius:6px;border:1px solid #ccc;background:#fff;">Previous</button>
+                                <span id="homestay-page-indicator" style="font-size:0.95rem;color:#333;">Page <span id="homestay-current-page">1</span> of <span id="homestay-total-pages">1</span></span>
+                                <button id="next-btn" onclick="goToHomestayPage('next')" style="padding:6px 10px;border-radius:6px;border:1px solid #ccc;background:#fff;">Next</button>
+                            </div>
                         </div>
                     </div>
 
@@ -1719,6 +1867,15 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
     <script>
+    // Debounce helper to avoid firing requests on every keystroke
+    function debounce(fn, wait) {
+        let t = null;
+        return function(...args) {
+            clearTimeout(t);
+            t = setTimeout(() => fn.apply(this, args), wait);
+        };
+    }
+
     // Load tourist data from backend and render table and dashboard
     async function loadTouristTableAndDashboard() {
         const tbody = document.getElementById('tourist-table-body');
@@ -1831,6 +1988,51 @@
             });
         }
     });
+
+    // Enforce digit-only input for contact number (prevent letters/special chars like '*')
+    (function enforceDigitOnlyContact() {
+        const contactInput = document.getElementById('contactNumber');
+        if (!contactInput) return;
+
+        // Allow only digits to be typed
+        contactInput.addEventListener('keypress', function (e) {
+            const char = String.fromCharCode(e.which || e.keyCode);
+            if (!/\d/.test(char)) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        // Sanitize pasted input
+        contactInput.addEventListener('paste', function (e) {
+            e.preventDefault();
+            const text = (e.clipboardData || window.clipboardData).getData('text') || '';
+            const digits = text.replace(/\D+/g, '');
+            // Insert digits at cursor position
+            const start = contactInput.selectionStart;
+            const end = contactInput.selectionEnd;
+            const before = contactInput.value.slice(0, start);
+            const after = contactInput.value.slice(end);
+            contactInput.value = (before + digits + after).slice(0, contactInput.maxLength || 11);
+            // move cursor to end of inserted digits
+            const pos = Math.min((before + digits).length, contactInput.value.length);
+            contactInput.setSelectionRange(pos, pos);
+        });
+
+        // On input, strip any non-digit characters (extra safety)
+        contactInput.addEventListener('input', function () {
+            const digits = contactInput.value.replace(/\D+/g, '');
+            contactInput.value = digits.slice(0, contactInput.maxLength || 11);
+        });
+
+        // Before form submit, ensure the value is normalized
+        const form = document.getElementById('tourist-registration-form');
+        if (form) {
+            form.addEventListener('submit', function () {
+                contactInput.value = (contactInput.value || '').toString().replace(/\D+/g, '').slice(0, contactInput.maxLength || 11);
+            });
+        }
+    })();
 
     // (fetchTouristTable removed, use loadTouristTableAndDashboard instead)
         // Global variables
@@ -2237,6 +2439,11 @@
             const nextBtn = document.getElementById('next-btn');
             if (prevBtn) prevBtn.disabled = currentHomestayPage === 1;
             if (nextBtn) nextBtn.disabled = currentHomestayPage === totalPages;
+            // Update page indicator
+            const currentSpan = document.getElementById('homestay-current-page');
+            const totalSpan = document.getElementById('homestay-total-pages');
+            if (currentSpan) currentSpan.textContent = Math.max(1, Math.min(currentHomestayPage, totalPages || 1));
+            if (totalSpan) totalSpan.textContent = totalPages || 1;
         }
 
         function goToHomestayPage(page) {
@@ -2270,26 +2477,61 @@
         }
 
         function searchHomestays() {
-            const searchTerm = document.getElementById('homestay-search').value.toLowerCase();
-            const rows = document.querySelectorAll('#dashboard-page #homestay-table-body tr');
-            rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                row.style.display = text.includes(searchTerm) ? '' : 'none';
-            });
+            const q = document.getElementById('homestay-search').value.trim();
+            const tbody = document.getElementById('homestay-table-body');
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#888;">Searching...</td></tr>';
+            fetch(`/api/homestay-search/?q=${encodeURIComponent(q)}`)
+                .then(r => r.json())
+                .then(res => {
+                    if (!res || !res.users || res.users.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#888;">No homestays found.</td></tr>';
+                        return;
+                    }
+                    tbody.innerHTML = '';
+                    res.users.forEach(h => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${h.homestayName || ''}</td>
+                            <td>${h.ownerName || ''}</td>
+                            <td>${h.totalGuests || 0}</td>
+                            <td><span class="status-badge status-${(h.status||'').toLowerCase()}">${h.status || ''}</span></td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                })
+                .catch(err => {
+                    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:red;">Error searching homestays.</td></tr>';
+                });
         }
 
         function searchTourists() {
-            const searchTerm = document.getElementById('tourist-search').value.toLowerCase();
-            const rows = document.querySelectorAll('#tourist-table-body tr');
-            
-            rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                if (text.includes(searchTerm)) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
-            });
+            const q = document.getElementById('tourist-search').value.trim();
+            const tbody = document.getElementById('tourist-table-body');
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#888;">Searching...</td></tr>';
+            fetch(`/api/tourist-search/?q=${encodeURIComponent(q)}`)
+                .then(r => r.json())
+                .then(data => {
+                    if (!Array.isArray(data) || data.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#888;">No tourists found.</td></tr>';
+                        return;
+                    }
+                    tbody.innerHTML = '';
+                    data.forEach(t => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${t.guest_name || '-'}</td>
+                            <td>${t.contact_number || '-'}</td>
+                            <td>${t.homestay__name || '-'}</td>
+                            <td>${t.date || '-'}</td>
+                            <td>${t.num_people || '-'}</td>
+                            <td>${t.status === 'reserved' ? '<span class="status-badge status-reserved">Reserved</span>' : t.status === 'available' ? '<span class="status-badge status-available">Available</span>' : `<span class="status-badge status-archived">${t.status ? t.status.charAt(0).toUpperCase() + t.status.slice(1) : '-'}</span>`}</td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                })
+                .catch(err => {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:red;">Error searching tourists.</td></tr>';
+                });
         }
 
         function logout() {
@@ -2798,7 +3040,174 @@
         if (yearlySelect) {
             yearlySelect.addEventListener('change', renderTouristCharts);
         }
+        // Live search: debounced input handlers
+        const touristInput = document.getElementById('tourist-search');
+        if (touristInput) {
+            const debouncedTouristSearch = debounce(() => {
+                const q = touristInput.value.trim();
+                if (!q) {
+                    // If cleared, reload full table
+                    loadTouristTableAndDashboard();
+                } else {
+                    searchTourists();
+                }
+            }, 250);
+            touristInput.addEventListener('input', debouncedTouristSearch);
+        }
+
+        const homestayInput = document.getElementById('homestay-search');
+        if (homestayInput) {
+            const debouncedHomestaySearch = debounce(() => {
+                const q = homestayInput.value.trim();
+                if (!q) {
+                    loadHomestayData();
+                } else {
+                    searchHomestays();
+                }
+            }, 250);
+            homestayInput.addEventListener('input', debouncedHomestaySearch);
+        }
     });
+    
+    // --- Change password UI and logic ---
+    (function(){
+        // Helper to get CSRF token from cookies
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        const userBtn = document.getElementById('user-profile-btn');
+        const dropdown = document.getElementById('user-dropdown');
+        const changeBtn = document.getElementById('change-password-btn');
+
+        if (userBtn && dropdown) {
+            userBtn.addEventListener('click', (e)=>{
+                const rect = userBtn.getBoundingClientRect();
+                dropdown.style.top = (rect.bottom + 6) + 'px';
+                dropdown.style.right = (window.innerWidth - rect.right) + 'px';
+                dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+            });
+            document.addEventListener('click', function(e){
+                if (!userBtn.contains(e.target) && !dropdown.contains(e.target)) {
+                    dropdown.style.display = 'none';
+                }
+            });
+            userBtn.addEventListener('keydown', function(e){
+                if (e.key === 'Enter' || e.key === ' ') changeBtn.focus();
+            });
+        }
+
+        // Create modal element
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.id = 'change-password-modal';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <h3>Change Password</h3>
+                <form id="change-password-form">
+                    <label>Current password
+                        <div class="input-with-icon">
+                            <input type="password" id="current_password" name="current_password" required autocomplete="current-password">
+                            <button type="button" class="show-pass" data-target="current_password" aria-label="Show password"><i class="fas fa-eye"></i></button>
+                        </div>
+                    </label>
+                    <label>New password
+                        <div class="input-with-icon">
+                            <input type="password" id="new_password1" name="new_password1" required autocomplete="new-password">
+                            <button type="button" class="show-pass" data-target="new_password1" aria-label="Show password"><i class="fas fa-eye"></i></button>
+                        </div>
+                    </label>
+                    <label>Confirm new password
+                        <div class="input-with-icon">
+                            <input type="password" id="new_password2" name="new_password2" required autocomplete="new-password">
+                            <button type="button" class="show-pass" data-target="new_password2" aria-label="Show password"><i class="fas fa-eye"></i></button>
+                        </div>
+                    </label>
+                    <div style="margin-top:12px; text-align:right;">
+                        <button type="button" id="cp-cancel">Cancel</button>
+                        <button type="submit">Change Password</button>
+                    </div>
+                    <div id="cp-message" style="margin-top:10px;"></div>
+                </form>
+            </div>
+        `;
+        document.body.appendChild(modal);
+
+        // Open modal
+        if (changeBtn) changeBtn.addEventListener('click', function(){
+            dropdown.style.display = 'none';
+            modal.style.display = 'flex';
+        });
+
+        // Close modal
+        document.getElementById('cp-cancel').addEventListener('click', function(){
+            modal.style.display = 'none';
+            document.getElementById('change-password-form').reset();
+            document.getElementById('cp-message').textContent = '';
+        });
+
+        modal.addEventListener('click', function(e){ if (e.target === modal) { modal.style.display = 'none'; } });
+
+        // Form submit
+        document.getElementById('change-password-form').addEventListener('submit', async function(e){
+            e.preventDefault();
+            const msg = document.getElementById('cp-message');
+            msg.textContent = '';
+            const cur = document.getElementById('current_password').value;
+            const n1 = document.getElementById('new_password1').value;
+            const n2 = document.getElementById('new_password2').value;
+            if (n1 !== n2) { msg.style.color = 'red'; msg.textContent = 'New passwords do not match.'; return; }
+            if (n1.length < 8) { msg.style.color = 'red'; msg.textContent = 'New password must be at least 8 characters.'; return; }
+            try {
+                const resp = await fetch('/api/change-password/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({ current_password: cur, new_password: n1 })
+                });
+                const data = await resp.json();
+                if (data.success) {
+                    msg.style.color = 'green';
+                    msg.textContent = data.message || 'Password changed successfully.';
+                    setTimeout(()=>{ modal.style.display = 'none'; document.getElementById('change-password-form').reset(); msg.textContent=''; }, 1200);
+                } else {
+                    msg.style.color = 'red';
+                    msg.textContent = data.error || 'Failed to change password.';
+                }
+            } catch (err) {
+                msg.style.color = 'red';
+                msg.textContent = 'Error: ' + err;
+            }
+        });
+        // Toggle password visibility for all show-pass buttons
+        document.addEventListener('click', function(e){
+            const btn = e.target.closest('.show-pass');
+            if (!btn) return;
+            const targetId = btn.getAttribute('data-target');
+            const input = document.getElementById(targetId);
+            if (!input) return;
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.innerHTML = '<i class="fas fa-eye-slash"></i>';
+            } else {
+                input.type = 'password';
+                btn.innerHTML = '<i class="fas fa-eye"></i>';
+            }
+        });
+    })();
     </script>
 </body>
 </html>

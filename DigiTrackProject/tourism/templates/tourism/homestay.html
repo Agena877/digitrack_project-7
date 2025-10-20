@@ -28,7 +28,7 @@
             --border-radius: 8px;
             --border-radius-lg: 12px;
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+    // removed extra closing brace that caused SyntaxError
 
         * {
             box-sizing: border-box;
@@ -355,7 +355,7 @@
         }
 
         .status-available {
-            background: rgba(39, 174, 96, 0.1);
+            background: rgba(5, 210, 60, 0.1);
             color: var(--success-color);
             border: 1px solid rgba(39, 174, 96, 0.2);
         }
@@ -1151,21 +1151,67 @@
             align-items: center;
         }
 
-        #tourist-search {
-            padding: 12px 16px;
-            border: 2px solid var(--border-color);
-            border-radius: var(--border-radius);
-            margin-right: 10px;
-            width: 300px;
+        .search-container input {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
             font-size: 14px;
-            transition: var(--transition);
+            margin-right: 5px;
         }
 
-        #tourist-search:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(0, 119, 182, 0.1);
+        .search-container button {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            cursor: pointer;
         }
+
+        .search-container button i {
+            font-size: 16px;
+        }
+
+        /* Export button style to match admin UI (copied from mtoadmin.html) */
+        .export-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 14px;
+            min-height: 40px;
+            background: var(--white);
+            border: 1px solid #e6eef6;
+            border-radius: 10px;
+            color: var(--text-dark);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            box-shadow: 0 6px 16px rgba(16, 24, 40, 0.04);
+            transition: transform 0.14s ease, box-shadow 0.14s ease, background 0.14s ease;
+        }
+
+        .export-btn .icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: rgba(74,144,226,0.08);
+            color: var(--primary-color);
+            font-size: 14px;
+        }
+
+        .export-btn .label { display: inline-block; }
+
+        .export-btn:hover {
+            background: var(--primary-color);
+            color: #fff;
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .export-btn:hover .icon { background: rgba(255,255,255,0.15); color: #fff; }
 
         .tourist-table {
             width: 100%;
@@ -1207,6 +1253,15 @@
             transform: translateY(-2px);
             box-shadow: var(--shadow-md);
         }
+        .status-maintenance {
+            background: rgba(231, 76, 60, 0.1);
+            color: var(--danger-color);
+            border: 1px solid rgba(231, 76, 60, 0.2);
+        }
+
+        .status-maintenance::before {
+            background: var(--danger-color);
+        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
 </head>
@@ -1244,14 +1299,17 @@
             </div>
         </div>
         <div class="content-area">
+            <!-- Dashboard Stats Cards removed from here -->
             <!-- Homestay Features Section -->
             <div id="features-section" class="content-section" style="display;">
                 <h2 style="margin-bottom: 20px;">Homestay Features</h2>
-                    <div class="features-list">
+                <button id="addFeatureBtn" style="margin-bottom: 18px; padding: 0.7rem 1.5rem; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: #fff; border: none; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: background 0.3s;">+ Add Feature</button>
+                <div class="features-list">
                         <div class="feature-item">
                             <span class="feature-icon">👥</span>
                             <span class="feature-label">Maximum Guests</span>
                             <input type="number" class="feature-toggle" id="feature-guests" min="1" max="99" value="{{ max_guests|default:4 }}">
+                            <button class="delete-feature-btn" style="margin-left:16px; background:#e74c3c; color:#fff; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Delete</button>
                         </div>
                         <div class="feature-item">
                             <span class="feature-icon">📶</span>
@@ -1260,6 +1318,7 @@
                                 <input type="checkbox" id="feature-wifi" {% if wifi_available %}checked{% endif %}>
                                 <span class="slider round"></span>
                             </label>
+                            <button class="delete-feature-btn" style="margin-left:16px; background:#e74c3c; color:#fff; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Delete</button>
                         </div>
                         <div class="feature-item">
                             <span class="feature-icon">🎤</span>
@@ -1268,6 +1327,7 @@
                                 <input type="checkbox" id="feature-videoke" {% if videoke_available %}checked{% endif %}>
                                 <span class="slider round"></span>
                             </label>
+                            <button class="delete-feature-btn" style="margin-left:16px; background:#e74c3c; color:#fff; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Delete</button>
                         </div>
                         <div class="feature-item">
                             <span class="feature-icon">🐕</span>
@@ -1276,6 +1336,7 @@
                                 <input type="checkbox" id="feature-pet" {% if pet_friendly %}checked{% endif %}>
                                 <span class="slider round"></span>
                             </label>
+                            <button class="delete-feature-btn" style="margin-left:16px; background:#e74c3c; color:#fff; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Delete</button>
                         </div>
                         <div class="feature-item">
                             <span class="feature-icon">🏖️</span>
@@ -1284,7 +1345,9 @@
                                 <input type="checkbox" id="feature-beachfront" {% if beach_front %}checked{% endif %}>
                                 <span class="slider round"></span>
                             </label>
+                            <button class="delete-feature-btn" style="margin-left:16px; background:#e74c3c; color:#fff; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Delete</button>
                         </div>
+                        <div id="dynamic-features-list" style="margin-top:20px;"></div>
                     </div>
                     <button class="btn btn-primary" id="save-features-btn" style="margin-top:20px;">Save Features</button>
                     <div id="features-save-status" style="margin-top:10px;"></div>
@@ -1349,6 +1412,139 @@
                         }
                     </style>
                     <script>
+    // Show Add Feature modal
+    document.getElementById('addFeatureBtn').onclick = function() {
+        document.getElementById('addFeatureModal').style.display = 'flex';
+    };
+
+    // Handle Add Feature form submit
+    // Move all JS to run after DOM is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        var addFeatureForm = document.getElementById('addFeatureForm');
+        if (addFeatureForm) {
+            addFeatureForm.onsubmit = async function(e) {
+                e.preventDefault();
+                const name = document.getElementById('featureName').value;
+                const type = document.getElementById('featureType').value;
+                const data = { featureName: name, featureType: type };
+                try {
+                    const resp = await fetch('/api/add_homestay_feature/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest',
+                        },
+                        body: JSON.stringify(data)
+                    });
+                    const result = await resp.json();
+                    if (result.success) {
+                        addFeatureToDOM(result.feature);
+                            document.getElementById('addFeatureModal').style.display = 'none';
+                            addFeatureForm.reset();
+                    } else {
+
+                    }
+                } catch (err) {
+
+                }
+            };
+        }
+    });
+
+    // Add feature to DOM
+    function addFeatureToDOM(feature) {
+        const container = document.getElementById('dynamic-features-list');
+        // Prevent duplicates: if a feature with same id or name already exists, skip
+        if (!container) return;
+        const existingById = container.querySelector(`.feature-item[data-feature-id="${feature.id}"]`);
+        if (existingById) return;
+        // Also check by name to avoid duplicate names
+        const existsByName = Array.from(container.querySelectorAll('.feature-item .feature-label')).some(el => el.textContent.trim() === String(feature.name).trim());
+        if (existsByName) return;
+        const div = document.createElement('div');
+        div.className = 'feature-item';
+        div.dataset.featureId = feature.id;
+        let inputHtml = '';
+        if (feature.type === 'boolean') {
+            inputHtml = `<label class="switch"><input type="checkbox" ${feature.value === 'true' ? 'checked' : ''}><span class="slider round"></span></label>`;
+        } else if (feature.type === 'number') {
+            inputHtml = `<input type="number" class="feature-toggle" value="${feature.value || ''}">`;
+        } else {
+            inputHtml = `<input type="text" class="feature-toggle" value="${feature.value || ''}">`;
+        }
+        // Add delete button
+        const deleteBtn = `<button class="delete-feature-btn" style="margin-left:16px; background:#e74c3c; color:#fff; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Delete</button>`;
+        div.innerHTML = `<span class="feature-label">${feature.name}</span>${inputHtml}${deleteBtn}`;
+
+        // Attach save/update event for dynamic feature
+        const inputEl = div.querySelector('input[type="checkbox"], input[type="number"], input[type="text"]');
+        if (inputEl) {
+            inputEl.onchange = async function() {
+                let newValue;
+                if (feature.type === 'boolean') {
+                    newValue = inputEl.checked ? 'true' : 'false';
+                } else {
+                    newValue = inputEl.value;
+                }
+                // Send update to backend with CSRF token
+                const resp = await fetch('/api/update_homestay_feature/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': getCSRFToken()
+                    },
+                    body: JSON.stringify({
+                        featureId: feature.id,
+                        featureValue: newValue
+                    })
+                });
+                const result = await resp.json();
+                if (!result.success) {
+
+                }
+            };
+        }
+
+        // Attach delete event
+        div.querySelector('.delete-feature-btn').onclick = async function() {
+            const resp = await fetch('/api/delete_homestay_feature/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                body: JSON.stringify({ featureId: feature.id })
+            });
+            const result = await resp.json();
+            if (result.success) {
+                div.remove();
+            } else {
+
+            }
+        };
+        container.appendChild(div);
+    }
+
+    // Attach delete event to static features (no alert)
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.feature-item .delete-feature-btn').forEach(function(btn) {
+            btn.onclick = function() {
+                btn.parentElement.remove();
+            };
+        });
+    });
+
+    // Fetch and render all features on page load
+    document.addEventListener('DOMContentLoaded', async function() {
+        console.log('[DEBUG] Fetching homestay features...');
+        const resp = await fetch('/api/get_homestay_features/');
+        const result = await resp.json();
+        console.log('[DEBUG] API response:', result);
+        if (result.success && Array.isArray(result.features)) {
+            result.features.forEach(addFeatureToDOM);
+        }
+    });
                     document.getElementById('save-features-btn').onclick = function() {
                         // Collect feature values
                         const features = {
@@ -1401,6 +1597,28 @@
                     }
                     </script>
             </div>
+             <!-- Add Feature Modal -->
+                    <div id="addFeatureModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.4); z-index:9999; justify-content:center; align-items:center;">
+                        <div style="background:#fff; padding:2rem 2.5rem; border-radius:16px; box-shadow:0 8px 32px rgba(0,0,0,0.18); max-width:400px; width:90%; position:relative;">
+                            <button onclick="document.getElementById('addFeatureModal').style.display='none'" style="position:absolute; top:16px; right:16px; background:none; border:none; font-size:1.5rem; color:#888; cursor:pointer;">&times;</button>
+                            <h3 style="margin-bottom:1.2rem; color:var(--primary-color);">Add New Feature</h3>
+                            <form id="addFeatureForm" autocomplete="off">
+                                <div style="margin-bottom:1rem;">
+                                    <label for="featureName" style="font-weight:500; color:#333;">Feature Name</label>
+                                    <input type="text" id="featureName" name="featureName" style="width:100%; padding:0.7rem; border-radius:8px; border:1px solid #e1e8ed; margin-top:0.5rem; font-size:1rem;">
+                                </div>
+                                <div style="margin-bottom:1rem;">
+                                    <label for="featureType" style="font-weight:500; color:#333;">Feature Type</label>
+                                    <select id="featureType" name="featureType" style="width:100%; padding:0.7rem; border-radius:8px; border:1px solid #e1e8ed; margin-top:0.5rem; font-size:1rem;">
+                                        <option value="text">Text</option>
+                                        <option value="number">Number</option>
+                                        <option value="boolean">Yes/No</option>
+                                    </select>
+                                </div>
+                                <button type="submit" style="width:100%; background:linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color:#fff; border:none; border-radius:8px; padding:0.8rem; font-weight:600; font-size:1rem; cursor:pointer; margin-top:0.5rem;">Add Feature</button>
+                            </form>
+                        </div>
+                    </div>
             <!-- Dashboard Section -->
             <div id="dashboard" class="content-section active">
                 <h2 style="margin-bottom: 20px;">Dashboard</h2>
@@ -1408,18 +1626,6 @@
                     <div class="stat-card">
                         <div class="stat-number" id="totalRooms"></div>
                         <div class="stat-label">Total Rooms</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="availableRooms"></div>
-                        <div class="stat-label">Available</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="reservedRooms"></div>
-                        <div class="stat-label">Reserved</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="occupancyRate"></div>
-                        <div class="stat-label">Occupancy Rate</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-number" id="totalTourists">0</div>
@@ -1597,7 +1803,6 @@
             <!-- Room Management Section -->
             <div id="available-room" class="content-section">
                 <h2 style="margin-bottom: 20px;">Room Management</h2>
-
                 <!-- Add/Edit Room Form -->
                 <div class="form-container">
                     <h3>Add New Room</h3>
@@ -1613,15 +1818,14 @@
                         <div class="form-group">
                             <label class="form-label" for="roomStatus">Room Status</label>
                             <select class="form-select" id="roomStatus" name="roomStatus" required>
-                                <option value="available">Available</option>
-                                <option value="reserved">Reserved</option>
-                                <option value="occupied">Occupied</option>
-                                <option value="maintenance">Maintenance</option>
+                                <option value="not_maintenance">Not Under Maintenance</option>
+                                <option value="maintenance">Under Maintenance</option>
                             </select>
                         </div>
                         <button type="submit" class="btn-primary">Add Room</button>
                     </form>
                 </div>
+                <!-- Removed Current Rooms table as requested -->
             </div>
 
             <!-- Tourist Management Section -->
@@ -1629,9 +1833,17 @@
                 <div class="tourist-management-container">
                     <div class="tourist-management-header">
                         <h2>Tourist Management</h2>
-                        <div class="search-container">
-                            <input type="text" id="tourist-search" placeholder="Search tourists..." onkeyup="filterTouristTable()" />
-                            <button onclick="filterTouristTable()"><i class="fas fa-search"></i></button>
+                        <div style="display:flex; gap:10px; align-items:center;">
+                            <div class="search-container">
+                                <input type="text" id="tourist-search" placeholder="Search tourists..." />
+                                <button onclick="searchTourists()"><i class="fas fa-search"></i></button>
+                            </div>
+                            <div>
+                                <a href="/api/export-tourists/" class="export-btn" target="_blank">
+                                    <span class="icon"><i class="fas fa-download"></i></span>
+                                    <span class="label">Export Users</span>
+                                </a>
+                            </div>
                         </div>
                     </div>
                     <table class="tourist-table" id="tourist-list-table">
@@ -1693,6 +1905,43 @@ async function loadMyTouristTable() {
     }
 }
 document.addEventListener('DOMContentLoaded', loadMyTouristTable);
+</script>
+
+<script>
+// Debounce helper
+function debounce(fn, wait) {
+    let t = null;
+    return function(...args) {
+        clearTimeout(t);
+        t = setTimeout(() => fn.apply(this, args), wait);
+    };
+}
+
+// Wire live search: call searchTourists() as the user types with debounce
+document.addEventListener('DOMContentLoaded', function() {
+    const input = document.getElementById('tourist-search');
+    if (!input) return;
+    const debouncedSearch = debounce(() => {
+        const q = input.value.trim();
+        if (q === '') {
+            // If empty, reload full homestay-specific list
+            loadMyTouristTable();
+            return;
+        }
+        // Otherwise perform server-backed search
+        searchTourists();
+    }, 300);
+
+    input.addEventListener('input', debouncedSearch);
+
+    // Also trigger search on Enter key
+    input.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            searchTourists();
+        }
+    });
+});
 </script>
 
             <!-- Date Availability Section -->
@@ -1759,7 +2008,7 @@ document.addEventListener('DOMContentLoaded', loadMyTouristTable);
         </style>
                             <!-- Right: Next and Today buttons in red box position -->
                             <div style="position:absolute; right:0; top:0; height:100%; display:flex; align-items:center; gap:8px;">
-                                <button id="calendar-today-btn" class="calendar-nav-btn">Today</button>
+                                <button id="calendar-today-btn" class="calendar-nav-btn" disabled style="cursor:not-allowed; opacity:0.6;">Today</button>
                                 <button id="calendar-next-btn" class="calendar-nav-btn">Next &#8594;</button>
         <style>
         /* ...existing code... */
@@ -1787,6 +2036,71 @@ document.addEventListener('DOMContentLoaded', loadMyTouristTable);
                         </div>
                     </div>
                     <div id="calendar-availability"></div>
+                    <style>
+                    .custom-calendar {
+                        width: 100%;
+                        border-collapse: collapse;
+                        margin-top: 1rem;
+                    }
+                    .custom-calendar th, .custom-calendar td {
+                        border: 1px solid #e2e8f0;
+                        min-width: 120px;
+                        vertical-align: top;
+                        padding: 4px 6px;
+                        font-size: 0.95em;
+                    }
+                    .custom-calendar th {
+                        background: #f4f7f6;
+                        text-align: center;
+                        font-weight: 600;
+                    }
+                    .calendar-date-label {
+                        font-weight: bold;
+                        font-size: 1.1em;
+                        margin-bottom: 2px;
+                        display: block;
+                    }
+                    .calendar-room {
+                        margin-bottom: 4px;
+                        padding: 6px 8px;
+                        border-radius: 6px;
+                        display: block;
+                        cursor: pointer;
+                        color: #fff;
+                        font-weight: 600;
+                        font-size: 0.95em;
+                        text-align: center;
+                    }
+
+                    /* Canonical status classes: available (green), reserved (red), maintenance (gray), occupied (orange) */
+                    .calendar-room.available,
+                    .calendar-room.not-maintenance,
+                    .calendar-room.not_maintenance {
+                        background: #27ae60 !important; /* green */
+                        border: 1px solid #1f8f49 !important;
+                        box-shadow: 0 2px 6px rgba(39,174,96,0.08) !important;
+                    }
+
+                    .calendar-room.reserved {
+                        background: #e74c3c !important; /* red */
+                        border: 1px solid #c43b33 !important;
+                        box-shadow: 0 2px 6px rgba(231,76,60,0.08) !important;
+                    }
+
+                    .calendar-room.maintenance,
+                    .calendar-room.under-maintenance,
+                    .calendar-room.under_maintenance {
+                        background: #95a5a6 !important; /* gray */
+                        border: 1px solid #7f8c8d !important;
+                        color: #fff !important;
+                    }
+
+                    .calendar-room.occupied {
+                        background: #f39c12 !important; /* amber/orange for occupied */
+                        border: 1px solid #d27e0d !important;
+                        box-shadow: 0 2px 6px rgba(243,156,18,0.06) !important;
+                    }
+                    </style>
                     <!-- Reservation Modal -->
                     <div id="reservation-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.4); z-index:2000; align-items:center; justify-content:center;">
                         <div style="background:#fff; padding:2rem; border-radius:10px; min-width:320px; max-width:90vw; box-shadow:0 4px 24px rgba(0,0,0,0.18); position:relative;">
@@ -1819,8 +2133,12 @@ document.addEventListener('DOMContentLoaded', loadMyTouristTable);
                         </div>
                     </div>
                     <div id="calendar-legend" style="margin-top:1rem;">
-                        <span style="display:inline-block;width:16px;height:16px;background:#f8d7da;border-radius:4px;margin-right:6px;vertical-align:middle;"></span>
+                        <span style="display:inline-block;width:16px;height:16px;background:#27ae60;border-radius:4px;margin-right:6px;vertical-align:middle;"></span>
+                        <span style="vertical-align:middle;">Available</span>
+                        <span style="display:inline-block;width:16px;height:16px;background:#e74c3c;border-radius:4px;margin-left:16px;margin-right:6px;vertical-align:middle;"></span>
                         <span style="vertical-align:middle;">Reserved</span>
+                        <span style="display:inline-block;width:16px;height:16px;background:#95a5a6;border-radius:4px;margin-left:16px;margin-right:6px;vertical-align:middle;"></span>
+                        <span style="vertical-align:middle;">Maintenance</span>
                     </div>
                     <div style="margin-top:1rem;color:#666;font-size:14px;">
                         <b>Instructions:</b> Click a date to edit its status. Reserved dates show guest name and number of people.
@@ -1853,7 +2171,11 @@ document.addEventListener('DOMContentLoaded', loadMyTouristTable);
                 opt.textContent = y;
                 yearSelect.appendChild(opt);
             }
-            yearSelect.value = currentYear;
+            // Set to selected year if already set, else current year
+            let selectedYear = parseInt(yearSelect.value) || currentYear;
+            if (selectedYear < 2020) selectedYear = 2020;
+            if (selectedYear > 2030) selectedYear = 2030;
+            yearSelect.value = selectedYear;
         }
         function getSelectedYear() {
             return parseInt(document.getElementById('year-filter').value);
@@ -1906,13 +2228,11 @@ document.addEventListener('DOMContentLoaded', loadMyTouristTable);
                 const currentValue = getCurrentCellValue(cell, field);
 
                 if (field === 'roomStatus') {
-                    // Create status dropdown
+                    // Create status dropdown (only two options)
                     const select = document.createElement('select');
                     select.innerHTML = `
-                        <option value="available" ${currentValue === 'available' ? 'selected' : ''}>Available</option>
-                        <option value="reserved" ${currentValue === 'reserved' ? 'selected' : ''}>Reserved</option>
-                        <option value="occupied" ${currentValue === 'occupied' ? 'selected' : ''}>Occupied</option>
-                        <option value="maintenance" ${currentValue === 'maintenance' ? 'selected' : ''}>Maintenance</option>
+                        <option value="not_maintenance" ${currentValue === 'not under maintenance' ? 'selected' : ''}>Not Under Maintenance</option>
+                        <option value="maintenance" ${currentValue === 'under maintenance' ? 'selected' : ''}>Under Maintenance</option>
                     `;
                     cell.innerHTML = '';
                     cell.appendChild(select);
@@ -1951,13 +2271,13 @@ document.addEventListener('DOMContentLoaded', loadMyTouristTable);
 
                 // Validation
                 if (field === 'roomNumber' && !newValue) {
-                    alert('Room number is required');
+
                     hasErrors = true;
                     return;
                 }
 
                 if (field === 'roomCapacity' && (!newValue || newValue < 1)) {
-                    alert('Room capacity must be at least 1');
+
                     hasErrors = true;
                     return;
                 }
@@ -1965,30 +2285,57 @@ document.addEventListener('DOMContentLoaded', loadMyTouristTable);
 
             if (hasErrors) return;
 
-            // Save changes
+            // Gather new values
+            let roomId = row.getAttribute('data-room-id') || row.dataset.roomId;
+            let roomNumber = '';
+            let roomCapacity = '';
+            let roomStatus = '';
             cells.forEach(cell => {
                 const field = cell.dataset.field;
                 const input = cell.querySelector('input, select');
                 const newValue = input.value.trim();
-
-                if (field === 'roomStatus') {
-                    const statusClass = getStatusClass(newValue);
-                    const statusText = newValue.charAt(0).toUpperCase() + newValue.slice(1);
-                    cell.innerHTML = `<span class="status-badge ${statusClass}">${statusText}</span>`;
-                } else {
-                    cell.textContent = newValue;
-                }
+                if (field === 'roomNumber') roomNumber = newValue;
+                if (field === 'roomCapacity') roomCapacity = newValue;
+                if (field === 'roomStatus') roomStatus = newValue;
             });
 
-            // Change save icon back to edit icon
-            editButton.classList.remove('fa-save');
-            editButton.classList.add('fa-edit');
-            editButton.title = 'Edit';
-
-            // Update dashboard stats
-            updateDashboardStats();
-
-            alert('Room updated successfully!');
+            // Send update to backend
+            fetch('/api/update-room/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': (document.querySelector('[name=csrfmiddlewaretoken]') || {}).value || ''
+                },
+                body: JSON.stringify({
+                    room_id: roomId,
+                    room_number: roomNumber,
+                    capacity: roomCapacity,
+                    status: roomStatus
+                })
+            })
+            .then(resp => resp.json())
+            .then(result => {
+                if (result.success && result.room) {
+                    // Update DOM with new values
+                    cells.forEach(cell => {
+                        const field = cell.dataset.field;
+                        if (field === 'roomStatus') {
+                            const statusClass = getStatusClass(result.room.status);
+                            let statusText = result.room.status === 'maintenance' ? 'Under Maintenance' : 'Not Under Maintenance';
+                            cell.innerHTML = `<span class="status-badge ${statusClass}">${statusText}</span>`;
+                        } else if (field === 'roomNumber') {
+                            cell.textContent = result.room.room_number;
+                        } else if (field === 'roomCapacity') {
+                            cell.textContent = result.room.capacity;
+                        }
+                    });
+                    // Change save icon back to edit icon
+                    editButton.classList.remove('fa-save');
+                    editButton.classList.add('fa-edit');
+                    editButton.title = 'Edit';
+                    updateDashboardStats();
+                }
+            });
         }
 
         function getCurrentCellValue(cell, field) {
@@ -2010,77 +2357,110 @@ document.addEventListener('DOMContentLoaded', loadMyTouristTable);
         }
 
         // Form Handling
-        document.getElementById('roomForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
+        const roomFormEl = document.getElementById('roomForm');
+        if (roomFormEl) {
+            roomFormEl.addEventListener('submit', async function(e) {
+                e.preventDefault();
 
-            const roomNumber = document.getElementById('roomNumber').value;
-            const roomCapacity = document.getElementById('roomCapacity').value;
-            const roomStatus = document.getElementById('roomStatus').value;
+                const roomNumber = document.getElementById('roomNumber').value;
+                const roomCapacity = document.getElementById('roomCapacity').value;
+                const roomStatus = document.getElementById('roomStatus').value;
 
-            try {
-                const response = await fetch('/api/room/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': (document.querySelector('[name=csrfmiddlewaretoken]') || {}).value || ''
-                    },
-                    body: JSON.stringify({
-                        room_number: roomNumber,
-                        capacity: roomCapacity,
-                        status: roomStatus
-                    })
-                });
-                const result = await response.json();
-                if (result.success) {
-                    // Add room to table instantly
-                    addRoomToTable(roomNumber, roomCapacity, roomStatus);
-                    // Reset form
-                    this.reset();
-                    // Navigate back to dashboard
-                    showSection('dashboard');
-                } else {
-                    alert(result.error || 'Failed to save room.');
+                try {
+                    const response = await fetch('/api/room/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': (document.querySelector('[name=csrfmiddlewaretoken]') || {}).value || ''
+                        },
+                        body: JSON.stringify({
+                            room_number: roomNumber,
+                            capacity: roomCapacity,
+                            status: roomStatus
+                        })
+                    });
+                    const result = await response.json();
+                    if (result.success && result.room) {
+                        this.reset();
+                        showSection('dashboard');
+                        // Add the new room directly to the table
+                        addRoomToTable(result.room.room_number, result.room.capacity, result.room.status, result.room.id);
+                        updateDashboardStats();
+                    } else if (result.success) {
+                        // Fallback: if no room object returned, refresh all
+                        this.reset();
+                        showSection('dashboard');
+                        fetchAndRenderRooms();
+                    }
+                } catch (err) {
+                    // Optionally handle error silently
                 }
-            } catch (err) {
-                alert('Error saving room.');
-            }
-        });
+            });
+        }
 
 
         // Function to add a single room row to the dashboard table
-        function addRoomToTable(roomNumber, roomCapacity, roomStatus) {
+        function addRoomToTable(roomNumber, roomCapacity, roomStatus, seenRoomNumbers) {
             const tableBody = document.getElementById('roomTableBody');
-            let statusClass = '';
-            switch(roomStatus.toLowerCase()) {
-                case 'available': statusClass = 'status-available'; break;
-                case 'reserved': statusClass = 'status-reserved'; break;
-                case 'occupied': statusClass = 'status-occupied'; break;
-                case 'maintenance': statusClass = 'status-maintenance'; break;
-            }
+            const normalizedStatus = String(roomStatus).toLowerCase();
+            let statusText = (normalizedStatus === 'maintenance' || normalizedStatus === 'under maintenance') ? 'Under Maintenance' : 'Not Under Maintenance';
+            let statusClass = (normalizedStatus === 'maintenance' || normalizedStatus === 'under maintenance') ? 'status-maintenance' : 'status-available';
             const newRow = document.createElement('tr');
+            // Add a data attribute for room id
+            newRow.setAttribute('data-room-id', arguments[3]);
             newRow.innerHTML = `
                 <td class="editable-cell" data-field="roomNumber">${roomNumber}</td>
                 <td class="editable-cell" data-field="roomCapacity">${roomCapacity}</td>
-                <td class="editable-cell" data-field="roomStatus"><span class="status-badge ${statusClass}">${roomStatus.charAt(0).toUpperCase() + roomStatus.slice(1)}</span></td>
+                <td class="editable-cell" data-field="roomStatus"><span class="status-badge ${statusClass}">${statusText}</span></td>
                 <td class="action-icons">
                     <i class="fas fa-edit edit-icon" title="Edit" onclick="toggleEdit(this)"></i>
+                    <i class="fas fa-trash delete-icon" title="Delete" style="color:#e74c3c;cursor:pointer;margin-left:10px;" onclick="deleteRoom(this, '${arguments[3]}')"></i>
                 </td>
             `;
             tableBody.appendChild(newRow);
-            // Immediately update dashboard stats (including total tourists)
+        }
+
+// Delete room function (must be global, not inside addRoomToTable)
+async function deleteRoom(iconElem, roomId) {
+    const row = iconElem.closest('tr');
+    try {
+        const resp = await fetch('/api/delete-room/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': (document.querySelector('[name=csrfmiddlewaretoken]') || {}).value || ''
+            },
+            body: JSON.stringify({ room_id: roomId })
+        });
+        const result = await resp.json();
+        if (result.success && result.room) {
+            // Remove the row from the dashboard table (since under maintenance rooms are hidden)
+            row.remove();
             updateDashboardStats();
         }
+    } catch (err) {}
+}
 
         // Fetch all rooms from backend and render in table
         async function fetchAndRenderRooms() {
             const tableBody = document.getElementById('roomTableBody');
             tableBody.innerHTML = '';
+            const seenRoomNumbers = new Set();
             try {
                 const response = await fetch('/api/rooms/');
                 const result = await response.json();
                 if (result.success && Array.isArray(result.rooms)) {
+                    // Filter out duplicate room numbers (show only the first occurrence)
+                    const uniqueRooms = [];
                     result.rooms.forEach(room => {
-                        addRoomToTable(room.room_number, room.capacity, room.status);
+                        if (!seenRoomNumbers.has(room.room_number)) {
+                            uniqueRooms.push(room);
+                            seenRoomNumbers.add(room.room_number);
+                        }
+                    });
+                    // Only render unique rooms
+                    uniqueRooms.forEach(room => {
+                        addRoomToTable(room.room_number, room.capacity, room.status, room.id);
                     });
                 }
             } catch (err) {
@@ -2110,10 +2490,9 @@ document.addEventListener('DOMContentLoaded', loadMyTouristTable);
             const occupancyRate = totalRooms > 0 ? Math.round(((reservedRooms + occupiedRooms) / totalRooms) * 100) : 0;
 
             // Update dashboard stats
-            document.getElementById('totalRooms').textContent = totalRooms;
-            document.getElementById('availableRooms').textContent = availableRooms;
-            document.getElementById('reservedRooms').textContent = reservedRooms;
-            document.getElementById('occupancyRate').textContent = occupancyRate + '%';
+            const totalRoomsElem = document.getElementById('totalRooms');
+            if (totalRoomsElem) totalRoomsElem.textContent = totalRooms;
+            const availableRoomsElem = document.getElementById('availableRooms');
 
             // Fetch and update total guests for this homestay
             try {
@@ -2126,9 +2505,11 @@ document.addEventListener('DOMContentLoaded', loadMyTouristTable);
                         return sum + (isNaN(n) ? 0 : n);
                     }, 0);
                 }
-                document.getElementById('totalTourists').textContent = totalGuests;
+                const totalTouristsElem = document.getElementById('totalTourists');
+                if (totalTouristsElem) totalTouristsElem.textContent = totalGuests;
             } catch (e) {
-                document.getElementById('totalTourists').textContent = '0';
+                const totalTouristsElem = document.getElementById('totalTourists');
+                if (totalTouristsElem) totalTouristsElem.textContent = '0';
             }
         }
 
@@ -2144,23 +2525,43 @@ document.addEventListener('DOMContentLoaded', loadMyTouristTable);
         }
 
         function searchTourists() {
-            const searchTerm = document.getElementById('tourist-search').value.toLowerCase().trim();
-            const rows = document.querySelectorAll('#tourist-table-body tr');
-            rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                row.style.display = text.includes(searchTerm) ? '' : 'none';
-            });
+            const q = document.getElementById('tourist-search').value.trim();
+            const tbody = document.getElementById('tourist-table-body');
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#888;">Searching...</td></tr>';
+            fetch(`/api/tourist-search/?q=${encodeURIComponent(q)}`)
+                .then(r => r.json())
+                .then(data => {
+                    if (!Array.isArray(data) || data.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#888;">No tourists found.</td></tr>';
+                        return;
+                    }
+                    tbody.innerHTML = '';
+                    data.forEach(t => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${t.guest_name || '-'}</td>
+                            <td>${t.contact_number || '-'}</td>
+                            <td>${t.homestay__name || t.homestay_name || '-'}</td>
+                            <td>${t.date || '-'}</td>
+                            <td>${t.num_people || '-'}</td>
+                            <td>
+                                ${t.status === 'reserved' ? '<span class="status-badge status-reserved">Reserved</span>' : t.status === 'available' ? '<span class="status-badge status-available">Available</span>' : `<span class="status-badge status-archived">${t.status ? t.status.charAt(0).toUpperCase() + t.status.slice(1) : '-'}</span>`}
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                })
+                .catch(err => {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:red;">Error searching tourists.</td></tr>';
+                });
         }
 
         // Render table on load and when switching to tourist management
 
-        document.addEventListener('DOMContentLoaded', function() {
-            fetchAndRenderRooms();
-            console.log('Homestay dashboard loaded successfully.');
-        });
-
-        // Sidebar navigation: use event listeners instead of inline onclick
-        document.addEventListener('DOMContentLoaded', function() {
+        // Prevent multiple event listeners: use a flag
+        if (!window.sidebarNavInitialized) {
+            window.sidebarNavInitialized = true;
+            let calendarNavInitialized = false;
             document.querySelectorAll('.sidebar-menu a').forEach(link => {
                 link.addEventListener('click', function(e) {
                     // Only handle navigation for non-logout links
@@ -2186,12 +2587,35 @@ document.addEventListener('DOMContentLoaded', loadMyTouristTable);
                         // Show selected section
                         document.getElementById(section).classList.add('active');
                         // Render calendar if needed
-                        if (section === 'date-availability') renderAvailabilityCalendar();
+                        if (section === 'date-availability') {
+                            // Always repopulate year filter and set month to current if not set
+                            populateYearFilter();
+                            const monthSelect = document.getElementById('month-filter');
+                            const yearSelect = document.getElementById('year-filter');
+                            const now = new Date();
+                            if (!monthSelect.value || monthSelect.value === '') monthSelect.value = (now.getMonth() + 1).toString();
+                            if (!yearSelect.value || yearSelect.value === '') yearSelect.value = now.getFullYear();
+                            // Initialize navigation buttons only once
+                            if (!calendarNavInitialized) {
+                                // Trigger the nav button setup by dispatching DOMContentLoaded again for that block
+                                const event = new Event('DOMContentLoaded');
+                                document.dispatchEvent(event);
+                                calendarNavInitialized = true;
+                            }
+                            renderAvailabilityCalendar();
+                        }
                         // Always fetch and render rooms when switching to dashboard or room management
-                        if (section === 'dashboard' || section === 'available-room') fetchAndRenderRooms();
+                        if (section === 'dashboard' || section === 'available-room') {
+                            fetchAndRenderRooms();
+                        }
                     }
                 });
             });
+        }
+        // Initial dashboard load
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchAndRenderRooms();
+            console.log('Homestay dashboard loaded successfully.');
         });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
@@ -2244,7 +2668,7 @@ document.addEventListener('DOMContentLoaded', loadMyTouristTable);
                     const date = window._selectedReservationDate;
                     const editingId = window._editingReservationId;
                     if (!guestName || !numPeople || !date) {
-                        alert('Please fill in all fields.');
+
                         return;
                     }
                     try {
@@ -2291,10 +2715,10 @@ document.addEventListener('DOMContentLoaded', loadMyTouristTable);
                             renderAvailabilityCalendar();
                             closeReservationModal();
                         } else {
-                            alert(result.error || 'Failed to save reservation.');
+
                         }
                     } catch (err) {
-                        alert('Error saving reservation.');
+
                     }
                 });
             });
@@ -2316,120 +2740,178 @@ document.addEventListener('DOMContentLoaded', loadMyTouristTable);
         }
 
 
-        function renderAvailabilityCalendar() {
+
+        async function renderAvailabilityCalendar() {
             const calendarEl = document.getElementById('calendar-availability');
             if (!calendarEl) return;
 
-            // Remove previous calendar if exists
-            if (calendarAvailabilityInstance) {
-                calendarAvailabilityInstance.destroy();
+            // Fetch room and booking data from API
+            let data;
+            try {
+                const resp = await fetch('/api/calendar-data/');
+                data = await resp.json();
+                if (!data.success) throw new Error(data.error || 'Failed to load calendar data');
+            } catch (err) {
+                calendarEl.innerHTML = `<div style=\"color:red;\">Failed to load calendar data: ${err.message}</div>`;
+                return;
             }
-
-            // Prepare events: Only add events for reserved dates
-            const allEvents = bookingsAvailability
-                .filter(b => b.status === 'reserved')
-                .map(b => ({
-                    id: b.id,
-                    title: `Reserved: ${b.guest_name} (${b.num_people})`,
-                    start: b.start,
-                    end: b.end,
-                    backgroundColor: getEventColor(b.status),
-                    borderColor: getEventColor(b.status),
-                    textColor: getTextColor(b.status),
-                    extendedProps: {
-                        status: b.status,
-                        guest_name: b.guest_name || '',
-                        num_people: b.num_people || ''
-                    }
-                }));
+            // Filter out duplicate room numbers (keep only the first occurrence)
+            const seenRoomNumbers = new Set();
+            const rooms = [];
+            for (const room of data.rooms) {
+                if (!seenRoomNumbers.has(room.room_number)) {
+                    seenRoomNumbers.add(room.room_number);
+                    rooms.push(room);
+                }
+            }
+            const bookings = data.bookings;
 
             // Get selected year/month
             const year = getSelectedYear();
             const month = getSelectedMonth();
+            const today = new Date();
+            let firstDay = new Date(year, month - 1, 1);
+            let daysInMonth = new Date(year, month, 0).getDate();
+            let startDay = firstDay.getDay(); // 0=Sun, 1=Mon, ...
 
-            // Always show only one month at a time
-            let initialDate;
-            if (month === 'all') {
-                // If 'all', default to current month
-                const now = new Date();
-                initialDate = new Date(year, now.getMonth(), 1);
-            } else {
-                initialDate = new Date(year, parseInt(month) - 1, 1);
-            }
-
-            // Filter events for selected year/month
-            const filteredEvents = filterCalendarEvents(allEvents, currentAvailabilityFilter);
-
-            calendarAvailabilityInstance = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
-                height: 600,
-                selectable: true,
-                selectMirror: true,
-                editable: true,
-                selectLongPressDelay: 0,
-                initialDate: initialDate,
-                headerToolbar: {
-                    left: '',
-                    center: 'title',
-                    right: ''
-                },
-                events: filteredEvents,
-                select: function(info) {
-                    showReservationModal(info.startStr, info.endStr);
-                },
-                dateClick: function(info) {
-                    // Only open modal for new reservation if clicking on empty date (not on event)
-                    const reserved = bookingsAvailability.find(b => b.status === 'reserved' && b.start === info.dateStr);
-                    if (!reserved) {
-                        showReservationModal(info.dateStr, info.dateStr);
-                    }
-                },
-                eventClick: function(info) {
-                    // Open modal for editing the clicked reservation event
-                    const event = info.event;
-                    const reservationData = {
-                        id: event.id,
-                        guest_name: event.extendedProps.guest_name,
-                        num_people: event.extendedProps.num_people,
-                        start: event.startStr,
-                        end: event.endStr
-                    };
-                    showReservationModal(event.startStr, event.endStr, reservationData);
-                },
-                dayMaxEvents: true,
-                views: {
-                    dayGridMonth: {
-                        type: 'dayGridMonth',
-                        duration: { months: 1 }
-                    }
-                },
-                // Prevent navigation via keyboard arrows
-                validRange: function(nowDate) {
-                    return {
-                        start: initialDate,
-                        end: new Date(initialDate.getFullYear(), initialDate.getMonth() + 1, 1)
-                    };
-                },
-                navLinks: false,
-                navLinkDayClick: null
-            });
-            calendarAvailabilityInstance.render();
-
-            // Update the calendar title to match selected month/year
-            setTimeout(function() {
-                const calendarTitle = document.querySelector('.fc-toolbar-title');
-                if (calendarTitle) {
-                    if (month === 'all') {
-                        const now = new Date();
-                        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-                        calendarTitle.textContent = monthNames[now.getMonth()] + ' ' + year;
+            // Build calendar grid
+            let html = '<table class="custom-calendar">';
+            html += '<thead><tr>';
+            ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(d => html += `<th>${d}</th>`);
+            html += '</tr></thead><tbody>';
+            let day = 1;
+            for (let week = 0; week < 6; week++) {
+                html += '<tr>';
+                for (let d = 0; d < 7; d++) {
+                    if ((week === 0 && d < startDay) || day > daysInMonth) {
+                        html += '<td></td>';
                     } else {
-                        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-                        calendarTitle.textContent = monthNames[parseInt(month) - 1] + ' ' + year;
+                        let dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                        html += `<td><span class="calendar-date-label">${day}</span>`;
+                        // List rooms for this date
+                        rooms.forEach(room => {
+                            let booking = bookings.find(b => b.room_id === room.id && b.date === dateStr);
+                            let status = booking ? booking.status : room.status;
+                            let guest = booking ? booking.guest_name : '';
+                            let numPeople = booking ? booking.num_people : '';
+                            let contact = booking ? booking.contact_number : '';
+                            // Normalize status values to canonical classes used in CSS
+                            const st = String(status || '').toLowerCase().trim();
+                            let statusClass = 'available';
+                            if (st === 'reserved' || st === 'booked') statusClass = 'reserved';
+                            else if (st === 'maintenance' || st === 'under maintenance' || st === 'under_maintenance' || st === 'under-maintenance') statusClass = 'maintenance';
+                            else if (st === 'occupied' || st === 'checked_in') statusClass = 'occupied';
+                            else statusClass = 'available';
+                            let label = room.room_number;
+                            let isMaintenance = (String(status).toLowerCase() === 'maintenance' || String(status).toLowerCase() === 'under maintenance');
+                            // Only display the room number as the label — status is indicated by the color/class
+                            // Keep guest/contact as data attributes and preserve maintenance tooltip/disabled styling
+                            html += `<div class="calendar-room ${statusClass}" data-room-id="${room.id}" data-date="${dateStr}" data-guest="${guest}" data-num-people="${numPeople}" data-contact="${contact}"${isMaintenance ? ' style=\"pointer-events:none;opacity:0.6;cursor:not-allowed;\" title=\"Room under maintenance\"' : ''}>${room.room_number}</div>`;
+                        });
+                        html += '</td>';
+                        day++;
                     }
                 }
-            }, 10);
+                html += '</tr>';
+                if (day > daysInMonth) break;
+            }
+            html += '</tbody></table>';
+            calendarEl.innerHTML = html;
+
+            // Add click event listeners to room divs
+            document.querySelectorAll('.calendar-room').forEach(cell => {
+                // Only add click event if not maintenance (use data attribute for reliability)
+                if (!cell.hasAttribute('title')) {
+                    cell.addEventListener('click', function(e) {
+                        const roomId = this.getAttribute('data-room-id');
+                        const date = this.getAttribute('data-date');
+                        const guest = this.getAttribute('data-guest');
+                        const numPeople = this.getAttribute('data-num-people');
+                        const contact = this.getAttribute('data-contact');
+                        if (this.classList.contains('reserved')) {
+                            showReservationDetailsModal({guest, numPeople, contact, date, room: this.textContent});
+                        } else {
+                            showReservationModalForRoom(roomId, date);
+                        }
+                        e.stopPropagation();
+                    });
+                }
+            });
         }
+
+        // Show reservation details modal
+        function showReservationDetailsModal({guest, numPeople, contact, date, room}) {
+            const modal = document.createElement('div');
+            modal.style.position = 'fixed';
+            modal.style.top = '0';
+            modal.style.left = '0';
+            modal.style.width = '100vw';
+            modal.style.height = '100vh';
+            modal.style.background = 'rgba(0,0,0,0.4)';
+            modal.style.zIndex = '3000';
+            modal.style.display = 'flex';
+            modal.style.alignItems = 'center';
+            modal.style.justifyContent = 'center';
+            modal.innerHTML = `
+                <div style="background:#fff;padding:2rem 2.5rem;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.18);min-width:320px;max-width:90vw;position:relative;">
+                    <button onclick="this.closest('div[style]').parentNode.remove()" style="position:absolute;top:12px;right:12px;background:none;border:none;font-size:1.5rem;color:#888;cursor:pointer;">&times;</button>
+                    <h3 style="margin-top:0;">Reservation Details</h3>
+                    <div style="margin-bottom:1rem;"><b>Date:</b> ${date}</div>
+                    <div style="margin-bottom:1rem;"><b>Room:</b> ${room}</div>
+                    <div style="margin-bottom:1rem;"><b>Guest Name:</b> ${guest}</div>
+                    <div style="margin-bottom:1rem;"><b>Number of People:</b> ${numPeople}</div>
+                    <div style="margin-bottom:1rem;"><b>Contact Number:</b> ${contact || 'N/A'}</div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+    // Show reservation modal for a specific room/date
+    function showReservationModalForRoom(roomId, date) {
+            const modal = document.getElementById('reservation-modal');
+            modal.style.display = 'flex';
+            document.getElementById('reservation-date').value = date;
+            document.getElementById('guest-name').value = '';
+            document.getElementById('num-people').value = '';
+            modal.setAttribute('data-room-id', roomId);
+        }
+
+        // Handle reservation form submit
+        document.getElementById('reservation-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const modal = document.getElementById('reservation-modal');
+            const roomId = modal.getAttribute('data-room-id');
+            const date = document.getElementById('reservation-date').value;
+            const guestName = document.getElementById('guest-name').value.trim();
+            const numPeople = document.getElementById('num-people').value.trim();
+            if (!roomId || !date || !guestName || !numPeople) {
+
+                return;
+            }
+            try {
+                const resp = await fetch('/api/reserve-room/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': (document.querySelector('[name=csrfmiddlewaretoken]') || {}).value || ''
+                    },
+                    body: JSON.stringify({
+                        room_id: roomId,
+                        date: date,
+                        guest_name: guestName,
+                        num_people: numPeople
+                    })
+                });
+                const result = await resp.json();
+                if (result.success) {
+                    modal.style.display = 'none';
+                    await renderAvailabilityCalendar();
+                } else {
+
+                }
+            } catch (err) {
+
+            }
+        });
 
         document.addEventListener('DOMContentLoaded', function() {
             // ...existing code...
@@ -2449,39 +2931,9 @@ document.addEventListener('DOMContentLoaded', loadMyTouristTable);
                 renderAvailabilityCalendar();
 
                 // Add event listeners to year/month dropdowns
-                yearSelect.addEventListener('change', function() {
-                    renderAvailabilityCalendar();
-                });
-                monthSelect.addEventListener('change', function() {
-                    renderAvailabilityCalendar();
-                });
+                // (Handlers are set in the navigation state block below)
 
-                // Add event listener to FullCalendar's today button
-                setTimeout(function() {
-                    const todayBtn = document.querySelector('.fc-today-button');
-                    if (todayBtn) {
-                        todayBtn.addEventListener('click', function() {
-                            // Use MutationObserver to wait for calendar title update
-                            const calendarTitle = document.querySelector('.fc-toolbar-title');
-                            const observer = new MutationObserver(function() {
-                                const now = new Date();
-                                yearSelect.value = now.getFullYear();
-                                monthSelect.value = (now.getMonth() + 1).toString();
-                                renderAvailabilityCalendar();
-                                observer.disconnect();
-                            });
-                            if (calendarTitle) {
-                                observer.observe(calendarTitle, { childList: true });
-                            } else {
-                                // fallback if title not found
-                                const now = new Date();
-                                yearSelect.value = now.getFullYear();
-                                monthSelect.value = (now.getMonth() + 1).toString();
-                                renderAvailabilityCalendar();
-                            }
-                        });
-                    }
-                }, 500);
+                // FullCalendar's internal Today button listener removed to avoid conflicting navigation/overwrites.
             }
 
             // ...existing code...
@@ -2499,7 +2951,7 @@ document.addEventListener('DOMContentLoaded', function() {
         calendarNavContainer.style.marginBottom = '10px';
         calendarNavContainer.innerHTML = `
             <button id="calendar-prev-btn" style="padding:4px 12px; border-radius:6px; border:1px solid #e2e8f0; background:#f4f7f6; cursor:pointer;">&#8592; Previous</button>
-            <button id="calendar-today-btn" style="padding:4px 12px; border-radius:6px; border:1px solid #e2e8f0; background:#f4f7f6; cursor:pointer;">Today</button>
+            <button id="calendar-today-btn" disabled style="padding:4px 12px; border-radius:6px; border:1px solid #e2e8f0; background:#f4f7f6; cursor:not-allowed; opacity:0.6;">Today</button>
             <button id="calendar-next-btn" style="padding:4px 12px; border-radius:6px; border:1px solid #e2e8f0; background:#f4f7f6; cursor:pointer;">Next &#8594;</button>
         `;
         const calendarSection = document.querySelector('#date-availability > div');
@@ -2515,48 +2967,35 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     function setCalendarState(year, month, triggerDropdowns=true) {
+        // If month filter is 'all', force year to current year
+        const monthFilterVal = document.getElementById('month-filter').value;
+        if (monthFilterVal === 'all') {
+            const now = new Date();
+            year = now.getFullYear();
+            month = now.getMonth() + 1;
+        }
         calendarState.year = year;
         calendarState.month = month;
         // Update dropdowns if needed
         if (triggerDropdowns) {
             document.getElementById('year-filter').value = year;
-            document.getElementById('month-filter').value = String(month);
+            document.getElementById('month-filter').value = (monthFilterVal === 'all' ? 'all' : String(month));
         }
         renderAvailabilityCalendar();
     }
 
     // --- Navigation Button Handlers ---
-    document.getElementById('calendar-prev-btn').onclick = function() {
-        let { year, month } = calendarState;
-        month--;
-        if (month < 1) {
-            month = 12;
-            year--;
-        }
-        setCalendarState(year, month);
-    };
-    document.getElementById('calendar-next-btn').onclick = function() {
-        let { year, month } = calendarState;
-        month++;
-        if (month > 12) {
-            month = 1;
-            year++;
-        }
-        setCalendarState(year, month);
-    };
-    document.getElementById('calendar-today-btn').onclick = function() {
-        const today = new Date();
-        setCalendarState(today.getFullYear(), today.getMonth() + 1);
-    };
+    // Today button functions removed. Button left disabled in UI.
 
     // --- Dropdowns update navigation state ---
     const yearFilter = document.getElementById('year-filter');
     const monthFilter = document.getElementById('month-filter');
     if (yearFilter._navListener !== true) {
         yearFilter.addEventListener('change', function() {
-            calendarState.year = parseInt(this.value);
+            const newYear = parseInt(this.value);
+            calendarState.year = newYear;
             // Always update calendar, even if month is 'all'
-            renderAvailabilityCalendar();
+            setCalendarState(newYear, calendarState.month, false);
         });
         yearFilter._navListener = true;
     }
@@ -2564,11 +3003,12 @@ document.addEventListener('DOMContentLoaded', function() {
         monthFilter.addEventListener('change', function() {
             const val = this.value;
             if (val === 'all') {
-                renderAvailabilityCalendar();
+                setCalendarState(calendarState.year, new Date().getMonth() + 1, false);
                 return;
             }
-            calendarState.month = parseInt(val);
-            renderAvailabilityCalendar();
+            const newMonth = parseInt(val);
+            calendarState.month = newMonth;
+            setCalendarState(calendarState.year, newMonth, false);
         });
         monthFilter._navListener = true;
     }
@@ -2602,6 +3042,27 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // On first load, sync to today
     setCalendarState(calendarState.year, calendarState.month);
+    // Enable and wire the Today button to reset view to current year/month
+    try {
+        const todayBtn = document.getElementById('calendar-today-btn');
+        if (todayBtn) {
+            // Enable UI (some markup created this button as disabled)
+            todayBtn.removeAttribute('disabled');
+            todayBtn.style.cursor = 'pointer';
+            todayBtn.style.opacity = '1';
+            // Click handler: reset calendarState to current date and render
+            todayBtn.addEventListener('click', function () {
+                const now = new Date();
+                const y = now.getFullYear();
+                const m = now.getMonth() + 1; // 1-based
+                // Use setCalendarState so dropdowns and rendering update consistently
+                setCalendarState(y, m);
+            });
+        }
+    } catch (err) {
+        // silent fail — keep behavior non-blocking
+        console.error('Error initializing Today button:', err);
+    }
 });
         function getEventColor(status) {
             switch (status) {
@@ -2848,5 +3309,84 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     </script>
+    <script>
+// Show modal on button click
+const addFeatureBtn = document.getElementById('addFeatureBtn');
+const addFeatureModal = document.getElementById('addFeatureModal');
+const addFeatureForm = document.getElementById('addFeatureForm');
+const featuresList = document.querySelector('.features-list');
+
+addFeatureBtn.onclick = function() {
+    addFeatureModal.style.display = 'flex';
+};
+
+// Utility: Get features from localStorage
+function getSavedFeatures() {
+    const saved = localStorage.getItem('homestay_features');
+    return saved ? JSON.parse(saved) : [];
+}
+
+// Utility: Save features to localStorage
+function saveFeatures(features) {
+    localStorage.setItem('homestay_features', JSON.stringify(features));
+}
+
+// Render features from localStorage
+function renderSavedFeatures() {
+    const saved = getSavedFeatures();
+    document.querySelectorAll('.custom-feature-item').forEach(e => e.remove());
+    saved.forEach((feature, idx) => {
+        const div = document.createElement('div');
+        div.className = 'feature-item custom-feature-item';
+        div.innerHTML = `
+            <span class="feature-icon">✨</span>
+            <input type="text" class="custom-feature-name" value="${feature.name}" style="flex:1; font-weight:500; margin-right:10px; padding:6px 10px; border-radius:6px; border:1px solid #e1e8ed; background:#fff; z-index:1;" onchange="updateFeatureName(${idx}, this.value)" autocomplete="off">
+            ${feature.type === 'boolean' ? `<label class='switch'><input type='checkbox' tabindex='0'><span class='slider round'></span></label>` : feature.type === 'number' ? `<input type='number' class='feature-toggle' value='' tabindex='0'>` : `<input type='text' class='feature-toggle' value='' tabindex='0'>`}
+            <button style='margin-left:12px; background:#e74c3c; color:#fff; border:none; border-radius:6px; padding:4px 10px; cursor:pointer; z-index:2;' onclick='removeFeature(${idx})'>Remove</button>
+        `;
+        featuresList.appendChild(div);
+    });
+}
+
+window.updateFeatureName = function(idx, newName) {
+    const saved = getSavedFeatures();
+    saved[idx].name = newName;
+    saveFeatures(saved);
+};
+
+// Focus input in modal when opened
+addFeatureBtn.onclick = function() {
+    addFeatureModal.style.display = 'flex';
+    setTimeout(function() {
+        document.getElementById('featureName').focus();
+    }, 200);
+};
+// ...existing code...
+</script>
+<script>
+function getFeatureStates() {
+    const states = localStorage.getItem('homestay_feature_states');
+    return states ? JSON.parse(states) : {};
+}
+function saveFeatureStates(states) {
+    localStorage.setItem('homestay_feature_states', JSON.stringify(states));
+}
+function updateWifiToggleUI() {
+    const wifiInput = document.getElementById('feature-wifi');
+    const states = getFeatureStates();
+    if (wifiInput) wifiInput.checked = !!states.wifi_available;
+}
+// On page load, restore WiFi state
+updateWifiToggleUI();
+// Handle WiFi toggle click
+const wifiInput = document.getElementById('feature-wifi');
+if (wifiInput) {
+    wifiInput.addEventListener('change', function() {
+        const states = getFeatureStates();
+        states.wifi_available = wifiInput.checked;
+        saveFeatureStates(states);
+    });
+}
+</script>
 </body>
 </html>

@@ -1,8 +1,5 @@
-class Migration(migrations.Migration):
-    dependencies = [
-        ('tourism', '0004_previous_migration'),
-    ]
+"""Tests package for the tourism app.
 
-    operations = [
-        # Define your operations here
-    ]
+This file was accidentally populated with a Django migration class which
+prevented pytest from importing the tests package. Keep this file minimal.
+"""

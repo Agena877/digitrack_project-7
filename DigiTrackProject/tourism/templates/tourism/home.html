@@ -4,8 +4,10 @@
 <head>
     <script>
         // Expose homestay bookings and features data for calendar and modal use
-        window.HOMESTAY_BOOKINGS = {{ bookings_json|safe }};
-        window.features_json = {{ features_json|safe }};
+    // Use safe defaults to avoid generating invalid JS when variables are missing
+    window.HOMESTAY_BOOKINGS = {{ bookings_json|default:'{}'|safe }};
+    window.features_json = {{ features_json|default:'{}'|safe }};
+    window.dynamic_features_json = {{ dynamic_features_json|default:'{}'|safe }};
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -559,14 +561,58 @@
            =========================================== */
         .homestay-list {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 2.5rem;
-            margin-bottom: 3rem;
+            /* use a minimum column width so grid can be centered nicely */
+            grid-template-columns: repeat(3, minmax(320px, 1fr));
+            gap: 1.2rem; /* reduced spacing between cards */
+            margin: 0 auto 2.2rem;
+            max-width: 1180px; /* center the overall grid within the section */
+            justify-content: center;
         }
 
-        .homestay-item {
+        /* Performance list uses fixed 3 columns on larger screens */
+        #performanceList {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(320px, 1fr));
+            gap: 1.2rem; /* reduced spacing between performance cards */
+            margin: 0 auto 2.2rem;
+            max-width: 1180px; /* center the grid */
+            /* stretch grid items so cards fill their columns */
+            justify-items: stretch;
+            justify-content: center;
+        }
+
+        /* Responsive: reduce min column width on smaller screens */
+        @media (max-width: 1100px) {
+            .homestay-list,
+            #performanceList {
+                grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+                max-width: 100%;
+                padding: 0 1rem;
+            }
+        }
+
+        /* Ensure performance cards match registered homestay card size */
+        #performanceList .homestay-item {
+            /* Use same padding and min-height as .homestay-item for consistent sizing */
+            padding: 2.2rem 2.8rem;
+            min-height: 160px;
+            /* occupy full width of the grid cell so both lists align */
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* Highlight the top-1 performance card */
+        #performanceList .homestay-item.top-1 {
+            background: linear-gradient(135deg, rgba(74,144,226,0.12), rgba(243,156,18,0.08));
+            border: 1px solid rgba(74,144,226,0.18);
+            box-shadow: 0 12px 30px rgba(53,122,189,0.12);
+            transform: translateY(-6px);
+        }
+
+        /* Shared card styles for homestay list and performance cards */
+        .homestay-card {
             text-align: center;
-            padding: 2.5rem;
+            padding: 2.2rem 2.8rem;
             background: linear-gradient(135deg, var(--white) 0%, var(--light-bg) 100%);
             border-radius: var(--border-radius);
             transition: var(--transition);
@@ -575,6 +621,19 @@
             position: relative;
             box-shadow: var(--shadow-light);
             border: 1px solid rgba(74, 144, 226, 0.1);
+            min-height: 160px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* Keep .homestay-item for behavioral/variant rules */
+        .homestay-item {
+            /* behavioral/variant-only rules remain here (hover, transforms, special states) */
+            position: relative;
         }
 
         .homestay-item::before {
@@ -610,6 +669,71 @@
             margin-bottom: 1.5rem;
         }
 
+        .homestay-rank {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            opacity: 0.9;
+            margin-bottom: 0.4rem;
+        }
+
+        .homestay-card--compact .homestay-rank {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 0.25rem;
+        }
+
+        .homestay-card--compact .homestay-meta-value {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: var(--primary-dark);
+        }
+
+        /* Metadata inside homestay cards (used by registered list and performance cards) */
+        .homestay-meta {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.125rem; /* small gap between label and value */
+            /* match vertical spacing used by .homestay-item + .homestay-name */
+            margin-top: 1.5rem;
+        }
+
+        .homestay-meta-label {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin: 0; /* reset margins so spacing is controlled by .homestay-meta gap */
+            line-height: 1.1;
+        }
+
+        .homestay-meta-value {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--primary-color);
+            margin: 0; /* reset margins so spacing is controlled by .homestay-meta gap */
+            line-height: 1;
+        }
+
+        /* Compact card variant for Performance Rankings */
+        .homestay-card--compact {
+            padding: 1rem 1.2rem;
+            min-height: 110px;
+            max-width: 420px; /* prevent full-width stretching */
+            width: auto; /* let grid cell center the card */
+            box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+        }
+
+        .homestay-card--compact .homestay-name {
+            font-size: 1.3rem;
+            margin-bottom: 0.6rem;
+                }
+                .homestay-card--compact .homestay-name {
+                    font-size: 1.6rem; /* increased for emphasis */
+                    margin-bottom: 0.6rem;
+                    letter-spacing: 0.6px;
+                }
+
         .homestay-buttons {
             display: flex;
             gap: 1rem;
@@ -626,7 +750,14 @@
             font-weight: 600;
             transition: var(--transition);
             min-width: 100px;
-            position: relative;
+                }
+                .homestay-card--compact .homestay-rank {
+                    font-size: 1.15rem; /* larger rank */
+                    font-weight: 800;
+                    color: var(--primary-dark);
+                    margin-bottom: 0.25rem;
+                    letter-spacing: 0.8px;
+                }
             overflow: hidden;
         }
 
@@ -799,6 +930,16 @@
             font-weight: 700;
         }
 
+        /* When modal has .no-anim, disable entrance animations to avoid flashing on auto-open */
+        .modal.no-anim {
+            animation: none !important;
+        }
+        .modal.no-anim .modal-content {
+            animation: none !important;
+            transform: none !important;
+            opacity: 1 !important;
+        }
+
         /* Enhanced Preferences Grid */
         .preferences-grid {
             display: grid;
@@ -827,7 +968,12 @@
             font-size: 1.5rem;
             margin-right: 1.5rem;
             width: 40px;
-            text-align: center;
+                }
+                .homestay-card--compact .homestay-meta-value {
+                    font-size: 1.15rem;
+                    font-weight: 800;
+                    color: var(--primary-dark);
+                }
             background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -848,17 +994,18 @@
             transition: var(--transition);
         }
 
-        .available {
-            background: linear-gradient(135deg, #d4edda, #c3e6cb);
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .not-available {
-            background: linear-gradient(135deg, #f8d7da, #f5c6cb);
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
+         .calendar-room.available {
+                background: #32a852 !important; /* green */
+                color: #fff !important;
+            }
+            .calendar-room.reserved {
+                background: #e74c3c !important; /* red */
+                color: #fff !important;
+            }
+            .calendar-room.maintenance {
+                background: #95a5a6 !important; /* gray */
+                color: #fff !important;
+            }
 
         /* Enhanced Form Styles */
         .booking-form {
@@ -887,6 +1034,11 @@
             transition: var(--transition);
             background: var(--white);
         }
+        /* Password visibility icon for login modal */
+        .input-with-icon { position: relative; }
+        .input-with-icon input { width: 100%; padding-right: 44px; }
+        .input-with-icon .show-pass { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); border: none; background: transparent; cursor: pointer; color: var(--text-light); padding: 0; width: 28px; height: 28px; display:inline-flex; align-items:center; justify-content:center; }
+        .input-with-icon .show-pass:focus { outline: none; }
 
         .form-input:focus, .form-select:focus {
             outline: none;
@@ -1235,13 +1387,14 @@
                 <ul class="nav-menu">
                     <li><a href="#home" onclick="event.preventDefault(); scrollToSection('home');">Home</a></li>
                     <li><a href="#homestay" onclick="event.preventDefault(); scrollToSection('homestay');">Homestay</a></li>
+                    <li><a href="#performance" onclick="event.preventDefault(); scrollToSection('performance');">Performance</a></li>
                     <li><a href="#destination" onclick="event.preventDefault(); scrollToSection('destination');">Destination</a></li>
                     <li><a href="#about" onclick="event.preventDefault(); scrollToSection('footer');">About</a></li>
                 </ul>
             </nav>
             
             <div class="login-container">
-                <button class="login-btn" onclick="openLoginModal()">
+                <button class="login-btn" onclick="openLoginModal(true)">
                     <span class="login-icon">👤</span>
                     <span>Log In</span>
                 </button>
@@ -1250,24 +1403,38 @@
                         <button class="modal-close" onclick="closeModal('loginModal')">&times;</button>
                         <h2 class="modal-title">🔐 Welcome Back</h2>
                         <p style="color: var(--text-light); margin-bottom: 2rem; text-align: center;">Please sign in to your account</p>
-                        <form method="post" action="/login/">
+                        <form id="login-form" method="post" action="/login/" autocomplete="off">
                             {% csrf_token %}
                             <div class="form-group">
                                 <label class="form-label" for="login-username">👤 Username</label>
-                                <input class="form-input" type="text" id="login-username" name="username" placeholder="Enter your username" required>
+                                <input class="form-input" type="text" id="login-username" name="username" placeholder="Enter your username" autocomplete="off" readonly required value="{{ login_username|default:'' }}">
                             </div>
                             <div class="form-group">
                                 <label class="form-label" for="login-password">🔒 Password</label>
-                                <input class="form-input" type="password" id="login-password" name="password" placeholder="Enter your password" required>
+                                <div class="input-with-icon">
+                                    <input class="form-input" type="password" id="login-password" name="password" placeholder="Enter your password" autocomplete="off" readonly required>
+                                    <button type="button" class="show-pass" data-target="login-password" aria-label="Show password">👁️</button>
+                                </div>
+                            </div>
+                            <!-- Login messages area: show either generic invalid or contact-admin after 4 fails -->
+                            <div id="login-messages" style="margin-top:12px;">
+                                {% comment %} Prefer server-side messages if present, but show a single message depending on failed attempts {% endcomment %}
+                                {% if failed_login_attempts and failed_login_attempts|default:0 >= 4 %}
+                                    <div style="color:#a94442; font-weight:600; font-size:0.95rem;">You have made multiple unsuccessful attempts. Please contact the admin or MTO staff for assistance.</div>
+                                {% else %}
+                                    {# Only display server messages here when the view explicitly flagged a login error #}
+                                    {% if login_error %}
+                                        {% for message in messages %}
+                                            <div style="color: #e74c3c; font-size:0.95rem; margin-bottom:6px;">{{ message }}</div>
+                                        {% endfor %}
+                                    {% endif %}
+                                {% endif %}
                             </div>
                             <button class="submit-btn" type="submit">
                                 <span>Sign In</span>
                                 <span style="margin-left: 8px;">→</span>
                             </button>
                         </form>
-                        <div class="login-footer" style="text-align: center; margin-top: 1.5rem; color: var(--text-light); border: none !important; outline: none !important;">
-                            <small style="border: none !important; outline: none !important;">Don't have an account? <a href="#" style="color: var(--primary-color); text-decoration: none; font-weight: 600; border: none !important; outline: none !important;">Contact Administrator</a></small>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -1293,16 +1460,12 @@
     
     <!-- Add the rest of your existing HTML content here -->
     <section id="homestay" class="section">
-        <div class="search-results" id="searchResults">
-            <h3 id="searchResultsTitle">Search Results</h3>
-            <p id="searchResultsText"></p>
-            <button class="clear-search" onclick="clearSearch()">Clear Search</button>
-        </div>
+
 
         <h2 class="section-title">List of Registered Homestay</h2>
         <div class="homestay-list" id="homestayList">
             {% for homestay in homestays %}
-            <div class="homestay-item{% if forloop.counter > 6 %} hidden{% endif %}" data-homestay-id="{{ homestay.id }}">
+            <div class="homestay-item homestay-card{% if forloop.counter > 6 %} hidden{% endif %}" data-homestay-id="{{ homestay.id }}">
                 <div class="homestay-name">{{ homestay.name }}</div>
                 <div class="homestay-buttons">
                     <button class="homestay-btn view-btn" onclick="viewHomestay('{{ homestay.name|escapejs }}', {{ homestay.id }})">View</button>
@@ -1313,7 +1476,29 @@
             {% endfor %}
         </div>
 
-        <button class="see-more-btn" id="seeMoreBtn" onclick="showMoreHomestays()">See More Homestays</button>
+
+    <button class="see-more-btn" id="seeMoreBtn" onclick="showMoreHomestays()">See All Homestays</button>
+    </section>
+
+    <!-- Performance Rankings Module (now as a sibling section) -->
+    <section id="performance" style="margin-top: 2.5rem;">
+        <h2 class="section-title" style="color: #357abd; text-align: center; margin-bottom: 0.5rem; letter-spacing: 1px;">Homestay Performance Rankings</h2>
+        <p style="color: #444; margin-bottom: 1.5rem; text-align: center;">Top homestays with the most tourist arrivals.</p>
+        <div class="homestay-list" id="performanceList">
+            {% for homestay in homestay_rankings|slice:":6" %}
+            <div class="homestay-item homestay-card homestay-card--compact{% if forloop.first %} top-1{% endif %}" data-homestay-id="{{ homestay.id }}">
+                <div class="homestay-rank">Rank {{ forloop.counter }}</div>
+                <div class="homestay-name">{{ homestay.name }}</div>
+                <div class="homestay-meta">
+                    <div class="homestay-meta-label">Total Arrivals</div>
+                    <div class="homestay-meta-value">{{ homestay.total_arrivals|default:0 }}</div>
+                </div>
+                <!-- View button intentionally removed for performance cards -->
+            </div>
+            {% empty %}
+            <div style="color:#888; text-align:center; width:100%">No data available.</div>
+            {% endfor %}
+        </div>
     </section>
 
     <section id="destination" class="section reveal">
@@ -1363,8 +1548,9 @@
                 <div id="availabilityCalendar"></div>
                 <div id="calendarLegend" style="margin-top:1rem;">
                     <span style="background:#32a852; color:white; padding:2px 8px; border-radius:8px;">Available</span>
-                    <span style="background:#f8d7da; color:#721c24; padding:2px 8px; border-radius:8px; margin-left:10px;">Unavailable</span>
-                    <span style="background:#fbbf24; color:#333; padding:2px 8px; border-radius:8px; margin-left:10px;">Selected</span>
+                    <span style="background:#f8d7da; color:#721c24; padding:2px 8px; border-radius:8px; margin-left:10px;">Reserved</span>
+                    <br>
+                    <span style="background:#95a5a6; color:white; padding:2px 8px; border-radius:8px; margin-top:6px; display:inline-block;">Under Maintenance</span>
                 </div>
                 <div id="selectedDateInfo" style="margin-top:1rem; color:#357abd; font-weight:bold;"></div>
             </div>
@@ -1392,6 +1578,7 @@
                 <ul>
                     <li><a href="#home">Home</a></li>
                     <li><a href="#homestay">Homestays</a></li>
+                    <li><a href="#performance">Performance</a></li>
                     <li><a href="#destination">Destinations</a></li>
                     <li><a href="#about">About Us</a></li>
                 </ul>
@@ -1449,21 +1636,35 @@
         }
 
         // Keep all your existing JavaScript functions here
-        function openLoginModal() {
+        function openLoginModal(clearFields, suppressAnimation) {
             const modal = document.getElementById('loginModal');
+            // Optionally suppress CSS entrance animations (used when auto-opening after failed login)
+            // Also respect global suppressNextOpenAnimation which is set after failed attempts
+            if (suppressAnimation || (typeof suppressNextOpenAnimation !== 'undefined' && suppressNextOpenAnimation)) {
+                modal.classList.add('no-anim');
+            }
             modal.style.display = 'flex';
             modal.classList.add('show');
             // Prevent body scroll when modal is open
             document.body.style.overflow = 'hidden';
-            // Focus on the username input for better UX
-            setTimeout(() => {
-                document.getElementById('login-username').focus();
-            }, 300);
+            // Optionally clear inputs so the form is blank when opened
+            try {
+                const u = document.getElementById('login-username');
+                const p = document.getElementById('login-password');
+                if (clearFields) {
+                    if (u) u.value = '';
+                    if (p) p.value = '';
+                }
+                // Focus username after a short delay
+                setTimeout(() => { if (u) u.focus(); }, 300);
+            } catch (e) { /* ignore */ }
         }
 
         function closeModal(modalId) {
             const modal = document.getElementById(modalId);
             modal.classList.remove('show');
+            // Remove no-anim when closing so next manual open can animate normally
+            modal.classList.remove('no-anim');
             modal.style.display = 'none';
             // Restore body scroll when modal is closed
             document.body.style.overflow = 'auto';
@@ -1493,102 +1694,102 @@
             });
         }
 
-        let visibleHomestays = 6;
-        const homestayItems = document.querySelectorAll('.homestay-item');
-        const totalHomestays = homestayItems.length;
+    // Scope registered homestay items separately so Performance cards are not affected
+    let visibleHomestays = 6;
+    const registeredHomestayItems = document.querySelectorAll('#homestayList .homestay-item');
+    const totalRegisteredHomestays = registeredHomestayItems.length;
 
         function showMoreHomestays() {
             const seeMoreBtn = document.getElementById('seeMoreBtn');
-            seeMoreBtn.classList.add('loading');
-            seeMoreBtn.textContent = 'Loading...';
-            
-            setTimeout(() => {
-                const itemsToShow = Math.min(visibleHomestays + 6, totalHomestays);
-                
-                for (let i = visibleHomestays; i < itemsToShow; i++) {
-                    const item = homestayItems[i];
-                    item.classList.remove('hidden');
-                    item.classList.add('fade-in');
-                }
-                
-                visibleHomestays = itemsToShow;
-                
-                if (visibleHomestays >= totalHomestays) {
-                    seeMoreBtn.classList.add('hidden');
-                } else {
+
+            // If currently showing less than total, expand to show all (registered list only)
+            if (visibleHomestays < totalRegisteredHomestays) {
+                seeMoreBtn.classList.add('loading');
+                seeMoreBtn.textContent = 'Loading...';
+
+                setTimeout(() => {
+                    for (let i = visibleHomestays; i < totalRegisteredHomestays; i++) {
+                        const item = registeredHomestayItems[i];
+                        if (item) {
+                            item.classList.remove('hidden');
+                            item.classList.add('fade-in');
+                            item.style.display = 'block';
+                        }
+                    }
+
+                    visibleHomestays = totalRegisteredHomestays;
                     seeMoreBtn.classList.remove('loading');
-                    seeMoreBtn.textContent = 'See More Homestays';
+                    // Change to hide mode
+                    seeMoreBtn.textContent = 'Hide Homestays';
+                }, 300);
+            } else {
+                // Collapse back to default (show only first visibleHomestaysDefault)
+                const defaultCount = 6;
+                for (let i = 0; i < totalRegisteredHomestays; i++) {
+                    const item = registeredHomestayItems[i];
+                    if (!item) continue;
+                    if (i < defaultCount) {
+                        item.classList.remove('hidden');
+                        item.style.display = 'block';
+                    } else {
+                        item.classList.add('hidden');
+                        item.style.display = 'none';
+                        item.classList.remove('fade-in');
+                    }
                 }
-            }, 1000);
+                visibleHomestays = defaultCount;
+                // Show the See All button again
+                if (totalRegisteredHomestays > visibleHomestays) {
+                    seeMoreBtn.style.display = 'block';
+                    seeMoreBtn.textContent = 'See All Homestays';
+                } else {
+                    seeMoreBtn.style.display = 'none';
+                }
+            }
         }
 
-        function handleSearch() {
+
+        function filterHomestays() {
             const searchInput = document.getElementById('searchInput');
             const searchTerm = searchInput.value.toLowerCase().trim();
-            
-            if (!searchTerm) return;
-            
-            const homestayItems = document.querySelectorAll('.homestay-item');
-            const searchResults = document.getElementById('searchResults');
-            const searchResultsTitle = document.getElementById('searchResultsTitle');
-            const searchResultsText = document.getElementById('searchResultsText');
-            
-            let matchingHomestays = [];
-            let visibleMatches = 0;
-            
-            homestayItems.forEach((item, index) => {
-                const homestayName = item.querySelector('.homestay-name').textContent.toLowerCase();
-                const isMatch = homestayName.includes(searchTerm);
-                
-                if (isMatch) {
-                    matchingHomestays.push(item.querySelector('.homestay-name').textContent);
-                    item.style.display = 'block';
-                    item.classList.remove('hidden');
-                    visibleMatches++;
-                } else {
-                    item.style.display = 'none';
-                }
-            });
-            
-            searchResultsTitle.textContent = `Search Results for "${searchTerm}"`;
-            searchResultsText.textContent = `Found ${matchingHomestays.length} homestay(s) matching your search.`;
-            searchResults.style.display = 'block';
-            
-            document.getElementById('seeMoreBtn').style.display = 'none';
-            scrollToSection('homestay');
-        }
-
-        function clearSearch() {
-            const searchInput = document.getElementById('searchInput');
-            const searchResults = document.getElementById('searchResults');
-            const homestayItems = document.querySelectorAll('.homestay-item');
+            // Filter only registered homestays
+            const homestayItems = document.querySelectorAll('#homestayList .homestay-item');
             const seeMoreBtn = document.getElementById('seeMoreBtn');
-            
-            searchInput.value = '';
-            searchResults.style.display = 'none';
-            
-            homestayItems.forEach((item, index) => {
-                if (index < 6) {
+            let matchCount = 0;
+
+            if (searchTerm === "") {
+                homestayItems.forEach((item, index) => {
+                    if (index < visibleHomestays) {
+                        item.style.display = 'block';
+                        item.classList.remove('hidden');
+                    } else {
+                        item.style.display = 'none';
+                        item.classList.add('hidden');
+                    }
+                });
+                // Reset visible count to the default
+                visibleHomestays = 6;
+                if (totalRegisteredHomestays > visibleHomestays) {
+                    seeMoreBtn.style.display = 'block';
+                    seeMoreBtn.classList.remove('hidden');
+                }
+                return;
+            }
+
+            homestayItems.forEach((item) => {
+                const homestayName = item.querySelector('.homestay-name').textContent.toLowerCase();
+                if (homestayName.includes(searchTerm)) {
                     item.style.display = 'block';
                     item.classList.remove('hidden');
+                    matchCount++;
                 } else {
                     item.style.display = 'none';
-                    item.classList.add('hidden');
                 }
             });
-            
-            visibleHomestays = 6;
-            if (totalHomestays > 6) {
-                seeMoreBtn.style.display = 'block';
-                seeMoreBtn.classList.remove('hidden');
-            }
+            seeMoreBtn.style.display = 'none';
         }
 
-        document.getElementById('searchInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                handleSearch();
-            }
-        });
+        document.getElementById('searchInput').addEventListener('input', filterHomestays);
 
         let currentHomestayId = null;
         function viewHomestay(homestayName, homestayId) {
@@ -1598,9 +1799,11 @@
             title.textContent = `${homestayName} - Features & Availability`;
             
             const features = (window.features_json && window.features_json[homestayId]) ? window.features_json[homestayId] : null;
+            const dynFeatures = (window.dynamic_features_json && window.dynamic_features_json[homestayId]) ? window.dynamic_features_json[homestayId] : [];
             const grid = document.getElementById('homestayFeaturesGrid');
+            let html = '';
             if (features) {
-                grid.innerHTML = `
+                html += `
                 <div class="preference-item">
                     <div class="preference-icon">👥</div>
                     <div class="preference-text">Maximum Guests</div>
@@ -1628,16 +1831,282 @@
                 </div>
                 `;
             } else {
-                grid.innerHTML = '<div style="color:#721c24;">No features data available.</div>';
+                html += '<div style="color:#721c24;">No features data available.</div>';
             }
+            // Append dynamic features at the bottom
+            dynFeatures.forEach(function(f) {
+                let valueHtml = '';
+                if (f.type === 'boolean') {
+                    valueHtml = `<div class="preference-status ${f.value === 'true' ? 'available' : 'not-available'}">${f.value === 'true' ? 'Yes' : 'No'}</div>`;
+                } else if (f.type === 'number') {
+                    valueHtml = `<div class="preference-status available">${f.value || ''}</div>`;
+                } else {
+                    valueHtml = `<div class="preference-status available">${f.value || ''}</div>`;
+                }
+                html += `<div class="preference-item">
+                    <div class="preference-icon">✨</div>
+                    <div class="preference-text">${f.name}</div>
+                    ${valueHtml}
+                </div>`;
+            });
+            grid.innerHTML = html;
+            // Make sure the modal is visible even if it was closed previously
+            modal.style.display = 'flex';
             modal.classList.add('show');
+            // Prevent body scroll while modal is open
+            document.body.style.overflow = 'hidden';
             fillCalendarFilters();
             renderAvailabilityCalendar();
         }
 
+            // AJAX login handler: intercept form submit, call /login/ with AJAX and handle JSON responses
+            (function(){
+                // Read cookie by name (used to get csrftoken if needed)
+                function getCookie(name) {
+                    var value = '; ' + document.cookie;
+                    var parts = value.split('; ' + name + '=');
+                    if (parts.length === 2) return parts.pop().split(';').shift();
+                    return null;
+                }
+
+                function getCsrfToken() {
+                    // Prefer the CSRF cookie (csrftoken) which Django sets on the initial GET.
+                    var cookieToken = getCookie('csrftoken');
+                    if (cookieToken) return cookieToken;
+                    // Fallback to the hidden form input (csrfmiddlewaretoken)
+                    var el = document.querySelector('#login-form input[name="csrfmiddlewaretoken"]');
+                    if (el && el.value) return el.value;
+                    return '';
+                }
+
+                function showLoginMessage(html) {
+                    var container = document.getElementById('login-messages');
+                    if (!container) return;
+                    container.innerHTML = html;
+                }
+
+                var countdownTimer = null;
+                // Flag to suppress entrance animation on next open (used after failed attempts)
+                var suppressNextOpenAnimation = false;
+
+                // Client-side per-username tracking using sessionStorage
+                function attemptsKeyFor(username) {
+                    return 'login_attempts:' + (username || '').toLowerCase();
+                }
+
+                function blockedUntilKeyFor(username) {
+                    return 'login_block_until:' + (username || '').toLowerCase();
+                }
+
+                function getSessionAttempts(username) {
+                    if (!username) return 0;
+                    try { return parseInt(sessionStorage.getItem(attemptsKeyFor(username)) || '0', 10) || 0; } catch(e){return 0;}
+                }
+
+                function setSessionAttempts(username, n) {
+                    try { sessionStorage.setItem(attemptsKeyFor(username), String(n)); } catch(e){}
+                }
+
+                function incrementSessionAttempts(username) {
+                    var c = getSessionAttempts(username) + 1;
+                    setSessionAttempts(username, c);
+                    return c;
+                }
+
+                function clearSessionAttempts(username) {
+                    try { sessionStorage.removeItem(attemptsKeyFor(username)); } catch(e){}
+                }
+
+                function setSessionBlocked(username, secondsFromNow) {
+                    try {
+                        var until = Date.now() + (secondsFromNow||0)*1000;
+                        sessionStorage.setItem(blockedUntilKeyFor(username), String(until));
+                    } catch(e){}
+                }
+
+                function getSessionBlockedRemaining(username) {
+                    try {
+                        var v = sessionStorage.getItem(blockedUntilKeyFor(username));
+                        if (!v) return 0;
+                        var until = parseInt(v,10) || 0;
+                        var rem = Math.max(0, Math.ceil((until - Date.now())/1000));
+                        if (rem <= 0) {
+                            sessionStorage.removeItem(blockedUntilKeyFor(username));
+                            return 0;
+                        }
+                        return rem;
+                    } catch(e){ return 0; }
+                }
+                function disableLoginForm(disabled, remainingSeconds) {
+                    var u = document.getElementById('login-username');
+                    var p = document.getElementById('login-password');
+                    var submit = document.querySelector('#login-form .submit-btn');
+                    if (u) u.disabled = disabled;
+                    if (p) p.disabled = disabled;
+                    if (submit) submit.disabled = disabled;
+
+                    // If disabled with remainingSeconds, start a visible countdown message
+                    if (disabled && remainingSeconds && remainingSeconds > 0) {
+                        var end = Date.now() + remainingSeconds * 1000;
+                        if (countdownTimer) clearInterval(countdownTimer);
+                        countdownTimer = setInterval(function(){
+                            var secs = Math.max(0, Math.ceil((end - Date.now())/1000));
+                            var mins = Math.floor(secs/60);
+                            var s = secs % 60;
+                            showLoginMessage('<div style="color:#a94442; font-weight:600; font-size:0.95rem;">Your account is temporarily locked. Please contact the admin or MTO staff. Retry in ' + mins + ':' + (s<10?('0'+s):s) + '.</div>');
+                            if (secs <= 0) {
+                                clearInterval(countdownTimer);
+                                countdownTimer = null;
+                                // lift the disabled state and clear suppression so modal animates normally again
+                                disableLoginForm(false);
+                                suppressNextOpenAnimation = false;
+                                showLoginMessage('');
+                            }
+                        }, 1000);
+                    } else {
+                        if (countdownTimer) { clearInterval(countdownTimer); countdownTimer = null; }
+                        // If re-enabled, clear suppression so modal can animate on next open
+                        suppressNextOpenAnimation = false;
+                    }
+                }
+
+                // Enable AJAX login so the frontend can handle responses (blocked/invalid/success)
+                var ENABLE_AJAX_LOGIN = true;
+
+                var form = document.getElementById('login-form');
+                if (form && ENABLE_AJAX_LOGIN) {
+                    form.addEventListener('submit', function(ev){
+                        // Prefer AJAX submit to get JSON responses (blocked / invalid / success)
+                        ev.preventDefault();
+                        // close any previous messages
+                        showLoginMessage('');
+                        var submitBtn = form.querySelector('.submit-btn');
+                        if (submitBtn) submitBtn.disabled = true;
+
+                        // Read username early so we can check local blocked state
+                        var usernameField = document.getElementById('login-username');
+                        var username = usernameField ? (usernameField.value||'').trim() : '';
+                        var localBlockedRem = getSessionBlockedRemaining(username);
+                        if (localBlockedRem > 0) {
+                            // If client believes the user is blocked, avoid sending request and show countdown
+                            openLoginModal(false, true);
+                            disableLoginForm(true, localBlockedRem);
+                            if (submitBtn) submitBtn.disabled = true;
+                            return;
+                        }
+
+                        var data = new FormData(form);
+                        var csrf = getCsrfToken();
+
+                        console.debug('Login: sending CSRF token', csrf);
+                        fetch(form.action, {
+                            method: 'POST',
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'X-CSRFToken': csrf
+                            },
+                            body: data,
+                            // Use include to ensure cookies are sent even in some dev envs
+                            credentials: 'include'
+                        }).then(function(resp){
+                            // try to parse JSON, otherwise fall back to full reload
+                            return resp.json().catch(function(){ return null; });
+                        }).then(function(json){
+                            if (!json) {
+                                // non-JSON response: fallback to full page submit
+                                form.removeEventListener('submit', arguments.callee);
+                                form.submit();
+                                return;
+                            }
+
+                            if (json.success) {
+                                // successful login — reload to authenticated state
+                                // clear client-side attempts for this user
+                                try { clearSessionAttempts(form.querySelector('#login-username') ? form.querySelector('#login-username').value : ''); } catch(e){}
+                                window.location.reload();
+                                return;
+                            }
+
+                            // If blocked, show message and disable inputs for remaining seconds
+                            if (json.blocked) {
+                                // ensure modal is open and username preserved
+                                openLoginModal(false, true);
+                                // mark to suppress next open animation (avoid flashing)
+                                suppressNextOpenAnimation = true;
+                                // set local blocked timestamp so repeated clicks are prevented
+                                try { setSessionBlocked(form.querySelector('#login-username') ? form.querySelector('#login-username').value : '', json.remaining || 300); } catch(e){}
+                                disableLoginForm(true, json.remaining || 0);
+                                if (submitBtn) submitBtn.disabled = true;
+                                return;
+                            }
+
+                            // Invalid credentials
+                            openLoginModal(false, true); // keep username, clear password,
+                            // set suppression flag so modal won't animate on subsequent opens
+                            suppressNextOpenAnimation = true;
+                            var p = document.getElementById('login-password'); if (p) p.value = '';
+                            // Show server-sent message or generic message
+                            var message = json.message || 'Invalid username or password.';
+                            showLoginMessage('<div style="color: #e74c3c; font-size:0.95rem; margin-bottom:6px;">' + message + '</div>');
+                            if (submitBtn) submitBtn.disabled = false;
+
+                            // increment client-side attempt counter for this username and, if it reaches 4, set local block
+                            try {
+                                var u = form.querySelector('#login-username') ? form.querySelector('#login-username').value : '';
+                                if (u) {
+                                    var attempts = incrementSessionAttempts(u);
+                                    // Keep UI in sync: if local attempts >=4, block locally for 5 minutes
+                                    if (attempts >= 4) {
+                                        // 5 minutes
+                                        var fiveMin = 5*60;
+                                        setSessionBlocked(u, fiveMin);
+                                        disableLoginForm(true, fiveMin);
+                                    }
+                                }
+                            } catch(e) {}
+                        }).catch(function(err){
+                            console.error('Login request failed', err);
+                            // On network/parse errors, fall back to normal submit
+                            form.removeEventListener('submit', arguments.callee);
+                            form.submit();
+                        });
+                    });
+                }
+            })();
+
+            // If the server signaled a login error, open the login modal automatically
+            (function(){
+                // Render server-side flag as a proper JavaScript boolean (lowercase)
+                var loginError = {{ login_error|default:False|yesno:"true,false" }};
+                if (loginError) {
+                    // small timeout to ensure DOM is ready
+                    // When opened automatically after a failed login, clear only the password and keep the username
+                    setTimeout(function(){ openLoginModal(false, true); var p = document.getElementById('login-password'); if(p) p.value = ''; }, 250);
+                }
+            })();
+
+            // Prevent aggressive browser autofill: remove readonly on user focus so inputs stay blank on open
+            (function(){
+                try {
+                    document.querySelectorAll('#login-username, #login-password').forEach(function(el){
+                        el.addEventListener('focus', function(){
+                            if (el.hasAttribute('readonly')) el.removeAttribute('readonly');
+                        });
+                    });
+                } catch(e) { /* ignore */ }
+            })();
+
+        // Close modal when clicking outside the modal-content area and restore scrolling
         document.addEventListener('click', function(event) {
             if (event.target.classList.contains('modal')) {
-                event.target.classList.remove('show');
+                // Prefer using closeModal so body overflow and inline styles are properly reset
+                if (event.target.id) {
+                    closeModal(event.target.id);
+                } else {
+                    event.target.classList.remove('show');
+                    event.target.style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                }
             }
         });
 
@@ -1650,13 +2119,14 @@
             const year = parseInt(document.getElementById('filterYear').value);
             const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-            let reservedDates = [];
+            // bookings_json structure: { [homestayId]: { [date]: [{room_number, status, ...}, ...] } }
+            let bookingsData = {};
             if (window.HOMESTAY_BOOKINGS && currentHomestayId && window.HOMESTAY_BOOKINGS[currentHomestayId]) {
-                reservedDates = window.HOMESTAY_BOOKINGS[currentHomestayId];
+                bookingsData = window.HOMESTAY_BOOKINGS[currentHomestayId];
             }
 
             let calendarHtml = `<div style="font-weight:bold; margin-bottom:8px;">${monthNames[month]} ${year}</div>`;
-            calendarHtml += '<table style="width:100%; border-collapse:collapse; text-align:center; margin-bottom:12px;">';
+            calendarHtml += '<table style="width:auto; border-collapse:collapse; text-align:center; margin-bottom:12px; font-size:13px;">';
             calendarHtml += '<tr>';
             for (let d = 0; d < 7; d++) {
                 calendarHtml += `<th style="padding:4px; color:#4a90e2;">${["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][d]}</th>`;
@@ -1670,14 +2140,30 @@
 
             for (let day = 1; day <= daysInMonth; day++) {
                 let dateStr = `${year}-${(month+1).toString().padStart(2,'0')}-${day.toString().padStart(2,'0')}`;
-                let unavailable = reservedDates.includes(dateStr);
+                let rooms = bookingsData[dateStr] || [];
                 let dateId = `cal-${year}-${month+1}-${day}`;
-                calendarHtml += `<td style="padding:6px;">
-                    <span id="${dateId}" style="display:inline-block; width:28px; height:28px; line-height:28px; border-radius:50%; background:${unavailable ? '#f8d7da' : '#32a852'}; color:${unavailable ? '#721c24' : 'white'}; cursor:${unavailable ? 'not-allowed' : 'pointer'};"
-                        onclick="${unavailable ? '' : `selectCalendarDate('${dateId}', '${year}-${month+1}-${day}')`}">
-                        ${day}
-                    </span>
-                </td>`;
+                calendarHtml += `<td style="padding:2px 3px; vertical-align:top; min-width:38px; max-width:60px;">`;
+                calendarHtml += `<div style="font-weight:bold; margin-bottom:1px; font-size:13px;">${day}</div>`;
+                if (rooms.length === 0) {
+                    calendarHtml += `<div style='color:#888; font-size:11px;'>No rooms</div>`;
+                } else {
+                    rooms.forEach(room => {
+                        let statusClass = '';
+                        let statusLabel = '';
+                        if (room.status === 'reserved') {
+                            statusClass = 'calendar-room reserved';
+                            statusLabel = 'Reserved';
+                        } else if (room.status === 'maintenance' || room.status === 'under_maintenance' || room.status === 'maintenance') {
+                            statusClass = 'calendar-room maintenance';
+                            statusLabel = 'Under Maintenance';
+                        } else {
+                            statusClass = 'calendar-room available';
+                            statusLabel = 'Available';
+                        }
+                        calendarHtml += `<div class=\"${statusClass}\" style=\"margin-bottom:1px; padding:1px 2px; border-radius:3px; font-size:11px; line-height:1.2; display:inline-block; min-width:18px; text-align:center;\">${room.room_number}</div>`;
+                    });
+                }
+                calendarHtml += `</td>`;
                 if ((day + firstDay) % 7 === 0 && day !== daysInMonth) {
                     calendarHtml += '</tr><tr>';
                 }
@@ -1721,14 +2207,18 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            homestayItems.forEach((item, index) => {
-                if (index >= 6) {
+            registeredHomestayItems.forEach((item, index) => {
+                if (index >= visibleHomestays) {
                     item.classList.add('hidden');
                 }
             });
-            
-            if (totalHomestays <= 6) {
-                document.getElementById('seeMoreBtn').style.display = 'none';
+
+            const seeBtn = document.getElementById('seeMoreBtn');
+            if (totalRegisteredHomestays <= visibleHomestays) {
+                seeBtn.style.display = 'none';
+            } else {
+                seeBtn.style.display = 'block';
+                seeBtn.textContent = 'See All Homestays';
             }
 
             // Initialize reveal animations
@@ -1736,6 +2226,22 @@
             
             // Debug navigation elements
             debugNavigation();
+        });
+
+        // Toggle password visibility in login modal
+        document.addEventListener('click', function(e){
+            const btn = e.target.closest('.show-pass');
+            if (!btn) return;
+            const targetId = btn.getAttribute('data-target');
+            const input = document.getElementById(targetId);
+            if (!input) return;
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                btn.textContent = '👁️';
+            }
         });
     </script>
 </body>

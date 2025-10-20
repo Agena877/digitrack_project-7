@@ -889,24 +889,59 @@
         }
 
         /* Enhanced button styles for suspend/unsuspend */
-        .suspend-btn, .unsuspend-btn {
-            font-size: 12px !important;
-            font-weight: 600 !important;
-            text-transform: uppercase !important;
-            letter-spacing: 0.5px !important;
-            transition: var(--transition) !important;
+        /* Action buttons in tables (Edit / Suspend / Unsuspend) */
+        .action-icons button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: transparent;
+            color: var(--text-dark);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: none;
         }
 
-        .suspend-btn:hover {
-            background: var(--warning-color) !important;
-            transform: translateY(-1px) !important;
-            box-shadow: var(--shadow-sm) !important;
+        .action-icons button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
         }
 
-        .unsuspend-btn:hover {
-            background: var(--primary-dark) !important;
-            transform: translateY(-1px) !important;
-            box-shadow: var(--shadow-sm) !important;
+        .action-icons .edit-btn {
+            background: var(--success-color);
+            color: #fff;
+            border-color: transparent;
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .action-icons .suspend-btn {
+            background: var(--warning-color);
+            color: #fff;
+            border-color: transparent;
+        }
+
+        .action-icons .unsuspend-btn {
+            background: var(--success-color);
+            color: #fff;
+            border-color: transparent;
+        }
+
+        .action-icons .edit-btn:focus,
+        .action-icons .suspend-btn:focus,
+        .action-icons .unsuspend-btn:focus {
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(0,119,182,0.08);
         }
 
         /* Mobile-specific enhancements */
@@ -1711,6 +1746,27 @@
             <!-- Will be filled by JS, same as users -->
         </tbody>
     </table>
+
+    <!-- MTO Staff & Admin Accounts -->
+    <h3 style="margin-top:24px; margin-bottom:12px;">MTO Staff & Admin Accounts</h3>
+    <div class="table-container">
+        <table class="user-table" id="mto-accounts-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Username</th>
+                    <th>Name</th>
+                    <th>Password</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="mto-accounts-body">
+                <!-- Filled by JS -->
+            </tbody>
+        </table>
+    </div>
 </div>
 <!-- Archive Tab Content -->
 <div id="archive-tab" class="tab-content">
@@ -1753,6 +1809,27 @@
                         <div style="margin-top: 20px;">
                             <button type="submit" id="submit-btn">Add User</button>
                             <button type="button" onclick="closeAddUserModal()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <!-- MTO Edit Modal (for staff/admin accounts) -->
+            <div id="mtoEditModal" class="modal">
+                <div class="modal-content" style="width:420px;">
+                    <h3 id="mto-modal-title">Edit MTO Account</h3>
+                    <form id="mtoEditForm">
+                        <label>Username:<br><input type="text" id="mto-input-username" readonly></label>
+                        <label>Name:<br><input type="text" id="mto-input-name" required></label>
+                        <label>Password:<br><input type="password" id="mto-input-password" placeholder="Leave blank to keep current"></label>
+                        <label>Status:<br>
+                            <select id="mto-input-status">
+                                <option value="Active">Active</option>
+                                <option value="Inactive">Inactive</option>
+                            </select>
+                        </label>
+                        <div style="margin-top:20px; display:flex; gap:8px; justify-content:flex-end;">
+                            <button type="button" onclick="saveMTOAccount()" style="background:var(--primary-color); color:#fff;">Save</button>
+                            <button type="button" onclick="closeMTOEditModal()">Cancel</button>
                         </div>
                     </form>
                 </div>
@@ -1825,6 +1902,10 @@
                 }
                 updateDashboardStats && updateDashboardStats();
                 renderManageUserTable && renderManageUserTable();
+                // Render MTO staff/admin accounts if present
+                if (result.success && Array.isArray(result.mto_accounts)) {
+                    renderMTOAccounts(result.mto_accounts);
+                }
             } catch (err) {
                 console.error('Error fetching users:', err);
                 const tbody = document.getElementById('user-table-body');
@@ -1833,6 +1914,160 @@
                 errorRow.innerHTML = `<td colspan="8" style="text-align:center; color:#c00; font-style:italic;">Error fetching users from backend.</td>`;
                 tbody.appendChild(errorRow);
             }
+        }
+
+        // Render MTO staff/admin accounts into the manage tab
+        function renderMTOAccounts(accounts) {
+            const tbody = document.getElementById('mto-accounts-body');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            if (!Array.isArray(accounts) || accounts.length === 0) {
+                const emptyRow = document.createElement('tr');
+                emptyRow.innerHTML = `<td colspan="7" style="text-align:center; color:#888; font-style:italic;">No MTO staff or admin accounts found.</td>`;
+                tbody.appendChild(emptyRow);
+                return;
+            }
+            accounts.forEach((a, idx) => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${idx + 1}</td>
+                    <td>${a.username}</td>
+                    <td>${a.name || '-'}</td>
+                    <td>••••••••</td>
+                    <td>${a.role}</td>
+                    <td><span class="status-badge status-${(a.status||'Inactive').toLowerCase()}">${a.status}</span></td>
+                    <td class="action-icons">
+                        <i class="fas fa-edit edit-icon" title="Edit" onclick="editMTOAccount(this)"></i>
+                        ${ (a.status||'').toLowerCase() === 'active' ? `<button class=\"suspend-btn\" onclick=\"toggleMTOActive(this, '${a.username}', false)\">Suspend</button>` : `<button class=\"unsuspend-btn\" onclick=\"toggleMTOActive(this, '${a.username}', true)\">Unsuspend</button>` }
+                    </td>
+                `;
+            });
+        }
+
+        // Open edit modal for MTO account (reuse add/edit modal)
+        function editMTOAccount(btn) {
+            const row = btn.closest('tr');
+            if (!row) return;
+            const username = row.cells[1].textContent.trim();
+            const name = row.cells[2].textContent.trim();
+
+            // Pre-fill MTO edit modal fields and open it
+            document.getElementById('mto-input-username').value = username;
+            document.getElementById('mto-input-name').value = name;
+            // status is now in cell index 5 (0:id,1:username,2:name,3:password,4:role,5:status,6:actions)
+            const statusText = row.cells[5].textContent.trim();
+            document.getElementById('mto-input-status').value = statusText;
+            // Save reference to row for UI update after save
+            currentEditingRow = row;
+            openMTOEditModal();
+        }
+
+        function openMTOEditModal() {
+            document.getElementById('mtoEditModal').style.display = 'flex';
+        }
+
+        function closeMTOEditModal() {
+            document.getElementById('mtoEditModal').style.display = 'none';
+            // clear fields
+            document.getElementById('mto-input-username').value = '';
+            document.getElementById('mto-input-name').value = '';
+            document.getElementById('mto-input-password').value = '';
+            document.getElementById('mto-input-status').value = 'Active';
+            currentEditingRow = null;
+        }
+
+        function saveMTOAccount() {
+            const username = document.getElementById('mto-input-username').value.trim();
+            const name = document.getElementById('mto-input-name').value.trim();
+            const password = document.getElementById('mto-input-password').value;
+            const status = document.getElementById('mto-input-status').value;
+            if (!username) return alert('Missing username');
+            const csrftoken = (document.querySelector('[name=csrfmiddlewaretoken]') || {}).value || '';
+            const payload = { username: username, name: name, status: status };
+            if (password && password.trim() !== '') payload.password = password;
+            fetch('/api/edit_user/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(r => r.json())
+            .then(result => {
+                if (result.success) {
+                    // update the MTO table row
+                    if (currentEditingRow) {
+                        currentEditingRow.cells[2].textContent = name || '-';
+                        // Update status cell at index 5
+                        currentEditingRow.cells[5].innerHTML = `<span class="status-badge status-${status.toLowerCase()}">${status}</span>`;
+                        // If password was changed, mask it in MTO table (index 3)
+                        if (payload.password) {
+                            currentEditingRow.cells[3].textContent = '••••••••';
+                        }
+                        // Also update main users table if username exists
+                        document.querySelectorAll('#user-table-body tr').forEach(r => {
+                            if (r.cells[4] && r.cells[4].textContent.trim() === username) {
+                                r.cells[2].textContent = name || r.cells[2].textContent;
+                                r.cells[6].innerHTML = `<span class="status-badge status-${status.toLowerCase()}">${status}</span>`;
+                                // mask password in main table (index 5)
+                                if (payload.password && r.cells[5]) r.cells[5].textContent = '••••••••';
+                            }
+                        });
+                    }
+                    closeMTOEditModal();
+                    renderManageUserTable();
+                } else {
+                    alert('Failed to save: ' + (result.error || 'Unknown'));
+                }
+            })
+            .catch(() => alert('Error saving account'));
+        }
+
+        // Toggle active status for MTO account — calls new /api/edit_user/ endpoint
+        function toggleMTOActive(btn, username, makeActive) {
+            const csrftoken = (document.querySelector('[name=csrfmiddlewaretoken]') || {}).value || '';
+            const payload = {
+                username: username,
+                status: makeActive ? 'Active' : 'Inactive'
+            };
+            fetch('/api/edit_user/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(resp => resp.json())
+            .then(result => {
+                if (result.success) {
+                    // Update UI rows in both MTO table and main user table (if present)
+                    const row = btn.closest('tr');
+                    if (row) {
+                        // status cell moved to index 5
+                        row.cells[5].innerHTML = `<span class="status-badge status-${makeActive ? 'active' : 'inactive'}">${makeActive ? 'Active' : 'Inactive'}</span>`;
+                        // Replace action button (now at index 6)
+                        const actionCell = row.cells[6];
+                        actionCell.innerHTML = makeActive
+                            ? `<i class=\\"fas fa-edit edit-icon\\" title=\\"Edit\\" onclick=\\"editMTOAccount(this)\\"></i><button class=\\"suspend-btn\\" onclick=\\"toggleMTOActive(this, '${username}', false)\\">Suspend</button>`
+                            : `<i class=\\"fas fa-edit edit-icon\\" title=\\"Edit\\" onclick=\\"editMTOAccount(this)\\"></i><button class=\\"unsuspend-btn\\" onclick=\\"toggleMTOActive(this, '${username}', true)\\">Unsuspend</button>`;
+                    }
+
+                    // Also update main user table if that username exists there
+                    document.querySelectorAll('#user-table-body tr').forEach(r => {
+                        if (r.cells[4] && r.cells[4].textContent.trim() === username) {
+                            r.cells[6].innerHTML = `<span class="status-badge status-${makeActive ? 'active' : 'inactive'}">${makeActive ? 'Active' : 'Inactive'}</span>`;
+                        }
+                    });
+
+                    updateDashboardStats();
+                    renderManageUserTable();
+                } else {
+                    alert('Failed to update account: ' + (result.error || 'Unknown'));
+                }
+            })
+            .catch(() => alert('Error updating account'));
         }
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -2185,6 +2420,8 @@
             cells[2].textContent = userData.ownerName;
             cells[3].textContent = userData.address;
             cells[4].textContent = userData.username;
+            // Keep password masked in table
+            cells[5].textContent = '••••••••';
             cells[6].innerHTML = `<span class="status-badge status-${userData.status.toLowerCase()}">${userData.status}</span>`;
             updateDashboardStats();
             renderManageUserTable();
@@ -2280,13 +2517,14 @@
                     ownerName: cells[2].textContent,
                     address: cells[3].textContent,
                     username: cells[4].textContent,
+                    password: cells[5] ? cells[5].textContent : '',
                     status: cells[6].textContent.trim()
                 });
             });
 
             const csvContent = "data:text/csv;charset=utf-8," 
-                + "ID,Homestay Name,Owner Name,Address,Username,Status\n"
-                + users.map(user => `${user.id},"${user.homestayName}","${user.ownerName}","${user.address}",${user.username},${user.status}`).join('\n');
+                + "ID,Homestay Name,Owner Name,Address,Username,Password,Status\n"
+                + users.map(user => `${user.id},"${user.homestayName}","${user.ownerName}","${user.address}",${user.username},"${user.password}",${user.status}`).join('\n');
 
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement('a');
